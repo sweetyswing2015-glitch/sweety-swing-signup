@@ -99,6 +99,22 @@ function getRole(lessonId) {
   return document.querySelector(`input[name="role-${lessonId}"]:checked`)?.value ?? "";
 }
 
+function shouldSkipLessonCardToggle(target) {
+  return Boolean(
+    target.closest(".poster-button, .role-box, .select-line, a, button, input, select, textarea, label"),
+  );
+}
+
+function toggleLessonFromCardClick(target) {
+  const card = target.closest("[data-lesson-card]");
+  if (!card || shouldSkipLessonCardToggle(target)) return false;
+  const checkbox = card.querySelector(`input[name="lesson"][value="${card.dataset.lessonCard}"]`);
+  if (!checkbox) return false;
+  checkbox.checked = !checkbox.checked;
+  checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
+
 function updateLessonCards() {
   lessons.forEach((lesson) => {
     const card = document.querySelector(`[data-lesson-card="${lesson.id}"]`);
@@ -342,6 +358,8 @@ document.addEventListener("click", (event) => {
     copyAccountNumber(copyButton);
     return;
   }
+
+  if (toggleLessonFromCardClick(event.target)) return;
 
   const posterButton = event.target.closest("[data-poster]");
   if (posterButton) {
