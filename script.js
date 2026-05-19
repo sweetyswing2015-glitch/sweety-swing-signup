@@ -68,11 +68,11 @@ function renderLessons() {
             <legend>${lesson.name} 역할</legend>
             <div class="role-options">
               <label>
-                <input type="radio" name="role-${lesson.id}" value="leader" />
+                <input type="radio" name="role-${lesson.id}" value="leader" disabled />
                 <span>리더</span>
               </label>
               <label>
-                <input type="radio" name="role-${lesson.id}" value="follower" />
+                <input type="radio" name="role-${lesson.id}" value="follower" disabled />
                 <span>팔뤄</span>
               </label>
             </div>
@@ -102,11 +102,18 @@ function updateLessonCards() {
   lessons.forEach((lesson) => {
     const card = document.querySelector(`[data-lesson-card="${lesson.id}"]`);
     const checkbox = document.querySelector(`input[name="lesson"][value="${lesson.id}"]`);
-    card?.classList.toggle("is-selected", Boolean(checkbox?.checked));
-    if (!checkbox?.checked) {
-      document.querySelectorAll(`input[name="role-${lesson.id}"]`).forEach((input) => {
+    const isSelected = Boolean(checkbox?.checked);
+    const roleInputs = document.querySelectorAll(`input[name="role-${lesson.id}"]`);
+    card?.classList.toggle("is-selected", isSelected);
+    roleInputs.forEach((input) => {
+      input.disabled = !isSelected;
+      input.required = isSelected;
+      input.setAttribute("aria-required", String(isSelected));
+      if (!isSelected) {
         input.checked = false;
-      });
+      }
+    });
+    if (!isSelected) {
       card?.classList.remove("has-error");
     }
   });
@@ -173,14 +180,15 @@ function validateForm() {
     isValid = false;
   }
 
-  selectedLessons.forEach((lesson) => {
-    if (!getRole(lesson.id)) {
-      document.querySelector(`[data-lesson-card="${lesson.id}"]`)?.classList.add("has-error");
-      setError("lessonError", "선택한 강습마다 리더/팔뤄 역할을 선택해주세요.");
-      isValid = false;
-    }
+  const missingRoleLessons = selectedLessons.filter((lesson) => !getRole(lesson.id));
+  missingRoleLessons.forEach((lesson) => {
+    document.querySelector(`[data-lesson-card="${lesson.id}"]`)?.classList.add("has-error");
   });
-
+  if (missingRoleLessons.length > 0) {
+    const lessonNames = missingRoleLessons.map((lesson) => lesson.name).join(", ");
+    setError("lessonError", `${lessonNames} 역할을 선택해주세요.`);
+    isValid = false;
+  }
   if (!applicantType) {
     setError("typeError", "신청자 유형을 선택해주세요.");
     isValid = false;
@@ -290,6 +298,7 @@ async function copyAccountNumber(button) {
 
 applyConfigText();
 renderLessons();
+updateLessonCards();
 updateSummary();
 
 document.addEventListener("change", (event) => {
