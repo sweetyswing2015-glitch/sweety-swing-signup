@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 강습 신청</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="스위티스윙 강습 신청 상단으로 이동">
+        <img src="./assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav class="header-actions" aria-label="빠른 이동">
+        <a href="#lessons">강습 선택</a>
+        <a href="#summary">금액 확인</a>
+        <a href="./students.html">강습생 명단</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p id="termLabel" class="eyebrow">134기 정규 강습 신청</p>
+          <h1>스위티스윙 강습 신청</h1>
+          <p>
+            원하는 강습을 선택하면 중복 수강 할인과 최종 입금 금액을 바로 확인할 수 있습니다.
+          </p>
+          <div class="hero-notice">
+            <a id="introSignupLink" href="#">입문 수업 신청은 여기로 &gt;</a>
+          </div>
+        </div>
+        <div class="hero-card" aria-label="입금 정보">
+          <span class="label">입금계좌</span>
+          <div class="bank-copy-row">
+            <strong data-bank-account>카카오뱅크 3333-35-1975536</strong>
+            <button type="button" class="copy-account-button" data-copy-account>복사</button>
+          </div>
+          <span data-bank-holder>예금주: 이기연</span>
+        </div>
+      </section>
+
+      <form id="signupForm" class="signup-layout" novalidate>
+        <div class="form-stack">
+          <section id="lessons" class="panel">
+            <div class="section-title">
+              <p class="eyebrow">Step 1</p>
+              <h2>강습 선택</h2>
+              <p>중복 수강이 가능합니다. 선택한 강습마다 리더/팔뤄 역할을 지정해주세요.</p>
+            </div>
+            <div id="lessonGrid" class="lesson-grid" aria-live="polite"></div>
+            <p id="lessonError" class="field-error" role="alert"></p>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <p class="eyebrow">Step 2</p>
+              <h2>할인 대상</h2>
+            </div>
+            <fieldset class="choice-group">
+              <legend>신청자 유형</legend>
+              <label class="choice-card">
+                <input type="radio" name="applicantType" value="first_intermediate_134" />
+                <span>
+                  <strong id="firstIntermediateTitle">134기 첫 중급 수강자</strong>
+                  <small id="firstIntermediateDescription">중급과 초급/트레이닝 중복 수강 할인 적용</small>
+                </span>
+              </label>
+              <label class="choice-card">
+                <input type="radio" name="applicantType" value="general" />
+                <span>
+                  <strong>그 외 강습생</strong>
+                  <small>2개 1만원, 3개 이상 2만원 할인</small>
+                </span>
+              </label>
+            </fieldset>
+            <p id="typeError" class="field-error" role="alert"></p>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <p class="eyebrow">Step 3</p>
+              <h2>신청자 정보</h2>
+            </div>
+            <div class="field-grid">
+              <label>
+                <span>닉네임</span>
+                <input id="nickname" name="nickname" type="text" autocomplete="nickname" placeholder="예: 로빈" />
+                <small class="field-error" id="nicknameError" role="alert"></small>
+              </label>
+              <label>
+                <span>이름</span>
+                <input id="realName" name="realName" type="text" autocomplete="name" placeholder="예: 홍길동" />
+                <small class="field-error" id="realNameError" role="alert"></small>
+              </label>
+              <label class="wide">
+                <span>연락처</span>
+                <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" />
+                <small>연락처는 신청 확인 및 안내 용도로만 사용되며 공개되지 않습니다.</small>
+                <small class="field-error" id="phoneError" role="alert"></small>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel payment-panel">
+            <div class="section-title">
+              <p class="eyebrow">Step 4</p>
+              <h2>입금 안내</h2>
+            </div>
+            <div class="payment-grid">
+              <div>
+                <span class="label">계좌</span>
+                <div class="bank-copy-row">
+                  <strong data-bank-account>카카오뱅크 3333-35-1975536</strong>
+                  <button type="button" class="copy-account-button" data-copy-account>복사</button>
+                </div>
+                <p data-bank-holder>예금주: 이기연</p>
+              </div>
+              <div>
+                <span class="label">입금자명</span>
+                <strong id="depositorPreview">닉네임</strong>
+                <p>예: 로빈</p>
+              </div>
+            </div>
+            <p class="payment-note">
+              신청 후 최종 입금 금액을 확인하고 입금해주세요. 입금자명이 다르면 입금 확인이 늦어질 수 있습니다.
+            </p>
+          </section>
+        </div>
+
+        <aside id="summary" class="summary-panel" aria-label="신청 요약">
+          <div class="summary-inner">
+            <p class="eyebrow">Summary</p>
+            <h2>신청 요약</h2>
+            <div id="selectedList" class="selected-list">
+              <p class="empty">강습을 선택하면 요약이 표시됩니다.</p>
+            </div>
+
+            <dl class="price-list">
+              <div>
+                <dt>강습 합계</dt>
+                <dd id="subtotalText">0원</dd>
+              </div>
+              <div>
+                <dt>할인 금액</dt>
+                <dd id="discountText">0원</dd>
+              </div>
+              <div class="total">
+                <dt>최종 입금 금액</dt>
+                <dd id="finalText">0원</dd>
+              </div>
+            </dl>
+
+            <div class="discount-box">
+              <span class="label">할인 내역</span>
+              <ul id="discountDetails">
+                <li>적용된 할인이 없습니다.</li>
+              </ul>
+            </div>
+
+            <div class="bank-box">
+              <span class="label">입금계좌</span>
+              <div class="bank-copy-row">
+                <strong data-bank-account>카카오뱅크 3333-35-1975536</strong>
+                <button type="button" class="copy-account-button" data-copy-account>복사</button>
+              </div>
+              <span data-bank-holder>예금주: 이기연</span>
+              <span class="depositor">입금자명: <b id="summaryDepositor">닉네임</b></span>
+            </div>
+
+            <button class="submit-button" type="submit">신청하기</button>
+          </div>
+        </aside>
+      </form>
+    </main>
+
+    <div class="mobile-total" aria-label="모바일 최종 금액">
+      <div>
+        <span>최종 입금 금액</span>
+        <strong id="mobileFinalText">0원</strong>
+      </div>
+      <button type="button" id="mobileSubmit">신청하기</button>
+    </div>
+
+    <dialog id="posterDialog" class="poster-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <img id="posterLarge" alt="" />
+      <p id="posterCaption"></p>
+    </dialog>
+
+    <dialog id="completeDialog" class="complete-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <div class="complete-mark" aria-hidden="true">✓</div>
+      <h2>신청이 완료되었습니다.</h2>
+      <p>최종 입금 금액을 확인한 뒤 아래 계좌로 입금해주세요.</p>
+      <div class="complete-bank">
+        <div class="bank-copy-row">
+          <strong data-bank-account>카카오뱅크 3333-35-1975536</strong>
+          <button type="button" class="copy-account-button" data-copy-account>복사</button>
+        </div>
+        <span data-bank-holder>예금주: 이기연</span>
+        <span>입금자명: <b id="completeDepositor">닉네임</b></span>
+        <span>입금 금액: <b id="completeAmount">0원</b></span>
+      </div>
+      <p>입금 확인 후 신청이 확정됩니다.</p>
+    </dialog>
+
+    <script src="./data.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

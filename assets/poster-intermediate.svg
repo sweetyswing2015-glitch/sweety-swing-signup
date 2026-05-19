@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">중급 더미 포스터</title>
+  <desc id="desc">추후 실제 강습 포스터로 교체할 자리</desc>
+  <rect width="900" height="1200" fill="#efe1c8"/>
+  <path d="M0 0h900v1200H0z" fill="none" stroke="#15110d" stroke-width="26"/>
+  <path d="M92 132h716v880H92z" fill="#fffaf0"/>
+  <path d="M0 210l900 180v162L0 371z" fill="#13a8b4" opacity=".9"/>
+  <path d="M0 755l900-185v166L0 918z" fill="#f35f4c" opacity=".86"/>
+  <text x="450" y="245" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="62" fill="#fffaf0">SWEETY SWING</text>
+  <text x="450" y="478" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="128" fill="#15110d">중급</text>
+  <text x="450" y="568" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="#2f624f">INTERMEDIATE 134</text>
+  <text x="450" y="668" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#15110d">커리큘럼 · 기간 · 시간 · 강사 · 장소</text>
+  <text x="450" y="756" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="54" fill="#f35f4c">70,000원</text>
+  <text x="450" y="880" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#15110d">POSTER PLACEHOLDER</text>
+  <path d="M252 1002c57 34 337 34 394 0" stroke="#f3c63f" stroke-width="18" fill="none" stroke-linecap="round"/>
+</svg>

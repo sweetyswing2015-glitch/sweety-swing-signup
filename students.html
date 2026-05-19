@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 강습생 공유 명단</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="students">
+    <header class="site-header">
+      <a class="brand" href="./index.html" aria-label="신청 페이지로 이동">
+        <img src="./assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav class="header-actions utility-nav" aria-label="공개 페이지">
+        <a href="./index.html">신청</a>
+      </nav>
+    </header>
+
+    <main class="admin-main">
+      <section class="page-hero">
+        <p id="rosterTerm" class="eyebrow">강습생 명단</p>
+        <h1>강습생 공유용 명단</h1>
+        <p>연락처와 입금 상태는 표시하지 않고, 강습별 신청자와 역할만 공유합니다.</p>
+      </section>
+
+      <section class="toolbar panel">
+        <label>
+          <span>강습 보기</span>
+          <select id="lessonFilter"></select>
+        </label>
+      </section>
+
+      <div id="rosterContent" class="roster-stack"></div>
+    </main>
+
+    <p id="toast" class="toast" hidden></p>
+    <script src="./data.js"></script>
+    <script src="./dashboard.js"></script>
+  </body>
+</html>
