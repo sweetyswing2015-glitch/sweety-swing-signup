@@ -276,6 +276,7 @@ function initStudentsPage() {
         const rows = Store.flattenByLesson(lesson.id, applications);
         const leaderCount = rows.filter((row) => row.selectedClass.role === "leader").length;
         const followerCount = rows.filter((row) => row.selectedClass.role === "follower").length;
+        const paidCount = rows.filter((row) => row.application.paymentStatus === "paid").length;
         return `
           <section class="panel roster-section">
             <div class="section-title row-title">
@@ -283,12 +284,12 @@ function initStudentsPage() {
                 <p class="eyebrow">${lesson.category === "training" ? "Training" : "Class"}</p>
                 <h2>${escapeHtml(lesson.name)}</h2>
               </div>
-              <p class="count-pill">총 ${rows.length}명 · 리더 ${leaderCount} · 팔뤄 ${followerCount}</p>
+              <p class="count-pill">총 ${rows.length}명 · 리더 ${leaderCount} · 팔뤄 ${followerCount} · 입금확인 ${paidCount}</p>
             </div>
             <div class="table-wrap">
               <table>
                 <thead>
-                  <tr><th>닉네임</th><th>이름</th><th>역할</th><th>신청일</th></tr>
+                  <tr><th>닉네임</th><th>역할</th><th>입금상태</th><th>신청일</th></tr>
                 </thead>
                 <tbody>
                   ${
@@ -298,8 +299,8 @@ function initStudentsPage() {
                             ({ application, selectedClass }) => `
                               <tr>
                                 <td>${escapeHtml(application.nickname)}</td>
-                                <td>${escapeHtml(application.realName)}</td>
                                 <td>${Store.roleLabels[selectedClass.role] || selectedClass.role}</td>
+                                <td>${Store.paymentStatusLabels[application.paymentStatus] || application.paymentStatus}</td>
                                 <td>${formatDate(application.submittedAt)}</td>
                               </tr>
                             `,
