@@ -264,6 +264,11 @@ main {
   border-color: #c73329;
 }
 
+.lesson-card:focus {
+  outline: 3px solid rgba(199, 51, 41, 0.28);
+  outline-offset: 3px;
+}
+
 .poster-button {
   display: block;
   width: 100%;
@@ -379,6 +384,14 @@ main {
   border-color: var(--green);
   background: var(--green);
   color: white;
+}
+
+.lesson-card.has-error .role-options span {
+  border-color: rgba(199, 51, 41, 0.55);
+}
+
+.role-error {
+  margin: -2px 0 0;
 }
 
 .choice-group {

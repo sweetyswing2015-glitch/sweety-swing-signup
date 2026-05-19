@@ -49,7 +49,7 @@ function renderLessons() {
   lessonGrid.innerHTML = lessons
     .map(
       (lesson) => `
-        <article class="lesson-card" data-lesson-card="${lesson.id}">
+        <article class="lesson-card" data-lesson-card="${lesson.id}" tabindex="-1">
           <button class="poster-button" type="button" data-poster="${lesson.id}" aria-label="${lesson.name} 포스터 크게 보기">
             <img src="${lesson.poster}" alt="${lesson.caption || `${lesson.name} 포스터`}" />
           </button>
@@ -68,15 +68,16 @@ function renderLessons() {
             <legend>${lesson.name} 역할</legend>
             <div class="role-options">
               <label>
-                <input type="radio" name="role-${lesson.id}" value="leader" disabled />
+                <input type="radio" name="role-${lesson.id}" value="leader" aria-describedby="role-error-${lesson.id}" disabled />
                 <span>리더</span>
               </label>
               <label>
-                <input type="radio" name="role-${lesson.id}" value="follower" disabled />
+                <input type="radio" name="role-${lesson.id}" value="follower" aria-describedby="role-error-${lesson.id}" disabled />
                 <span>팔뤄</span>
               </label>
             </div>
           </fieldset>
+          <p id="role-error-${lesson.id}" class="field-error role-error" data-role-error="${lesson.id}" role="alert"></p>
         </article>
       `,
     )
@@ -115,6 +116,7 @@ function updateLessonCards() {
     });
     if (!isSelected) {
       card?.classList.remove("has-error");
+      setRoleError(lesson.id, "");
     }
   });
 }
@@ -161,9 +163,30 @@ function setError(id, message) {
   if (node) node.textContent = message;
 }
 
+function setRoleError(lessonId, message) {
+  const node = document.querySelector(`[data-role-error="${lessonId}"]`);
+  if (node) node.textContent = message;
+}
+
+function clearRoleError(lessonId) {
+  setRoleError(lessonId, "");
+  document.querySelector(`[data-lesson-card="${lessonId}"]`)?.classList.remove("has-error");
+}
+
+function focusFirstInvalidLessonCard() {
+  const card = document.querySelector(".lesson-card.has-error");
+  if (!card) return false;
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  card.focus({ preventScroll: true });
+  return true;
+}
+
 function clearErrors() {
   ["lessonError", "typeError", "nicknameError", "realNameError", "phoneError"].forEach((id) => setError(id, ""));
   document.querySelectorAll(".lesson-card").forEach((card) => card.classList.remove("has-error"));
+  document.querySelectorAll("[data-role-error]").forEach((node) => {
+    node.textContent = "";
+  });
 }
 
 function validateForm() {
@@ -183,10 +206,9 @@ function validateForm() {
   const missingRoleLessons = selectedLessons.filter((lesson) => !getRole(lesson.id));
   missingRoleLessons.forEach((lesson) => {
     document.querySelector(`[data-lesson-card="${lesson.id}"]`)?.classList.add("has-error");
+    setRoleError(lesson.id, "이 강습의 리더/팔뤄 역할을 선택해주세요.");
   });
   if (missingRoleLessons.length > 0) {
-    const lessonNames = missingRoleLessons.map((lesson) => lesson.name).join(", ");
-    setError("lessonError", `${lessonNames} 역할을 선택해주세요.`);
     isValid = false;
   }
   if (!applicantType) {
@@ -303,6 +325,9 @@ updateSummary();
 
 document.addEventListener("change", (event) => {
   if (event.target.matches('input[name="lesson"]')) updateLessonCards();
+  if (event.target.matches('input[type="radio"][name^="role-"]')) {
+    clearRoleError(event.target.name.replace("role-", ""));
+  }
   if (event.target.matches("input")) updateSummary();
 });
 
@@ -343,7 +368,9 @@ document.querySelector("#signupForm").addEventListener("submit", (event) => {
   updateSummary();
 
   if (!validateForm()) {
-    document.querySelector(".field-error:not(:empty)")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!focusFirstInvalidLessonCard()) {
+      document.querySelector(".field-error:not(:empty)")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     return;
   }
 
