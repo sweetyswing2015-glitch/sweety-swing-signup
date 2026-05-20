@@ -275,6 +275,7 @@ function initStudentsPage() {
 
   $("#rosterTerm").textContent = config.termLabel;
   $("#lessonFilter").innerHTML = lessonOptions(config, selectedFilter);
+  $("#lessonFilter").disabled = false;
 
   function renderRosterPerson({ application }) {
     const paidBadge = application.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
@@ -337,6 +338,19 @@ function initStudentsPage() {
 
   $("#lessonFilter").onchange = render;
   render();
+}
+
+function renderStudentsLoading() {
+  const config = Store.getConfig();
+  $("#rosterTerm").textContent = config.termLabel || "신청확인";
+  $("#lessonFilter").innerHTML = `<option>명단 불러오는 중</option>`;
+  $("#lessonFilter").disabled = true;
+  $("#rosterContent").innerHTML = `
+    <section class="panel roster-loading" role="status">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <strong>명단을 불러오는 중입니다.</strong>
+    </section>
+  `;
 }
 
 function filteredApplications() {
@@ -508,7 +522,7 @@ async function loadConfigForDashboard() {
 
 async function boot() {
   if (page === "students") {
-    initStudentsPage();
+    renderStudentsLoading();
     await loadConfigForDashboard();
     await loadApplicationsForDashboard();
     initStudentsPage();

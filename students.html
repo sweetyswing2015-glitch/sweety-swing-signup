@@ -25,11 +25,18 @@
       <section class="toolbar panel">
         <label>
           <span>강습 선택</span>
-          <select id="lessonFilter"></select>
+          <select id="lessonFilter" disabled>
+            <option>명단 불러오는 중</option>
+          </select>
         </label>
       </section>
 
-      <div id="rosterContent" class="roster-stack"></div>
+      <div id="rosterContent" class="roster-stack" aria-live="polite">
+        <section class="panel roster-loading" role="status">
+          <span class="loading-spinner" aria-hidden="true"></span>
+          <strong>명단을 불러오는 중입니다.</strong>
+        </section>
+      </div>
     </main>
 
     <p id="toast" class="toast" hidden></p>
