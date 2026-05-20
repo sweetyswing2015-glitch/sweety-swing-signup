@@ -269,8 +269,12 @@ function initSettingsPage() {
 
 function initStudentsPage() {
   const config = Store.getConfig();
+  const currentFilter = $("#lessonFilter").value || "all";
+  const enabledLessonIds = new Set(config.lessons.filter((lesson) => lesson.enabled !== false).map((lesson) => lesson.id));
+  const selectedFilter = currentFilter === "all" || enabledLessonIds.has(currentFilter) ? currentFilter : "all";
+
   $("#rosterTerm").textContent = config.termLabel;
-  $("#lessonFilter").innerHTML = lessonOptions(config);
+  $("#lessonFilter").innerHTML = lessonOptions(config, selectedFilter);
 
   function renderRosterPerson({ application }) {
     const paidBadge = application.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
@@ -331,7 +335,7 @@ function initStudentsPage() {
       .join("");
   }
 
-  $("#lessonFilter").addEventListener("change", render);
+  $("#lessonFilter").onchange = render;
   render();
 }
 
@@ -503,10 +507,17 @@ async function loadConfigForDashboard() {
 }
 
 async function boot() {
+  if (page === "students") {
+    initStudentsPage();
+    await loadConfigForDashboard();
+    await loadApplicationsForDashboard();
+    initStudentsPage();
+    return;
+  }
+
   await loadConfigForDashboard();
   await loadApplicationsForDashboard();
   if (page === "settings") initSettingsPage();
-  if (page === "students") initStudentsPage();
   if (page === "ops") initOpsPage("ops");
   if (page === "accounting") initOpsPage("accounting");
 }
