@@ -521,6 +521,15 @@ async function loadPublicRosterForDashboard() {
   }
 }
 
+async function loadStudentsPageData() {
+  try {
+    await Store.refreshStudentsPageData();
+  } catch (error) {
+    console.error(error);
+    setToast("명단 데이터를 불러오지 못했습니다. 잠시 후 새로고침해주세요.");
+  }
+}
+
 async function loadConfigForDashboard() {
   try {
     await Store.refreshConfig();
@@ -533,7 +542,7 @@ async function loadConfigForDashboard() {
 async function boot() {
   if (page === "students") {
     renderStudentsLoading();
-    await Promise.all([loadConfigForDashboard(), loadPublicRosterForDashboard()]);
+    await loadStudentsPageData();
     initStudentsPage();
     return;
   }

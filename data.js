@@ -292,6 +292,25 @@
     }
   }
 
+  async function refreshStudentsPageData(termId = "") {
+    if (!USE_REMOTE_API) {
+      return {
+        config: getConfig(),
+        publicRoster: savePublicRosterRows(publicRosterRowsFromApplications()),
+      };
+    }
+
+    try {
+      const data = await apiGet("getStudentsPageData", termId ? { termId } : {});
+      const config = data?.config ? saveConfig(data.config) : getConfig();
+      const publicRoster = savePublicRosterRows(Array.isArray(data?.publicRoster) ? data.publicRoster : []);
+      return { config, publicRoster };
+    } catch (error) {
+      const [config, publicRoster] = await Promise.all([refreshConfig(), refreshPublicRosterRows(termId)]);
+      return { config, publicRoster };
+    }
+  }
+
   async function refreshConfig() {
     if (!USE_REMOTE_API) return getConfig();
     const config = await apiGet("getConfig");
@@ -485,6 +504,7 @@
     savePublicRosterRows,
     refreshApplications,
     refreshPublicRosterRows,
+    refreshStudentsPageData,
     addApplication,
     updateApplication,
     deleteApplication,
