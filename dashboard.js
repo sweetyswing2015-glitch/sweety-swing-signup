@@ -311,6 +311,25 @@ function initStudentsPage() {
                 </tbody>
               </table>
             </div>
+            <div class="mobile-roster-list" aria-label="${escapeHtml(lesson.name)} 모바일 신청 명단">
+              ${
+                rows.length
+                  ? rows
+                      .map(
+                        ({ application, selectedClass }) => `
+                          <div class="mobile-roster-row">
+                            <strong>${escapeHtml(application.nickname)}</strong>
+                            <span class="mobile-roster-badges">
+                              <b>${Store.roleLabels[selectedClass.role] || selectedClass.role}</b>
+                              <b>${Store.paymentStatusLabels[application.paymentStatus] || application.paymentStatus}</b>
+                            </span>
+                          </div>
+                        `,
+                      )
+                      .join("")
+                  : `<p class="mobile-empty">아직 신청자가 없습니다.</p>`
+              }
+            </div>
           </section>
         `;
       })

@@ -923,6 +923,10 @@ dialog::backdrop {
   overflow-x: auto;
 }
 
+.mobile-roster-list {
+  display: none;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -965,6 +969,16 @@ td select {
 
 .empty-cell {
   padding: 28px 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.mobile-empty {
+  margin: 0;
+  padding: 16px 12px;
+  border: 1px solid rgba(21, 17, 13, 0.1);
+  border-radius: 7px;
+  background: #fffdf7;
   color: var(--muted);
   text-align: center;
 }
@@ -1137,6 +1151,70 @@ td select {
   .stat-grid,
   .staff-grid {
     grid-template-columns: 1fr;
+  }
+
+  .roster-section .row-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .roster-section .count-pill {
+    width: 100%;
+    border-radius: 7px;
+    line-height: 1.45;
+    white-space: normal;
+  }
+
+  .roster-section .table-wrap {
+    display: none;
+  }
+
+  .mobile-roster-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .mobile-roster-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid rgba(21, 17, 13, 0.1);
+    border-radius: 7px;
+    background: #fffdf7;
+  }
+
+  .mobile-roster-row strong {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 16px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-roster-badges {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-end;
+  }
+
+  .mobile-roster-badges b {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
   }
 
   .lesson-editor-preview {
