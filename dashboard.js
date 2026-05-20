@@ -277,11 +277,11 @@ function initStudentsPage() {
   $("#lessonFilter").innerHTML = lessonOptions(config, selectedFilter);
   $("#lessonFilter").disabled = false;
 
-  function renderRosterPerson({ application }) {
-    const paidBadge = application.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
+  function renderRosterPerson(row) {
+    const paidBadge = row.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
     return `
       <div class="role-roster-person">
-        <strong>${escapeHtml(application.nickname)}</strong>
+        <strong>${escapeHtml(row.nickname)}</strong>
         ${paidBadge}
       </div>
     `;
@@ -304,15 +304,15 @@ function initStudentsPage() {
   function render() {
     const filter = $("#lessonFilter").value;
     const lessons = config.lessons.filter((lesson) => lesson.enabled !== false && (filter === "all" || lesson.id === filter));
-    const applications = activeApplications();
+    const publicRows = Store.getPublicRosterRows().filter((row) => row.status !== "cancelled");
     $("#rosterContent").innerHTML = lessons
       .map((lesson) => {
-        const rows = Store.flattenByLesson(lesson.id, applications);
-        const leaderRows = rows.filter((row) => row.selectedClass.role === "leader");
-        const followerRows = rows.filter((row) => row.selectedClass.role === "follower");
-        const leaderCount = rows.filter((row) => row.selectedClass.role === "leader").length;
-        const followerCount = rows.filter((row) => row.selectedClass.role === "follower").length;
-        const paidCount = rows.filter((row) => row.application.paymentStatus === "paid").length;
+        const rows = publicRows.filter((row) => row.lessonId === lesson.id);
+        const leaderRows = rows.filter((row) => row.role === "leader");
+        const followerRows = rows.filter((row) => row.role === "follower");
+        const leaderCount = leaderRows.length;
+        const followerCount = followerRows.length;
+        const paidCount = rows.filter((row) => row.paymentStatus === "paid").length;
         return `
           <section class="panel roster-section">
             <div class="section-title row-title">
@@ -511,6 +511,16 @@ async function loadApplicationsForDashboard() {
   }
 }
 
+async function loadPublicRosterForDashboard() {
+  if (page !== "students") return;
+  try {
+    await Store.refreshPublicRosterRows();
+  } catch (error) {
+    console.error(error);
+    setToast("명단 데이터를 불러오지 못했습니다. 잠시 후 새로고침해주세요.");
+  }
+}
+
 async function loadConfigForDashboard() {
   try {
     await Store.refreshConfig();
@@ -523,8 +533,7 @@ async function loadConfigForDashboard() {
 async function boot() {
   if (page === "students") {
     renderStudentsLoading();
-    await loadConfigForDashboard();
-    await loadApplicationsForDashboard();
+    await Promise.all([loadConfigForDashboard(), loadPublicRosterForDashboard()]);
     initStudentsPage();
     return;
   }

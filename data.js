@@ -1,10 +1,12 @@
 (function () {
   const CONFIG_KEY = "sweetySwing.config.v2";
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
+  const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
   let applicationsCache = null;
+  let publicRosterCache = null;
 
   const legacyLessonIds = {
     "training-slow": "training-a",
@@ -138,6 +140,19 @@
     };
   }
 
+  function normalizePublicRosterRow(row) {
+    return {
+      ...row,
+      lessonId: normalizeLessonId(row.lessonId || row.classId || row.id || ""),
+      lessonName: row.lessonName || row.className || row.name || "",
+      nickname: row.nickname || "",
+      role: row.role || "",
+      status: row.status || "submitted",
+      paymentStatus: row.paymentStatus || "unpaid",
+      submittedAt: row.submittedAt || "",
+    };
+  }
+
   function normalizeConfig(input) {
     const saved = input && typeof input === "object" ? input : {};
     const config = {
@@ -198,6 +213,35 @@
     return normalized;
   }
 
+  function getPublicRosterRows() {
+    if (Array.isArray(publicRosterCache)) return publicRosterCache;
+    const rows = safeJsonParse(localStorage.getItem(PUBLIC_ROSTER_KEY), []);
+    return Array.isArray(rows) ? rows.map(normalizePublicRosterRow) : [];
+  }
+
+  function savePublicRosterRows(rows) {
+    const normalized = Array.isArray(rows) ? rows.map(normalizePublicRosterRow) : [];
+    publicRosterCache = normalized;
+    localStorage.setItem(PUBLIC_ROSTER_KEY, JSON.stringify(normalized));
+    return normalized;
+  }
+
+  function publicRosterRowsFromApplications(applications = getApplications()) {
+    return applications.flatMap((application) =>
+      (application.selectedClasses || []).map((selectedClass) => ({
+        termId: application.termId,
+        termName: application.termName,
+        lessonId: selectedClass.id,
+        lessonName: selectedClass.name,
+        nickname: application.nickname,
+        role: selectedClass.role,
+        status: application.status,
+        paymentStatus: application.paymentStatus,
+        submittedAt: application.submittedAt,
+      })),
+    );
+  }
+
   function makeId() {
     if (window.crypto?.randomUUID) return window.crypto.randomUUID();
     return `app-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -235,6 +279,17 @@
     if (!USE_REMOTE_API) return getApplications();
     const applications = await apiGet("listApplications", termId ? { termId } : {});
     return saveApplications(Array.isArray(applications) ? applications : []);
+  }
+
+  async function refreshPublicRosterRows(termId = "") {
+    if (!USE_REMOTE_API) return savePublicRosterRows(publicRosterRowsFromApplications());
+    try {
+      const rows = await apiGet("listPublicRoster", termId ? { termId } : {});
+      return savePublicRosterRows(Array.isArray(rows) ? rows : []);
+    } catch (error) {
+      const applications = await refreshApplications(termId);
+      return savePublicRosterRows(publicRosterRowsFromApplications(applications));
+    }
   }
 
   async function refreshConfig() {
@@ -426,7 +481,10 @@
     getEnabledLessons,
     getApplications,
     saveApplications,
+    getPublicRosterRows,
+    savePublicRosterRows,
     refreshApplications,
+    refreshPublicRosterRows,
     addApplication,
     updateApplication,
     deleteApplication,
