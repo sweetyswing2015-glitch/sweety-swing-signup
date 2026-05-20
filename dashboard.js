@@ -267,6 +267,30 @@ function initStudentsPage() {
   $("#rosterTerm").textContent = config.termLabel;
   $("#lessonFilter").innerHTML = lessonOptions(config);
 
+  function renderRosterPerson({ application }) {
+    const paidBadge = application.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
+    return `
+      <div class="role-roster-person">
+        <strong>${escapeHtml(application.nickname)}</strong>
+        ${paidBadge}
+      </div>
+    `;
+  }
+
+  function renderRoleColumn(title, rows) {
+    return `
+      <div class="role-roster-column">
+        <div class="role-roster-head">
+          <h3>${title}</h3>
+          <span>${rows.length}명</span>
+        </div>
+        <div class="role-roster-list">
+          ${rows.length ? rows.map(renderRosterPerson).join("") : `<p class="role-roster-empty">아직 없음</p>`}
+        </div>
+      </div>
+    `;
+  }
+
   function render() {
     const filter = $("#lessonFilter").value;
     const lessons = config.lessons.filter((lesson) => lesson.enabled !== false && (filter === "all" || lesson.id === filter));
@@ -274,6 +298,8 @@ function initStudentsPage() {
     $("#rosterContent").innerHTML = lessons
       .map((lesson) => {
         const rows = Store.flattenByLesson(lesson.id, applications);
+        const leaderRows = rows.filter((row) => row.selectedClass.role === "leader");
+        const followerRows = rows.filter((row) => row.selectedClass.role === "follower");
         const leaderCount = rows.filter((row) => row.selectedClass.role === "leader").length;
         const followerCount = rows.filter((row) => row.selectedClass.role === "follower").length;
         const paidCount = rows.filter((row) => row.application.paymentStatus === "paid").length;
@@ -286,50 +312,14 @@ function initStudentsPage() {
               </div>
               <p class="count-pill">총 ${rows.length}명 · 리더 ${leaderCount} · 팔뤄 ${followerCount} · 입금확인 ${paidCount}</p>
             </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr><th>닉네임</th><th>역할</th><th>입금상태</th><th>신청일</th></tr>
-                </thead>
-                <tbody>
-                  ${
-                    rows.length
-                      ? rows
-                          .map(
-                            ({ application, selectedClass }) => `
-                              <tr>
-                                <td>${escapeHtml(application.nickname)}</td>
-                                <td>${Store.roleLabels[selectedClass.role] || selectedClass.role}</td>
-                                <td>${Store.paymentStatusLabels[application.paymentStatus] || application.paymentStatus}</td>
-                                <td>${formatDate(application.submittedAt)}</td>
-                              </tr>
-                            `,
-                          )
-                          .join("")
-                      : `<tr><td colspan="4" class="empty-cell">아직 신청자가 없습니다.</td></tr>`
-                  }
-                </tbody>
-              </table>
-            </div>
-            <div class="mobile-roster-list" aria-label="${escapeHtml(lesson.name)} 모바일 신청 명단">
-              ${
-                rows.length
-                  ? rows
-                      .map(
-                        ({ application, selectedClass }) => `
-                          <div class="mobile-roster-row">
-                            <strong>${escapeHtml(application.nickname)}</strong>
-                            <span class="mobile-roster-badges">
-                              <b>${Store.roleLabels[selectedClass.role] || selectedClass.role}</b>
-                              <b>${Store.paymentStatusLabels[application.paymentStatus] || application.paymentStatus}</b>
-                            </span>
-                          </div>
-                        `,
-                      )
-                      .join("")
-                  : `<p class="mobile-empty">아직 신청자가 없습니다.</p>`
-              }
-            </div>
+            ${
+              rows.length
+                ? `<div class="role-roster" aria-label="${escapeHtml(lesson.name)} 신청 명단">
+                    ${renderRoleColumn("리더", leaderRows)}
+                    ${renderRoleColumn("팔뤄", followerRows)}
+                  </div>`
+                : `<p class="roster-empty">아직 신청자가 없습니다.</p>`
+            }
           </section>
         `;
       })

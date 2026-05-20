@@ -923,10 +923,6 @@ dialog::backdrop {
   overflow-x: auto;
 }
 
-.mobile-roster-list {
-  display: none;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -973,7 +969,7 @@ td select {
   text-align: center;
 }
 
-.mobile-empty {
+.roster-empty {
   margin: 0;
   padding: 16px 12px;
   border: 1px solid rgba(21, 17, 13, 0.1);
@@ -981,6 +977,92 @@ td select {
   background: #fffdf7;
   color: var(--muted);
   text-align: center;
+}
+
+.role-roster {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(21, 17, 13, 0.12);
+  border-radius: 8px;
+  background: #fffdf7;
+}
+
+.role-roster-column {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.role-roster-column + .role-roster-column {
+  border-left: 1px solid rgba(21, 17, 13, 0.1);
+}
+
+.role-roster-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--green);
+}
+
+.role-roster-head h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.role-roster-head span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.role-roster-list {
+  display: grid;
+  gap: 7px;
+}
+
+.role-roster-person {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 30px;
+}
+
+.role-roster-person strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.paid-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 19px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(47, 98, 79, 0.12);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.role-roster-empty {
+  margin: 0;
+  padding: 7px 0;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .stat-grid {
@@ -1166,55 +1248,32 @@ td select {
     white-space: normal;
   }
 
-  .roster-section .table-wrap {
-    display: none;
-  }
-
-  .mobile-roster-list {
-    display: grid;
+  .role-roster-column {
     gap: 8px;
+    padding: 11px 8px;
   }
 
-  .mobile-roster-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 10px;
-    align-items: center;
-    min-width: 0;
-    padding: 11px 12px;
-    border: 1px solid rgba(21, 17, 13, 0.1);
-    border-radius: 7px;
-    background: #fffdf7;
+  .role-roster-head h3 {
+    font-size: 14px;
   }
 
-  .mobile-roster-row strong {
-    min-width: 0;
-    overflow: hidden;
-    font-size: 16px;
-    line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .role-roster-list {
+    gap: 6px;
   }
 
-  .mobile-roster-badges {
-    display: flex;
-    flex: 0 0 auto;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: flex-end;
+  .role-roster-person {
+    gap: 4px;
+    min-height: 28px;
   }
 
-  .mobile-roster-badges b {
-    display: inline-flex;
-    align-items: center;
-    min-height: 26px;
-    padding: 0 8px;
-    border-radius: 999px;
-    background: var(--paper);
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 900;
-    white-space: nowrap;
+  .role-roster-person strong {
+    font-size: 14px;
+  }
+
+  .paid-badge {
+    min-height: 18px;
+    padding: 0 5px;
+    font-size: 11px;
   }
 
   .lesson-editor-preview {
