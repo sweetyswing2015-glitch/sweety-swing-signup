@@ -27,6 +27,11 @@ const posterDialog = document.querySelector("#posterDialog");
 const posterLarge = document.querySelector("#posterLarge");
 const posterCaption = document.querySelector("#posterCaption");
 const completeDialog = document.querySelector("#completeDialog");
+const submitButtons = [
+  document.querySelector('#signupForm button[type="submit"]'),
+  document.querySelector("#mobileSubmit"),
+].filter(Boolean);
+let isSubmitting = false;
 
 function applyConfigText() {
   document.querySelector("#termLabel").textContent = config.termLabel;
@@ -380,8 +385,18 @@ document.querySelector("#mobileSubmit").addEventListener("click", () => {
   document.querySelector("#signupForm").requestSubmit();
 });
 
-document.querySelector("#signupForm").addEventListener("submit", (event) => {
+function setSubmitting(nextSubmitting) {
+  isSubmitting = nextSubmitting;
+  submitButtons.forEach((button) => {
+    if (!button.dataset.originalText) button.dataset.originalText = button.textContent;
+    button.disabled = nextSubmitting;
+    button.textContent = nextSubmitting ? "신청 저장 중" : button.dataset.originalText;
+  });
+}
+
+document.querySelector("#signupForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (isSubmitting) return;
   updateLessonCards();
   updateSummary();
 
@@ -392,9 +407,17 @@ document.querySelector("#signupForm").addEventListener("submit", (event) => {
     return;
   }
 
-  const payload = addApplication(buildPayload());
-  console.log("신청 데이터", payload);
-  completeDepositor.textContent = payload.recommendedDepositorName;
-  completeAmount.textContent = formatWon(payload.finalAmount);
-  completeDialog.showModal();
+  try {
+    setSubmitting(true);
+    const payload = await addApplication(buildPayload());
+    console.log("신청 데이터", payload);
+    completeDepositor.textContent = payload.recommendedDepositorName;
+    completeAmount.textContent = formatWon(payload.finalAmount);
+    completeDialog.showModal();
+  } catch (error) {
+    console.error(error);
+    alert("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+  } finally {
+    setSubmitting(false);
+  }
 });

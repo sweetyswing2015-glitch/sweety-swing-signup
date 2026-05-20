@@ -1,6 +1,9 @@
 (function () {
   const CONFIG_KEY = "sweetySwing.config.v2";
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
+  const USE_REMOTE_API = Boolean(API_URL);
+  let applicationsCache = null;
 
   const defaultConfig = {
     termLabel: "134기 정규 강습 신청",
@@ -152,13 +155,16 @@
   }
 
   function getApplications() {
+    if (Array.isArray(applicationsCache)) return applicationsCache;
     const applications = safeJsonParse(localStorage.getItem(APPLICATIONS_KEY), []);
     return Array.isArray(applications) ? applications : [];
   }
 
   function saveApplications(applications) {
-    localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(applications));
-    return applications;
+    const normalized = Array.isArray(applications) ? applications : [];
+    applicationsCache = normalized;
+    localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(normalized));
+    return normalized;
   }
 
   function makeId() {
@@ -166,7 +172,41 @@
     return `app-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
-  function addApplication(payload) {
+  function buildApiUrl(action, params = {}) {
+    const url = new URL(API_URL);
+    url.searchParams.set("action", action);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== "" && value !== null && value !== undefined) url.searchParams.set(key, value);
+    });
+    url.searchParams.set("_", Date.now());
+    return url.toString();
+  }
+
+  async function apiGet(action, params = {}) {
+    const response = await fetch(buildApiUrl(action, params), { cache: "no-store" });
+    const data = await response.json();
+    if (!response.ok || data?.error) throw new Error(data?.error || "Google Sheets API request failed");
+    return data;
+  }
+
+  async function apiPost(action, payload = {}) {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action, ...payload }),
+    });
+    const data = await response.json();
+    if (!response.ok || data?.error) throw new Error(data?.error || "Google Sheets API request failed");
+    return data;
+  }
+
+  async function refreshApplications(termId = "") {
+    if (!USE_REMOTE_API) return getApplications();
+    const applications = await apiGet("listApplications", termId ? { termId } : {});
+    return saveApplications(Array.isArray(applications) ? applications : []);
+  }
+
+  function addLocalApplication(payload) {
     const now = new Date().toISOString();
     const record = {
       ...payload,
@@ -184,7 +224,15 @@
     return record;
   }
 
-  function updateApplication(id, patch) {
+  async function addApplication(payload) {
+    if (!USE_REMOTE_API) return addLocalApplication(payload);
+    const record = await apiPost("addApplication", { payload });
+    const applications = getApplications().filter((application) => application.id !== record.id);
+    saveApplications([record, ...applications]);
+    return record;
+  }
+
+  function updateLocalApplication(id, patch) {
     const now = new Date().toISOString();
     const applications = getApplications();
     const next = applications.map((application) => {
@@ -196,6 +244,14 @@
     });
     saveApplications(next);
     return next.find((application) => application.id === id);
+  }
+
+  async function updateApplication(id, patch) {
+    if (!USE_REMOTE_API) return updateLocalApplication(id, patch);
+    const updated = await apiPost("updateApplication", { id, patch });
+    const next = getApplications().map((application) => (application.id === id ? updated : application));
+    saveApplications(next.some((application) => application.id === id) ? next : [updated, ...next]);
+    return updated;
   }
 
   function deleteApplication(id) {
@@ -319,6 +375,8 @@
   window.SweetySwingData = {
     CONFIG_KEY,
     APPLICATIONS_KEY,
+    API_URL,
+    USE_REMOTE_API,
     roleLabels,
     applicantTypeLabels,
     applicationStatusLabels,
@@ -330,6 +388,7 @@
     getEnabledLessons,
     getApplications,
     saveApplications,
+    refreshApplications,
     addApplication,
     updateApplication,
     deleteApplication,

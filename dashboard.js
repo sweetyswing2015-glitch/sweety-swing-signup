@@ -230,35 +230,40 @@ function initSettingsPage() {
     setToast("신청 데이터를 초기화했습니다.");
   });
 
-  $("#seedSample").addEventListener("click", () => {
+  $("#seedSample").addEventListener("click", async () => {
     const sampleLessons = Store.getEnabledLessons();
     const intermediate = sampleLessons.find((lesson) => lesson.id === "intermediate");
     const beginner = sampleLessons.find((lesson) => lesson.id === "beginner");
     const slow = sampleLessons.find((lesson) => lesson.id === "training-slow");
     const selected = [intermediate, beginner, slow].filter(Boolean);
     const price = Store.calculate(selected, "first_intermediate_134", Store.getConfig());
-    Store.addApplication({
-      nickname: "로빈",
-      realName: "홍길동",
-      phone: "010-1234-5678",
-      applicantType: "first_intermediate_134",
-      selectedClasses: selected.map((lesson, index) => ({
-        id: lesson.id,
-        name: lesson.name,
-        shortName: lesson.shortName,
-        category: lesson.category,
-        price: lesson.price,
-        role: index === 1 ? "follower" : "leader",
-      })),
-      subtotal: price.subtotal,
-      discountAmount: price.discountAmount,
-      discountDetails: price.details,
-      finalAmount: price.finalAmount,
-      bankAccount: Store.getConfig().bankAccount,
-      recommendedDepositorName: "로빈",
-      submittedAt: new Date().toISOString(),
-    });
-    setToast("샘플 신청 1건을 추가했습니다.");
+    try {
+      await Store.addApplication({
+        nickname: "로빈",
+        realName: "홍길동",
+        phone: "010-1234-5678",
+        applicantType: "first_intermediate_134",
+        selectedClasses: selected.map((lesson, index) => ({
+          id: lesson.id,
+          name: lesson.name,
+          shortName: lesson.shortName,
+          category: lesson.category,
+          price: lesson.price,
+          role: index === 1 ? "follower" : "leader",
+        })),
+        subtotal: price.subtotal,
+        discountAmount: price.discountAmount,
+        discountDetails: price.details,
+        finalAmount: price.finalAmount,
+        bankAccount: Store.getConfig().bankAccount,
+        recommendedDepositorName: "로빈",
+        submittedAt: new Date().toISOString(),
+      });
+      setToast("샘플 신청 1건을 추가했습니다.");
+    } catch (error) {
+      console.error(error);
+      setToast("샘플 신청 저장에 실패했습니다.");
+    }
   });
 }
 
@@ -392,17 +397,27 @@ function renderManagementTable(targetId, mode) {
 }
 
 function bindManagementEvents(mode) {
-  document.addEventListener("change", (event) => {
+  document.addEventListener("change", async (event) => {
     if (event.target.matches("[data-status]")) {
-      Store.updateApplication(event.target.dataset.status, { status: event.target.value });
-      setToast("진행 상태를 저장했습니다.");
-      refreshManagement(mode);
+      try {
+        await Store.updateApplication(event.target.dataset.status, { status: event.target.value });
+        setToast("진행 상태를 저장했습니다.");
+        refreshManagement(mode);
+      } catch (error) {
+        console.error(error);
+        setToast("진행 상태 저장에 실패했습니다.");
+      }
     }
 
     if (event.target.matches("[data-payment]")) {
-      Store.updateApplication(event.target.dataset.payment, { paymentStatus: event.target.value });
-      setToast("입금 상태를 저장했습니다.");
-      refreshManagement(mode);
+      try {
+        await Store.updateApplication(event.target.dataset.payment, { paymentStatus: event.target.value });
+        setToast("입금 상태를 저장했습니다.");
+        refreshManagement(mode);
+      } catch (error) {
+        console.error(error);
+        setToast("입금 상태 저장에 실패했습니다.");
+      }
     }
 
     if (event.target.matches("#classFilter, #paymentFilter")) refreshManagement(mode);
@@ -412,17 +427,27 @@ function bindManagementEvents(mode) {
     if (event.target.matches("#searchInput")) refreshManagement(mode);
   });
 
-  document.addEventListener("blur", (event) => {
+  document.addEventListener("blur", async (event) => {
     if (!event.target.matches("[data-memo]")) return;
-    Store.updateApplication(event.target.dataset.memo, { memo: event.target.value });
-    setToast("메모를 저장했습니다.");
+    try {
+      await Store.updateApplication(event.target.dataset.memo, { memo: event.target.value });
+      setToast("메모를 저장했습니다.");
+    } catch (error) {
+      console.error(error);
+      setToast("메모 저장에 실패했습니다.");
+    }
   }, true);
 
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     if (event.target.matches("[data-mark-paid]")) {
-      Store.updateApplication(event.target.dataset.markPaid, { paymentStatus: "paid", status: "confirmed" });
-      setToast("입금 확인으로 표시했습니다.");
-      refreshManagement(mode);
+      try {
+        await Store.updateApplication(event.target.dataset.markPaid, { paymentStatus: "paid", status: "confirmed" });
+        setToast("입금 확인으로 표시했습니다.");
+        refreshManagement(mode);
+      } catch (error) {
+        console.error(error);
+        setToast("입금 확인 저장에 실패했습니다.");
+      }
     }
 
     if (event.target.matches("#downloadCsv")) {
@@ -458,7 +483,22 @@ function initOpsPage(mode) {
   refreshManagement(mode);
 }
 
-if (page === "settings") initSettingsPage();
-if (page === "students") initStudentsPage();
-if (page === "ops") initOpsPage("ops");
-if (page === "accounting") initOpsPage("accounting");
+async function loadApplicationsForDashboard() {
+  if (!["students", "ops", "accounting"].includes(page)) return;
+  try {
+    await Store.refreshApplications();
+  } catch (error) {
+    console.error(error);
+    setToast("신청 데이터를 불러오지 못했습니다. 잠시 후 새로고침해주세요.");
+  }
+}
+
+async function boot() {
+  await loadApplicationsForDashboard();
+  if (page === "settings") initSettingsPage();
+  if (page === "students") initStudentsPage();
+  if (page === "ops") initOpsPage("ops");
+  if (page === "accounting") initOpsPage("accounting");
+}
+
+boot();
