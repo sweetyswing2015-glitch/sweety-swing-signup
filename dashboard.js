@@ -234,8 +234,8 @@ function initSettingsPage() {
     const sampleLessons = Store.getEnabledLessons();
     const intermediate = sampleLessons.find((lesson) => lesson.id === "intermediate");
     const beginner = sampleLessons.find((lesson) => lesson.id === "beginner");
-    const slow = sampleLessons.find((lesson) => lesson.id === "training-slow");
-    const selected = [intermediate, beginner, slow].filter(Boolean);
+    const trainingA = sampleLessons.find((lesson) => lesson.id === "training-a");
+    const selected = [intermediate, beginner, trainingA].filter(Boolean);
     const price = Store.calculate(selected, "first_intermediate_134", Store.getConfig());
     try {
       await Store.addApplication({

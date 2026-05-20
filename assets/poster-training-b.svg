@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title desc">
+  <title id="title">트레이닝 B 더미 포스터</title>
+  <desc id="desc">추후 실제 강습 포스터로 교체할 자리</desc>
+  <rect width="900" height="1200" fill="#f8ecd8"/>
+  <path d="M0 0h900v1200H0z" fill="#2f624f" opacity=".08"/>
+  <path d="M122 120h656v960H122z" fill="#15110d"/>
+  <path d="M158 158h584v884H158z" fill="#fffaf0"/>
+  <path d="M158 158h584v250H158z" fill="#f35f4c"/>
+  <circle cx="230" cy="666" r="78" fill="#13a8b4"/>
+  <circle cx="670" cy="666" r="78" fill="#f3c63f"/>
+  <path d="M240 742c92 102 328 102 420 0" stroke="#15110d" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <text x="450" y="250" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="48" fill="#fffaf0">TRAINING B</text>
+  <text x="450" y="352" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="84" fill="#fffaf0">CLASS</text>
+  <text x="450" y="512" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="66" fill="#15110d">트레이닝 B</text>
+  <text x="450" y="604" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#15110d">이번 학기 트레이닝 과목</text>
+  <text x="450" y="820" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#15110d">커리큘럼 · 기간 · 시간 · 강사 · 장소</text>
+  <text x="450" y="912" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="56" fill="#f35f4c">40,000원</text>
+  <text x="450" y="998" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#15110d">POSTER PLACEHOLDER</text>
+</svg>

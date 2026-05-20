@@ -6,6 +6,11 @@
   let configCache = null;
   let applicationsCache = null;
 
+  const legacyLessonIds = {
+    "training-slow": "training-a",
+    "training-rnb": "training-b",
+  };
+
   const defaultConfig = {
     termLabel: "134기 정규 강습 신청",
     firstIntermediateLabel: "134기 첫 중급 수강자",
@@ -21,7 +26,7 @@
       generalTwoClasses: 10000,
       generalThreePlusClasses: 20000,
     },
-    depositPriority: ["intermediate", "pre-intermediate", "beginner", "training-slow", "training-rnb"],
+    depositPriority: ["intermediate", "pre-intermediate", "beginner", "training-a", "training-b"],
     lessons: [
       {
         id: "beginner",
@@ -54,23 +59,23 @@
         enabled: true,
       },
       {
-        id: "training-slow",
-        name: "트레이닝 9기 - 슬로우",
-        shortName: "슬로우",
+        id: "training-a",
+        name: "트레이닝 A",
+        shortName: "트레이닝 A",
         category: "training",
         price: 40000,
-        poster: "./assets/poster-training-slow.svg",
-        caption: "트레이닝 9기 슬로우 포스터",
+        poster: "./assets/poster-training-a.svg",
+        caption: "트레이닝 A 포스터",
         enabled: true,
       },
       {
-        id: "training-rnb",
-        name: "트레이닝 10기 - 리듬앤블루스",
-        shortName: "리듬앤블루스",
+        id: "training-b",
+        name: "트레이닝 B",
+        shortName: "트레이닝 B",
         category: "training",
         price: 40000,
-        poster: "./assets/poster-training-rnb.svg",
-        caption: "트레이닝 10기 리듬앤블루스 포스터",
+        poster: "./assets/poster-training-b.svg",
+        caption: "트레이닝 B 포스터",
         enabled: true,
       },
     ],
@@ -111,6 +116,23 @@
     }
   }
 
+  function normalizeLessonId(id) {
+    return legacyLessonIds[id] || id;
+  }
+
+  function normalizeLesson(lesson) {
+    return { ...lesson, id: normalizeLessonId(lesson.id) };
+  }
+
+  function normalizeApplication(application) {
+    return {
+      ...application,
+      selectedClasses: Array.isArray(application.selectedClasses)
+        ? application.selectedClasses.map(normalizeLesson)
+        : [],
+    };
+  }
+
   function normalizeConfig(input) {
     const saved = input && typeof input === "object" ? input : {};
     const config = {
@@ -119,11 +141,11 @@
       bankAccount: { ...defaultConfig.bankAccount, ...(saved.bankAccount || {}) },
       discounts: { ...defaultConfig.discounts, ...(saved.discounts || {}) },
       depositPriority: Array.isArray(saved.depositPriority)
-        ? saved.depositPriority
+        ? saved.depositPriority.map(normalizeLessonId)
         : clone(defaultConfig.depositPriority),
     };
 
-    const savedLessons = Array.isArray(saved.lessons) ? saved.lessons : [];
+    const savedLessons = Array.isArray(saved.lessons) ? saved.lessons.map(normalizeLesson) : [];
     config.lessons = defaultConfig.lessons.map((lesson) => {
       const override = savedLessons.find((item) => item.id === lesson.id) || {};
       return { ...lesson, ...override, price: Number(override.price ?? lesson.price) || 0 };
@@ -161,11 +183,11 @@
   function getApplications() {
     if (Array.isArray(applicationsCache)) return applicationsCache;
     const applications = safeJsonParse(localStorage.getItem(APPLICATIONS_KEY), []);
-    return Array.isArray(applications) ? applications : [];
+    return Array.isArray(applications) ? applications.map(normalizeApplication) : [];
   }
 
   function saveApplications(applications) {
-    const normalized = Array.isArray(applications) ? applications : [];
+    const normalized = Array.isArray(applications) ? applications.map(normalizeApplication) : [];
     applicationsCache = normalized;
     localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(normalized));
     return normalized;
