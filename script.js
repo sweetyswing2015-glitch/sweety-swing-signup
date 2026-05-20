@@ -28,6 +28,12 @@ const posterDialog = document.querySelector("#posterDialog");
 const posterLarge = document.querySelector("#posterLarge");
 const posterCaption = document.querySelector("#posterCaption");
 const completeDialog = document.querySelector("#completeDialog");
+const heroSection = document.querySelector(".hero");
+const closedNotice = document.querySelector("#closedNotice");
+const closedNoticeMessage = document.querySelector("#closedNoticeMessage");
+const closedIntroSignupLink = document.querySelector("#closedIntroSignupLink");
+const signupForm = document.querySelector("#signupForm");
+const mobileTotal = document.querySelector(".mobile-total");
 const submitButtons = [
   document.querySelector('#signupForm button[type="submit"]'),
   document.querySelector("#mobileSubmit"),
@@ -60,6 +66,40 @@ function applyConfigText() {
   document.querySelectorAll("[data-bank-holder]").forEach((node) => {
     node.textContent = `예금주: ${bankAccount.accountHolder}`;
   });
+}
+
+function formatDateLabel(value) {
+  const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return "";
+  return `${match[1]}.${match[2]}.${match[3]}`;
+}
+
+function getClosedMessage() {
+  const startDate = formatDateLabel(config.applicationStartDate);
+  const endDate = formatDateLabel(config.applicationEndDate);
+  const period = [startDate, endDate].filter(Boolean).join(" ~ ");
+
+  if (config.signupClosedReason === "before") {
+    return period ? `신청 기간은 ${period}입니다. 시작일 이후 다시 방문해주세요.` : "신청 기간이 열리면 이 페이지에서 신청할 수 있습니다.";
+  }
+  if (config.signupClosedReason === "after") {
+    return period ? `신청 기간은 ${period}까지였습니다. 다음 강습 신청을 기다려주세요.` : "신청 기간이 종료되었습니다.";
+  }
+  return "신청 기간이 열리면 이 페이지에서 신청할 수 있습니다.";
+}
+
+function applySignupPeriodState() {
+  const isOpen = config.signupOpen !== false;
+  heroSection.hidden = !isOpen;
+  closedNotice.hidden = isOpen;
+  signupForm.hidden = !isOpen;
+  mobileTotal.hidden = !isOpen;
+  if (!isOpen) {
+    closedNoticeMessage.textContent = getClosedMessage();
+  }
+
+  closedIntroSignupLink.href = config.introSignupUrl || "#";
+  closedIntroSignupLink.toggleAttribute("aria-disabled", !config.introSignupUrl || config.introSignupUrl === "#");
 }
 
 function renderLessons() {
@@ -354,6 +394,7 @@ async function copyAccountNumber(button) {
 async function boot() {
   await loadPageConfig();
   applyConfigText();
+  applySignupPeriodState();
   renderLessons();
   updateLessonCards();
   updateSummary();
@@ -414,6 +455,10 @@ function setSubmitting(nextSubmitting) {
 document.querySelector("#signupForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (isSubmitting) return;
+  if (config.signupOpen === false) {
+    closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
   updateLessonCards();
   updateSummary();
 
@@ -433,6 +478,13 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
     completeDialog.showModal();
   } catch (error) {
     console.error(error);
+    if (error.message.includes("현재 강습 신청 기간")) {
+      config.signupOpen = false;
+      applySignupPeriodState();
+      closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
+      alert(error.message);
+      return;
+    }
     alert("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
     setSubmitting(false);

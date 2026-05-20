@@ -13,6 +13,11 @@
 
   const defaultConfig = {
     termLabel: "134기 정규 강습 신청",
+    applicationStartDate: "",
+    applicationEndDate: "",
+    signupOpen: true,
+    signupClosedReason: "",
+    today: "",
     firstIntermediateLabel: "134기 첫 중급 수강자",
     firstIntermediateDescription: "중급과 초급/트레이닝 중복 수강 할인 적용",
     introSignupUrl: "#",

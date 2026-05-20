@@ -43,6 +43,10 @@ a {
   color: inherit;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -170,6 +174,51 @@ main {
   margin: 8px 0 4px;
   font-size: 21px;
   line-height: 1.25;
+}
+
+.closed-notice {
+  max-width: 720px;
+  margin: 0 auto 64px;
+  padding: 34px;
+  text-align: center;
+}
+
+.closed-notice h2 {
+  margin: 6px 0 10px;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.closed-notice p {
+  margin: 0 auto;
+  max-width: 560px;
+  color: var(--muted);
+}
+
+.closed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.closed-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(21, 17, 13, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 250, 240, 0.72);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.closed-actions a[aria-disabled="true"] {
+  color: var(--muted);
+  cursor: not-allowed;
 }
 
 .bank-copy-row {
