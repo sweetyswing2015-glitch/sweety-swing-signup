@@ -12,6 +12,10 @@ const {
 let config = getConfig();
 let lessons = getEnabledLessons(config);
 let bankAccount = config.bankAccount;
+const pageMode = document.body.dataset.pageMode || "";
+const previewMode = new URLSearchParams(window.location.search).get("preview") || "";
+const isTestPage = pageMode === "test";
+const isClosedPreview = previewMode === "closed";
 
 const lessonGrid = document.querySelector("#lessonGrid");
 const selectedList = document.querySelector("#selectedList");
@@ -47,8 +51,29 @@ async function loadPageConfig() {
     console.error(error);
   }
 
+  applyPageModeOverrides();
   lessons = getEnabledLessons(config);
   bankAccount = config.bankAccount;
+}
+
+function applyPageModeOverrides() {
+  if (isClosedPreview) {
+    config = {
+      ...config,
+      applicationStartDate: config.applicationStartDate || "2026-06-01",
+      applicationEndDate: config.applicationEndDate || "2026-06-30",
+      signupOpen: false,
+      signupClosedReason: config.signupClosedReason || "before",
+    };
+  }
+
+  if (isTestPage) {
+    config = {
+      ...config,
+      signupOpen: true,
+      signupClosedReason: "",
+    };
+  }
 }
 
 function applyConfigText() {
@@ -457,6 +482,10 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
   if (isSubmitting) return;
   if (config.signupOpen === false) {
     closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  if (isTestPage) {
+    alert("테스트 화면에서는 신청 저장을 하지 않습니다. 강습 정보와 금액 확인용으로만 사용해주세요.");
     return;
   }
   updateLessonCards();
