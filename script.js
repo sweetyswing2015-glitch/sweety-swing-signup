@@ -5,12 +5,13 @@ const {
   getConfig,
   getDepositorName,
   getEnabledLessons,
+  refreshConfig,
   roleLabels,
 } = window.SweetySwingData;
 
-const config = getConfig();
-const lessons = getEnabledLessons(config);
-const bankAccount = config.bankAccount;
+let config = getConfig();
+let lessons = getEnabledLessons(config);
+let bankAccount = config.bankAccount;
 
 const lessonGrid = document.querySelector("#lessonGrid");
 const selectedList = document.querySelector("#selectedList");
@@ -32,6 +33,17 @@ const submitButtons = [
   document.querySelector("#mobileSubmit"),
 ].filter(Boolean);
 let isSubmitting = false;
+
+async function loadPageConfig() {
+  try {
+    config = await refreshConfig();
+  } catch (error) {
+    console.error(error);
+  }
+
+  lessons = getEnabledLessons(config);
+  bankAccount = config.bankAccount;
+}
 
 function applyConfigText() {
   document.querySelector("#termLabel").textContent = config.termLabel;
@@ -339,10 +351,15 @@ async function copyAccountNumber(button) {
   }
 }
 
-applyConfigText();
-renderLessons();
-updateLessonCards();
-updateSummary();
+async function boot() {
+  await loadPageConfig();
+  applyConfigText();
+  renderLessons();
+  updateLessonCards();
+  updateSummary();
+}
+
+boot();
 
 document.addEventListener("change", (event) => {
   if (event.target.matches('input[name="lesson"]')) updateLessonCards();

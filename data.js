@@ -3,6 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
+  let configCache = null;
   let applicationsCache = null;
 
   const defaultConfig = {
@@ -136,16 +137,19 @@
   }
 
   function getConfig() {
+    if (configCache) return configCache;
     return normalizeConfig(safeJsonParse(localStorage.getItem(CONFIG_KEY), null));
   }
 
   function saveConfig(config) {
     const normalized = normalizeConfig(config);
+    configCache = normalized;
     localStorage.setItem(CONFIG_KEY, JSON.stringify(normalized));
     return normalized;
   }
 
   function resetConfig() {
+    configCache = null;
     localStorage.removeItem(CONFIG_KEY);
     return getConfig();
   }
@@ -204,6 +208,12 @@
     if (!USE_REMOTE_API) return getApplications();
     const applications = await apiGet("listApplications", termId ? { termId } : {});
     return saveApplications(Array.isArray(applications) ? applications : []);
+  }
+
+  async function refreshConfig() {
+    if (!USE_REMOTE_API) return getConfig();
+    const config = await apiGet("getConfig");
+    return saveConfig(config);
   }
 
   function addLocalApplication(payload) {
@@ -383,6 +393,7 @@
     paymentStatusLabels,
     defaultConfig: clone(defaultConfig),
     getConfig,
+    refreshConfig,
     saveConfig,
     resetConfig,
     getEnabledLessons,

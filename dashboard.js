@@ -493,7 +493,17 @@ async function loadApplicationsForDashboard() {
   }
 }
 
+async function loadConfigForDashboard() {
+  try {
+    await Store.refreshConfig();
+  } catch (error) {
+    console.error(error);
+    setToast("설정 정보를 불러오지 못했습니다. 기본 설정으로 표시합니다.");
+  }
+}
+
 async function boot() {
+  await loadConfigForDashboard();
   await loadApplicationsForDashboard();
   if (page === "settings") initSettingsPage();
   if (page === "students") initStudentsPage();
