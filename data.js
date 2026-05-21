@@ -2,6 +2,8 @@
   const CONFIG_KEY = "sweetySwing.config.v2";
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
+  const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
+  const CACHE_VERSION = "20260521-poster-cache";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -12,6 +14,14 @@
     "training-slow": "training-a",
     "training-rnb": "training-b",
   };
+
+  function migrateLocalCache() {
+    if (localStorage.getItem(CACHE_VERSION_KEY) === CACHE_VERSION) return;
+    localStorage.removeItem(CONFIG_KEY);
+    localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+  }
+
+  migrateLocalCache();
 
   const defaultConfig = {
     termLabel: "134기 정규 강습 신청",

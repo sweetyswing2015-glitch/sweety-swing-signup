@@ -12,6 +12,7 @@ const {
 let config = getConfig();
 let lessons = getEnabledLessons(config);
 let bankAccount = config.bankAccount;
+const ASSET_CACHE_VERSION = "20260521-poster-cache";
 const pageMode = document.body.dataset.pageMode || "";
 const previewMode = new URLSearchParams(window.location.search).get("preview") || "";
 const isTestPage = pageMode === "test";
@@ -127,13 +128,20 @@ function applySignupPeriodState() {
   closedIntroSignupLink.toggleAttribute("aria-disabled", !config.introSignupUrl || config.introSignupUrl === "#");
 }
 
+function getPosterSrc(lesson) {
+  const poster = lesson?.poster || "";
+  if (!poster) return "";
+  const separator = poster.includes("?") ? "&" : "?";
+  return `${poster}${separator}sitev=${ASSET_CACHE_VERSION}`;
+}
+
 function renderLessons() {
   lessonGrid.innerHTML = lessons
     .map(
       (lesson) => `
         <article class="lesson-card" data-lesson-card="${lesson.id}" tabindex="-1">
           <button class="poster-button" type="button" data-poster="${lesson.id}" aria-label="${lesson.name} 포스터 크게 보기">
-            <img src="${lesson.poster}" alt="${lesson.caption || `${lesson.name} 포스터`}" />
+            <img src="${getPosterSrc(lesson)}" alt="${lesson.caption || `${lesson.name} 포스터`}" />
           </button>
           <div class="lesson-head">
             <div>
@@ -453,7 +461,7 @@ document.addEventListener("click", (event) => {
   if (posterButton) {
     const lesson = lessons.find((item) => item.id === posterButton.dataset.poster);
     if (!lesson) return;
-    posterLarge.src = lesson.poster;
+    posterLarge.src = getPosterSrc(lesson);
     posterLarge.alt = lesson.caption || `${lesson.name} 포스터`;
     posterCaption.textContent = lesson.name;
     posterDialog.showModal();
