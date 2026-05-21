@@ -74,6 +74,18 @@ function saveBlob(filename, text, type = "text/plain;charset=utf-8") {
   URL.revokeObjectURL(url);
 }
 
+function getDiscountRuleValue(config, id, fallback) {
+  const rule = (config.discountRules || []).find((item) => item.id === id);
+  return Number(rule?.discountValue ?? fallback ?? 0);
+}
+
+function updateDiscountRuleValues(config, values) {
+  return (config.discountRules || []).map((rule) => ({
+    ...rule,
+    discountValue: Object.prototype.hasOwnProperty.call(values, rule.id) ? values[rule.id] : rule.discountValue,
+  }));
+}
+
 function initSettingsPage() {
   const config = Store.getConfig();
   $("#termLabelInput").value = config.termLabel;
@@ -83,9 +95,9 @@ function initSettingsPage() {
   $("#bankInput").value = config.bankAccount.bank;
   $("#accountNumberInput").value = config.bankAccount.accountNumber;
   $("#accountHolderInput").value = config.bankAccount.accountHolder;
-  $("#trainingDiscountInput").value = config.discounts.firstIntermediateTraining;
-  $("#generalTwoDiscountInput").value = config.discounts.generalTwoClasses;
-  $("#generalThreeDiscountInput").value = config.discounts.generalThreePlusClasses;
+  $("#trainingDiscountInput").value = getDiscountRuleValue(config, "first-intermediate-training", config.discounts.firstIntermediateTraining);
+  $("#generalTwoDiscountInput").value = getDiscountRuleValue(config, "general-two-classes", config.discounts.generalTwoClasses);
+  $("#generalThreeDiscountInput").value = getDiscountRuleValue(config, "general-three-plus-classes", config.discounts.generalThreePlusClasses);
 
   $("#lessonEditor").innerHTML = config.lessons
     .map(
@@ -170,6 +182,11 @@ function initSettingsPage() {
         generalTwoClasses: Number($("#generalTwoDiscountInput").value || 0),
         generalThreePlusClasses: Number($("#generalThreeDiscountInput").value || 0),
       },
+      discountRules: updateDiscountRuleValues(current, {
+        "first-intermediate-training": Number($("#trainingDiscountInput").value || 0),
+        "general-two-classes": Number($("#generalTwoDiscountInput").value || 0),
+        "general-three-plus-classes": Number($("#generalThreeDiscountInput").value || 0),
+      }),
       lessons: $all(".lesson-editor-row").map((row) => ({
         ...current.lessons.find((lesson) => lesson.id === row.dataset.lessonId),
         enabled: $('[data-field="enabled"]', row).checked,

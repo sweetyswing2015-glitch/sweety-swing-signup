@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260521-poster-cache";
+  const CACHE_VERSION = "20260521-discount-rules";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -43,6 +43,64 @@
       generalTwoClasses: 10000,
       generalThreePlusClasses: 20000,
     },
+    discountRules: [
+      {
+        id: "first-intermediate-beginner-half",
+        name: "첫 중급자 초급 반값 할인",
+        enabled: true,
+        applicantType: "first_intermediate_134",
+        requiresLessonId: "intermediate",
+        targetLessonId: "beginner",
+        targetCategory: "",
+        minClassCount: "",
+        maxClassCount: "",
+        discountType: "percent",
+        discountValue: 50,
+        label: "{강습명} 중복 수강 반값 할인",
+      },
+      {
+        id: "first-intermediate-training",
+        name: "첫 중급자 트레이닝 중복 할인",
+        enabled: true,
+        applicantType: "first_intermediate_134",
+        requiresLessonId: "intermediate",
+        targetLessonId: "",
+        targetCategory: "training",
+        minClassCount: "",
+        maxClassCount: "",
+        discountType: "amount_per_lesson",
+        discountValue: 10000,
+        label: "{강습명} 트레이닝 중복 수강 할인",
+      },
+      {
+        id: "general-two-classes",
+        name: "일반 2개 수강 할인",
+        enabled: true,
+        applicantType: "general",
+        requiresLessonId: "",
+        targetLessonId: "",
+        targetCategory: "",
+        minClassCount: 2,
+        maxClassCount: 2,
+        discountType: "amount_once",
+        discountValue: 10000,
+        label: "2개 중복 수강 할인",
+      },
+      {
+        id: "general-three-plus-classes",
+        name: "일반 3개 이상 수강 할인",
+        enabled: true,
+        applicantType: "general",
+        requiresLessonId: "",
+        targetLessonId: "",
+        targetCategory: "",
+        minClassCount: 3,
+        maxClassCount: "",
+        discountType: "amount_once",
+        discountValue: 20000,
+        label: "3개 이상 중복 수강 할인",
+      },
+    ],
     depositPriority: ["intermediate", "pre-intermediate", "beginner", "training-a", "training-b"],
     lessons: [
       {
@@ -163,6 +221,38 @@
     };
   }
 
+  function normalizeDiscountRule(rule) {
+    return {
+      id: String(rule.id || "").trim(),
+      name: String(rule.name || "").trim(),
+      enabled: rule.enabled !== false,
+      applicantType: rule.applicantType || "all",
+      requiresLessonId: normalizeLessonId(String(rule.requiresLessonId || "").trim()),
+      targetLessonId: normalizeLessonId(String(rule.targetLessonId || "").trim()),
+      targetCategory: String(rule.targetCategory || "").trim(),
+      minClassCount: rule.minClassCount === "" || rule.minClassCount === null || rule.minClassCount === undefined ? "" : Number(rule.minClassCount),
+      maxClassCount: rule.maxClassCount === "" || rule.maxClassCount === null || rule.maxClassCount === undefined ? "" : Number(rule.maxClassCount),
+      discountType: ["percent", "amount_per_lesson", "amount_once"].includes(rule.discountType) ? rule.discountType : "amount_once",
+      discountValue: Number(rule.discountValue || 0),
+      label: String(rule.label || "").trim(),
+    };
+  }
+
+  function buildDefaultDiscountRules(discounts = defaultConfig.discounts) {
+    return defaultConfig.discountRules.map((rule) => {
+      if (rule.id === "first-intermediate-training") {
+        return normalizeDiscountRule({ ...rule, discountValue: discounts.firstIntermediateTraining ?? rule.discountValue });
+      }
+      if (rule.id === "general-two-classes") {
+        return normalizeDiscountRule({ ...rule, discountValue: discounts.generalTwoClasses ?? rule.discountValue });
+      }
+      if (rule.id === "general-three-plus-classes") {
+        return normalizeDiscountRule({ ...rule, discountValue: discounts.generalThreePlusClasses ?? rule.discountValue });
+      }
+      return normalizeDiscountRule(rule);
+    });
+  }
+
   function normalizeConfig(input) {
     const saved = input && typeof input === "object" ? input : {};
     const config = {
@@ -170,6 +260,9 @@
       ...saved,
       bankAccount: { ...defaultConfig.bankAccount, ...(saved.bankAccount || {}) },
       discounts: { ...defaultConfig.discounts, ...(saved.discounts || {}) },
+      discountRules: Array.isArray(saved.discountRules)
+        ? saved.discountRules.map(normalizeDiscountRule)
+        : buildDefaultDiscountRules(saved.discounts || defaultConfig.discounts),
       depositPriority: Array.isArray(saved.depositPriority)
         ? saved.depositPriority.map(normalizeLessonId)
         : clone(defaultConfig.depositPriority),
@@ -387,41 +480,78 @@
     return `${Number(value || 0).toLocaleString("ko-KR")}원`;
   }
 
+  function ruleMatchesApplicantType(rule, applicantType) {
+    return !rule.applicantType || rule.applicantType === "all" || rule.applicantType === "전체" || rule.applicantType === applicantType;
+  }
+
+  function ruleMatchesClassCount(rule, classCount) {
+    const min = Number(rule.minClassCount || 0);
+    const max = Number(rule.maxClassCount || 0);
+    if (min && classCount < min) return false;
+    if (max && classCount > max) return false;
+    return true;
+  }
+
+  function getDiscountTargets(rule, selectedLessons) {
+    if (rule.targetLessonId) return selectedLessons.filter((lesson) => lesson.id === rule.targetLessonId);
+    if (rule.targetCategory) return selectedLessons.filter((lesson) => lesson.category === rule.targetCategory);
+    return [];
+  }
+
+  function formatDiscountRuleLabel(rule, lesson) {
+    const fallback = lesson ? `${lesson.shortName || lesson.name} ${rule.name}` : rule.name;
+    return (rule.label || fallback)
+      .replaceAll("{강습명}", lesson?.shortName || lesson?.name || "")
+      .replaceAll("{할인명}", rule.name || "")
+      .trim();
+  }
+
+  function calculateRuleDiscount(rule, targets) {
+    if (rule.discountType === "percent") {
+      return targets.map((lesson) => ({
+        lesson,
+        amount: Math.round(Number(lesson.price || 0) * (Number(rule.discountValue || 0) / 100)),
+      }));
+    }
+    if (rule.discountType === "amount_per_lesson") {
+      return targets.map((lesson) => ({ lesson, amount: Number(rule.discountValue || 0) }));
+    }
+    return [{ lesson: targets[0] || null, amount: Number(rule.discountValue || 0) }];
+  }
+
   function calculate(selectedLessons, applicantType, config = getConfig()) {
     const subtotal = selectedLessons.reduce((sum, lesson) => sum + Number(lesson.price || 0), 0);
     const ids = new Set(selectedLessons.map((lesson) => lesson.id));
     const details = [];
     let discountAmount = 0;
     let hint = "";
+    const discountRules = Array.isArray(config.discountRules) && config.discountRules.length
+      ? config.discountRules.map(normalizeDiscountRule)
+      : buildDefaultDiscountRules(config.discounts || defaultConfig.discounts);
 
-    if (applicantType === "first_intermediate_134") {
-      if (ids.has("intermediate")) {
-        const beginner = selectedLessons.find((lesson) => lesson.id === "beginner");
-        if (beginner) {
-          const beginnerDiscount = Math.round(Number(beginner.price || 0) / 2);
-          discountAmount += beginnerDiscount;
-          details.push(`${beginner.shortName} 중복 수강 반값 할인 -${formatWon(beginnerDiscount)}`);
-        }
+    discountRules
+      .filter((rule) => rule.enabled !== false)
+      .filter((rule) => ruleMatchesApplicantType(rule, applicantType))
+      .filter((rule) => ruleMatchesClassCount(rule, selectedLessons.length))
+      .filter((rule) => !rule.requiresLessonId || ids.has(rule.requiresLessonId))
+      .forEach((rule) => {
+        const targets = getDiscountTargets(rule, selectedLessons);
+        if ((rule.targetLessonId || rule.targetCategory) && targets.length === 0) return;
 
-        selectedLessons
-          .filter((lesson) => lesson.category === "training")
-          .forEach((lesson) => {
-            discountAmount += Number(config.discounts.firstIntermediateTraining || 0);
-            details.push(`${lesson.shortName} 트레이닝 중복 수강 할인 -${formatWon(config.discounts.firstIntermediateTraining)}`);
-          });
-      } else if (selectedLessons.length > 0) {
-        hint = `${config.firstIntermediateLabel} 할인은 중급 강습을 함께 선택하면 적용됩니다.`;
-      }
-    }
+        calculateRuleDiscount(rule, targets).forEach(({ lesson, amount }) => {
+          if (!amount) return;
+          discountAmount += amount;
+          details.push(`${formatDiscountRuleLabel(rule, lesson)} -${formatWon(amount)}`);
+        });
+      });
 
-    if (applicantType === "general") {
-      if (selectedLessons.length >= 3) {
-        discountAmount = Number(config.discounts.generalThreePlusClasses || 0);
-        details.push(`3개 이상 중복 수강 할인 -${formatWon(discountAmount)}`);
-      } else if (selectedLessons.length === 2) {
-        discountAmount = Number(config.discounts.generalTwoClasses || 0);
-        details.push(`2개 중복 수강 할인 -${formatWon(discountAmount)}`);
-      }
+    if (
+      applicantType === "first_intermediate_134" &&
+      selectedLessons.length > 0 &&
+      discountRules.some((rule) => rule.enabled !== false && rule.applicantType === "first_intermediate_134" && rule.requiresLessonId === "intermediate") &&
+      !ids.has("intermediate")
+    ) {
+      hint = `${config.firstIntermediateLabel} 할인은 중급 강습을 함께 선택하면 적용됩니다.`;
     }
 
     return {

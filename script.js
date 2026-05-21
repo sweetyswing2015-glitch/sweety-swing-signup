@@ -12,7 +12,7 @@ const {
 let config = getConfig();
 let lessons = getEnabledLessons(config);
 let bankAccount = config.bankAccount;
-const ASSET_CACHE_VERSION = "20260521-poster-cache";
+const ASSET_CACHE_VERSION = "20260521-discount-rules";
 const pageMode = document.body.dataset.pageMode || "";
 const previewMode = new URLSearchParams(window.location.search).get("preview") || "";
 const isTestPage = pageMode === "test";
