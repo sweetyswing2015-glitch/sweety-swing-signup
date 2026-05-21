@@ -7,6 +7,7 @@ const {
   getEnabledLessons,
   refreshConfig,
   roleLabels,
+  USE_REMOTE_API,
 } = window.SweetySwingData;
 
 let config = getConfig();
@@ -39,19 +40,21 @@ const closedNoticeMessage = document.querySelector("#closedNoticeMessage");
 const closedIntroSignupLink = document.querySelector("#closedIntroSignupLink");
 const signupForm = document.querySelector("#signupForm");
 const mobileTotal = document.querySelector(".mobile-total");
+const configLoadingBar = document.querySelector("#configLoadingBar");
+const configLoadingText = document.querySelector("#configLoadingText");
 const submitButtons = [
   document.querySelector('#signupForm button[type="submit"]'),
   document.querySelector("#mobileSubmit"),
 ].filter(Boolean);
 let isSubmitting = false;
+let isConfigReady = !USE_REMOTE_API;
 
-async function loadPageConfig() {
-  try {
-    config = await refreshConfig();
-  } catch (error) {
-    console.error(error);
-  }
+function $all(selector, root = document) {
+  return Array.from(root.querySelectorAll(selector));
+}
 
+function applyConfigState(nextConfig) {
+  config = nextConfig || getConfig();
   applyPageModeOverrides();
   lessons = getEnabledLessons(config);
   bankAccount = config.bankAccount;
@@ -172,6 +175,48 @@ function renderLessons() {
       `,
     )
     .join("");
+}
+
+function getLessonFormState() {
+  const selectedIds = $all('input[name="lesson"]:checked').map((input) => input.value);
+  const roles = Object.fromEntries(
+    $all('input[type="radio"][name^="role-"]:checked').map((input) => [input.name.replace("role-", ""), input.value]),
+  );
+  return { selectedIds, roles };
+}
+
+function restoreLessonFormState(state) {
+  if (!state) return;
+  state.selectedIds.forEach((lessonId) => {
+    const checkbox = document.querySelector(`input[name="lesson"][value="${lessonId}"]`);
+    if (checkbox) checkbox.checked = true;
+  });
+  Object.entries(state.roles).forEach(([lessonId, role]) => {
+    const radio = document.querySelector(`input[name="role-${lessonId}"][value="${role}"]`);
+    if (radio) radio.checked = true;
+  });
+}
+
+function renderPage({ preserveLessonState = false } = {}) {
+  const lessonState = preserveLessonState ? getLessonFormState() : null;
+  applyConfigText();
+  applySignupPeriodState();
+  renderLessons();
+  restoreLessonFormState(lessonState);
+  updateLessonCards();
+  updateSummary();
+  updateSubmitButtons();
+}
+
+function updateConfigLoadingBar({ error = false } = {}) {
+  if (!configLoadingBar) return;
+  configLoadingBar.hidden = isConfigReady && !error;
+  configLoadingBar.classList.toggle("is-error", error);
+  if (configLoadingText) {
+    configLoadingText.textContent = error
+      ? "최신 강습 정보를 불러오지 못했습니다. 새로고침 후 다시 시도해주세요."
+      : "최신 강습 정보를 확인하는 중입니다.";
+  }
 }
 
 function getSelectedLessons() {
@@ -424,13 +469,41 @@ async function copyAccountNumber(button) {
   }
 }
 
-async function boot() {
-  await loadPageConfig();
-  applyConfigText();
-  applySignupPeriodState();
-  renderLessons();
-  updateLessonCards();
-  updateSummary();
+function updateSubmitButtons() {
+  submitButtons.forEach((button) => {
+    if (!button.dataset.originalText) button.dataset.originalText = button.textContent;
+    button.disabled = isSubmitting || !isConfigReady;
+    button.textContent = isSubmitting ? "신청 저장 중" : isConfigReady ? button.dataset.originalText : "정보 확인 중";
+  });
+}
+
+async function refreshPageConfig() {
+  if (!USE_REMOTE_API) {
+    isConfigReady = true;
+    updateConfigLoadingBar();
+    updateSubmitButtons();
+    return;
+  }
+
+  try {
+    const nextConfig = await refreshConfig();
+    isConfigReady = true;
+    applyConfigState(nextConfig);
+    renderPage({ preserveLessonState: true });
+    updateConfigLoadingBar();
+  } catch (error) {
+    console.error(error);
+    isConfigReady = false;
+    updateSubmitButtons();
+    updateConfigLoadingBar({ error: true });
+  }
+}
+
+function boot() {
+  applyConfigState(getConfig());
+  updateConfigLoadingBar();
+  renderPage();
+  refreshPageConfig();
 }
 
 boot();
@@ -478,16 +551,12 @@ document.querySelector("#mobileSubmit").addEventListener("click", () => {
 
 function setSubmitting(nextSubmitting) {
   isSubmitting = nextSubmitting;
-  submitButtons.forEach((button) => {
-    if (!button.dataset.originalText) button.dataset.originalText = button.textContent;
-    button.disabled = nextSubmitting;
-    button.textContent = nextSubmitting ? "신청 저장 중" : button.dataset.originalText;
-  });
+  updateSubmitButtons();
 }
 
 document.querySelector("#signupForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (isSubmitting) return;
+  if (isSubmitting || !isConfigReady) return;
   if (config.signupOpen === false) {
     closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
     return;

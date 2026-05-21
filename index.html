@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 강습 신청</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260521-fast-loading" />
   </head>
   <body>
     <header class="site-header">
@@ -55,6 +55,10 @@
               <p class="eyebrow">Step 1</p>
               <h2>강습 선택</h2>
               <p>중복 수강이 가능합니다. 선택한 강습마다 리더/팔뤄 역할을 지정해주세요.</p>
+            </div>
+            <div id="configLoadingBar" class="config-loading-bar" role="status" aria-live="polite">
+              <span class="config-loading-track" aria-hidden="true"><span></span></span>
+              <span id="configLoadingText">최신 강습 정보를 확인하는 중입니다.</span>
             </div>
             <div id="lessonGrid" class="lesson-grid" aria-live="polite"></div>
             <p id="lessonError" class="field-error" role="alert"></p>
@@ -213,7 +217,7 @@
       <p>입금 확인 후 신청이 확정됩니다.</p>
     </dialog>
 
-    <script src="./data.js?v=20260521-discount-rules"></script>
-    <script src="./script.js?v=20260521-discount-rules"></script>
+    <script src="./data.js?v=20260521-fast-loading"></script>
+    <script src="./script.js?v=20260521-fast-loading"></script>
   </body>
 </html>
