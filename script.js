@@ -242,9 +242,12 @@ function hasTrainingLesson(selectedLessons = getSelectedLessons()) {
 
 function normalizeSwingExperience(value) {
   const text = String(value || "").trim();
-  const match = text.match(/^(\d+)\s*년\s*(\d+)\s*개월$/);
-  if (!match) return "";
-  return `${Number(match[1])}년 ${Number(match[2])}개월`;
+  if (!text) return "";
+  const yearMatch = text.match(/^(\d+)\s*년(?:\s*(\d+)\s*개월)?$/);
+  if (yearMatch) return `${Number(yearMatch[1])}년 ${Number(yearMatch[2] || 0)}개월`;
+  const monthMatch = text.match(/^(\d+)\s*개월$/);
+  if (monthMatch) return `0년 ${Number(monthMatch[1])}개월`;
+  return "";
 }
 
 function buildSelectedClasses(selectedLessons) {
@@ -434,7 +437,7 @@ function validateForm() {
   }
 
   if (needsSwingExperience && !swingExperience) {
-    setError("swingExperienceError", "스윙경력을 0년 0개월 형식으로 입력해주세요.");
+    setError("swingExperienceError", "스윙경력을 예: 8년, 8년 6개월, 6개월처럼 입력해주세요.");
     isValid = false;
   }
 
@@ -628,7 +631,7 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
   updateSummary();
 
   if (!validateForm()) {
-    setFormStatus("입력하지 않은 항목을 확인해주세요.", { error: true });
+    setFormStatus("입력 내용을 확인해주세요.", { error: true });
     if (!focusFirstInvalidLessonCard()) {
       document.querySelector(".field-error:not(:empty)")?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
