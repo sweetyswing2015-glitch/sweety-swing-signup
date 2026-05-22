@@ -32,7 +32,6 @@ const completeDepositor = document.querySelector("#completeDepositor");
 const completeAmount = document.querySelector("#completeAmount");
 const posterDialog = document.querySelector("#posterDialog");
 const posterLarge = document.querySelector("#posterLarge");
-const posterCaption = document.querySelector("#posterCaption");
 const completeDialog = document.querySelector("#completeDialog");
 const heroSection = document.querySelector(".hero");
 const closedNotice = document.querySelector("#closedNotice");
@@ -536,7 +535,6 @@ document.addEventListener("click", (event) => {
     if (!lesson) return;
     posterLarge.src = getPosterSrc(lesson);
     posterLarge.alt = lesson.caption || `${lesson.name} 포스터`;
-    posterCaption.textContent = lesson.name;
     posterDialog.showModal();
   }
 

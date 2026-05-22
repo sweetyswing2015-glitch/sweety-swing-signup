@@ -768,12 +768,6 @@ dialog::backdrop {
   background: var(--paper);
 }
 
-.poster-dialog p {
-  margin: 0;
-  padding: 14px 18px 18px;
-  font-weight: 900;
-}
-
 .dialog-close {
   position: absolute;
   top: 10px;
