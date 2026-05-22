@@ -43,6 +43,7 @@ const configLoadingBar = document.querySelector("#configLoadingBar");
 const configLoadingText = document.querySelector("#configLoadingText");
 const swingExperienceField = document.querySelector("#swingExperienceField");
 const swingExperienceInput = document.querySelector("#swingExperience");
+const formStatus = document.querySelector("#formStatus");
 const submitButtons = [
   document.querySelector('#signupForm button[type="submit"]'),
   document.querySelector("#mobileSubmit"),
@@ -355,6 +356,12 @@ function setError(id, message) {
   if (node) node.textContent = message;
 }
 
+function setFormStatus(message, { error = false } = {}) {
+  if (!formStatus) return;
+  formStatus.textContent = message;
+  formStatus.classList.toggle("is-error", error);
+}
+
 function setRoleError(lessonId, message) {
   const node = document.querySelector(`[data-role-error="${lessonId}"]`);
   if (node) node.textContent = message;
@@ -374,6 +381,7 @@ function focusFirstInvalidLessonCard() {
 }
 
 function clearErrors() {
+  setFormStatus("");
   ["lessonError", "typeError", "nicknameError", "realNameError", "phoneError", "swingExperienceError"].forEach((id) => setError(id, ""));
   document.querySelectorAll(".lesson-card").forEach((card) => card.classList.remove("has-error"));
   document.querySelectorAll("[data-role-error]").forEach((node) => {
@@ -601,12 +609,18 @@ function setSubmitting(nextSubmitting) {
 
 document.querySelector("#signupForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (isSubmitting || !isConfigReady) return;
+  if (isSubmitting) return;
+  if (!isConfigReady) {
+    setFormStatus("최신 강습 정보를 확인하는 중입니다. 잠시 후 다시 눌러주세요.", { error: true });
+    return;
+  }
   if (config.signupOpen === false) {
+    setFormStatus("현재 강습 신청 기간이 아닙니다.", { error: true });
     closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
   if (isTestPage) {
+    setFormStatus("테스트 화면에서는 신청 저장을 하지 않습니다.", { error: true });
     alert("테스트 화면에서는 신청 저장을 하지 않습니다. 강습 정보와 금액 확인용으로만 사용해주세요.");
     return;
   }
@@ -614,6 +628,7 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
   updateSummary();
 
   if (!validateForm()) {
+    setFormStatus("입력하지 않은 항목을 확인해주세요.", { error: true });
     if (!focusFirstInvalidLessonCard()) {
       document.querySelector(".field-error:not(:empty)")?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
@@ -622,20 +637,24 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
 
   try {
     setSubmitting(true);
+    setFormStatus("신청 저장 중입니다. 잠시만 기다려주세요.");
     const payload = await addApplication(buildPayload());
     console.log("신청 데이터", payload);
     completeDepositor.textContent = payload.recommendedDepositorName;
     completeAmount.textContent = formatWon(payload.finalAmount);
+    setFormStatus("");
     completeDialog.showModal();
   } catch (error) {
     console.error(error);
     if (error.message.includes("현재 강습 신청 기간")) {
       config.signupOpen = false;
       applySignupPeriodState();
+      setFormStatus(error.message, { error: true });
       closedNotice.scrollIntoView({ behavior: "smooth", block: "center" });
       alert(error.message);
       return;
     }
+    setFormStatus("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.", { error: true });
     alert("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
     setSubmitting(false);
