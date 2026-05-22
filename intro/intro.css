@@ -191,6 +191,7 @@ p {
 .intro-band p,
 .notice-strip li,
 .check-list li,
+.notice-list li,
 .payment-card p {
   color: var(--muted);
   font-size: 1.05rem;
@@ -203,6 +204,7 @@ p {
   grid-template-columns: 1fr 1fr;
   gap: 24px;
   margin: 34px 0;
+  align-items: start;
 }
 
 .info-block {
@@ -212,11 +214,28 @@ p {
 }
 
 .check-list,
+.notice-list,
 .notice-strip ul {
   display: grid;
   gap: 14px;
   margin: 0;
   padding-left: 22px;
+}
+
+.recommend-card {
+  display: grid;
+  gap: 26px;
+}
+
+.mini-section {
+  border-top: 1px solid rgba(21, 17, 13, 0.12);
+  padding-top: 24px;
+}
+
+.mini-section h3 {
+  margin: 0 0 14px;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  line-height: 1.18;
 }
 
 .payment-card dl,
@@ -258,13 +277,11 @@ p {
 }
 
 .fee-summary {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 10px;
-  border-bottom: 2px solid rgba(21, 17, 13, 0.12);
-  padding-bottom: 16px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .fee-summary span {
@@ -273,13 +290,15 @@ p {
 }
 
 .fee-summary strong {
-  color: var(--coral);
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1;
+  color: var(--ink);
+  font-size: 1.18rem;
+  line-height: 1.25;
 }
 
 .payment-lines {
-  margin-top: 22px;
+  margin-top: 20px;
+  border-top: 1px solid rgba(21, 17, 13, 0.12);
+  padding-top: 20px;
 }
 
 dt {

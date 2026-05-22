@@ -16,8 +16,9 @@ const defaultConfig = {
   mainImageUrl: "../assets/poster-beginner.png",
   heroImageUrl: "../assets/poster-beginner.png",
   posterImageUrl: "../assets/poster-beginner.png",
-  lessonTime: "",
-  lessonPlace: "",
+  lessonPeriod: "6월20일~8월15일(총6회강습)",
+  lessonTime: "토요일 PM 06:20~07:55",
+  lessonPlace: "선릉 Swing Time 바깥쪽 홀",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 선착순 남녀 각각 25명",
@@ -102,6 +103,11 @@ function applyConfig(nextConfig = {}) {
     ...nextConfig,
     bankAccount: { ...defaultConfig.bankAccount, ...(nextConfig.bankAccount || {}) },
   };
+  config.lessonPeriod = textOrDefault(config.lessonPeriod, defaultConfig.lessonPeriod);
+  config.lessonTime = textOrDefault(config.lessonTime, defaultConfig.lessonTime);
+  config.lessonPlace = textOrDefault(config.lessonPlace, defaultConfig.lessonPlace);
+  config.spaceFeeNotice = textOrDefault(config.spaceFeeNotice || config.timebarNotice, defaultConfig.spaceFeeNotice);
+  config.timebarNotice = textOrDefault(config.timebarNotice || config.spaceFeeNotice, defaultConfig.timebarNotice);
 
   setText("#termLabel", config.termLabel);
   setText("#priceText", formatWon(config.price));
@@ -113,6 +119,7 @@ function applyConfig(nextConfig = {}) {
   setText("#spaceFeeText", config.spaceFeeNotice || config.timebarNotice);
   setText("#ageNotice", config.ageNotice);
   setText("#paymentNotice", config.paymentNotice);
+  setOptionalRow("#lessonPeriodRow", "#lessonPeriodText", config.lessonPeriod);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
 
@@ -121,6 +128,11 @@ function applyConfig(nextConfig = {}) {
   const posterImage = document.querySelector("#posterImage");
   if (posterImage && config.posterImageUrl) posterImage.src = normalizeImageUrl(config.posterImageUrl);
   updateDepositorPreview();
+}
+
+function textOrDefault(value, fallback) {
+  const text = String(value || "").trim();
+  return text || fallback;
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {

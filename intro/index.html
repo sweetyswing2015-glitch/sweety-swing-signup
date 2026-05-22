@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 입문 강습 신청</title>
-    <link rel="stylesheet" href="./intro.css?v=20260523-intro-polish" />
+    <link rel="stylesheet" href="./intro.css?v=20260523-intro-cards" />
   </head>
   <body>
     <header class="intro-header">
@@ -41,7 +41,15 @@
       </section>
 
       <section class="content-grid">
-        <article class="info-block">
+        <article class="info-block poster-card">
+          <p class="eyebrow">Poster</p>
+          <h2>강습 포스터</h2>
+          <div class="poster-frame">
+            <img id="posterImage" src="../assets/poster-beginner.png" alt="입문 강습 포스터" />
+          </div>
+        </article>
+
+        <article class="info-block recommend-card">
           <p class="eyebrow">Recommend</p>
           <h2>이런 분께 추천해요</h2>
           <ul class="check-list">
@@ -49,19 +57,31 @@
             <li>동호회가 처음이라 분위기를 먼저 경험해보고 싶은 분</li>
             <li>파트너댄스를 기초부터 차근차근 배우고 싶은 분</li>
           </ul>
+          <div class="mini-section">
+            <h3>신청 전 확인해주세요</h3>
+            <ul class="notice-list">
+              <li id="ageNotice">만45세 이하 신청 가능</li>
+              <li id="paymentNotice">입금 선착순 남녀 각각 25명</li>
+              <li>입금자명은 자동으로 안내되는 이름 그대로 넣어주세요.</li>
+            </ul>
+          </div>
         </article>
 
         <article class="info-block class-info-card">
           <p class="eyebrow">Class</p>
           <h2>강습 정보</h2>
           <dl class="compact-list">
+            <div id="lessonPeriodRow">
+              <dt>강습기간</dt>
+              <dd id="lessonPeriodText">6월20일~8월15일(총6회강습)</dd>
+            </div>
             <div id="lessonTimeRow">
               <dt>강습시간</dt>
-              <dd id="lessonTimeText">추후 안내</dd>
+              <dd id="lessonTimeText">토요일 PM 06:20~07:55</dd>
             </div>
             <div id="lessonPlaceRow">
               <dt>장소</dt>
-              <dd id="lessonPlaceText">추후 안내</dd>
+              <dd id="lessonPlaceText">선릉 Swing Time 바깥쪽 홀</dd>
             </div>
             <div>
               <dt>공간이용료</dt>
@@ -70,17 +90,9 @@
           </dl>
         </article>
 
-        <article class="info-block poster-card">
-          <p class="eyebrow">Poster</p>
-          <h2>입문 강습 포스터</h2>
-          <div class="poster-frame">
-            <img id="posterImage" src="../assets/poster-beginner.png" alt="입문 강습 포스터" />
-          </div>
-        </article>
-
         <article class="info-block payment-card">
           <p class="eyebrow">Fee</p>
-          <h2>강습비/입금 안내</h2>
+          <h2>강습비 입금안내</h2>
           <div class="fee-summary">
             <span>강습비</span>
             <strong id="priceText">60,000원</strong>
@@ -104,15 +116,6 @@
             </div>
           </dl>
         </article>
-      </section>
-
-      <section class="notice-strip">
-        <h2>신청 전 확인해주세요</h2>
-        <ul>
-          <li id="ageNotice">만45세 이하 신청 가능</li>
-          <li id="paymentNotice">입금 선착순 남녀 각각 25명</li>
-          <li>입금자명은 자동으로 안내되는 이름 그대로 넣어주세요.</li>
-        </ul>
       </section>
 
       <section id="apply" class="apply-section">
@@ -221,6 +224,6 @@
       <a href="./students.html">신청확인 보기</a>
     </dialog>
 
-    <script src="./intro.js?v=20260523-intro-polish"></script>
+    <script src="./intro.js?v=20260523-intro-cards"></script>
   </body>
 </html>
