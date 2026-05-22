@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 입문 신청확인</title>
+    <link rel="stylesheet" href="./intro.css?v=20260522-intro-site" />
+  </head>
+  <body data-page="intro-students">
+    <header class="intro-header">
+      <a class="brand" href="./" aria-label="입문 신청 페이지로 이동">
+        <img src="../assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav aria-label="입문 신청확인">
+        <a href="./">입문 신청</a>
+      </nav>
+    </header>
+
+    <main class="students-main">
+      <section class="students-hero">
+        <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
+        <h1>입문 강습 신청확인</h1>
+      </section>
+
+      <section class="summary-cards" aria-label="신청 요약">
+        <article>
+          <span>총 신청</span>
+          <strong id="totalCount">0</strong>
+        </article>
+        <article>
+          <span>남성</span>
+          <strong id="maleCount">0</strong>
+        </article>
+        <article>
+          <span>여성</span>
+          <strong id="femaleCount">0</strong>
+        </article>
+        <article>
+          <span>입금확인</span>
+          <strong id="paidCount">0</strong>
+        </article>
+      </section>
+
+      <section class="roster-panel">
+        <div class="roster-head">
+          <h2>신청 명단</h2>
+          <button type="button" id="refreshButton">새로고침</button>
+        </div>
+        <div id="loadingState" class="loading-state" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <strong>명단을 불러오는 중입니다.</strong>
+        </div>
+        <div id="emptyState" class="empty-state" hidden>아직 신청자가 없습니다.</div>
+        <table id="rosterTable" class="intro-roster" hidden>
+          <thead>
+            <tr>
+              <th>닉네임</th>
+              <th>성별</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <p id="toast" class="toast" hidden></p>
+    <script src="./intro-students.js?v=20260522-intro-site"></script>
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 입문 강습 신청</title>
+    <link rel="stylesheet" href="./intro.css?v=20260522-intro-site" />
+  </head>
+  <body>
+    <header class="intro-header">
+      <a class="brand" href="./" aria-label="스위티스윙 입문 신청 상단으로 이동">
+        <img src="../assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav aria-label="입문 신청 페이지">
+        <a href="./students.html">신청확인</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
+          <h1>처음이어도 괜찮아요. 같이 스윙을 시작해요.</h1>
+          <p>
+            스위티스윙 입문 강습은 기본 스텝부터 파트너와 춤추는 즐거움까지 천천히 익히는 첫 수업입니다.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#apply">입문 강습 신청하기</a>
+            <a class="secondary-link" href="./students.html">신청확인</a>
+          </div>
+        </div>
+        <figure class="hero-visual">
+          <img id="heroImage" src="../assets/poster-beginner.png" alt="스위티스윙 입문 강습 이미지" />
+        </figure>
+      </section>
+
+      <section class="intro-band">
+        <div>
+          <p class="eyebrow">Welcome</p>
+          <h2>스윙댄스가 처음인 사람을 위한 수업</h2>
+        </div>
+        <p>
+          리듬을 듣고, 걸음을 맞추고, 서로의 움직임을 존중하는 법을 배웁니다. 혼자 오셔도 괜찮고 춤 경험이 없어도 괜찮습니다.
+        </p>
+      </section>
+
+      <section class="content-grid">
+        <article class="info-block">
+          <p class="eyebrow">Recommend</p>
+          <h2>이런 분께 추천해요</h2>
+          <ul class="check-list">
+            <li>스윙댄스를 한 번쯤 해보고 싶었던 분</li>
+            <li>동호회가 처음이라 분위기를 먼저 경험해보고 싶은 분</li>
+            <li>파트너댄스를 기초부터 차근차근 배우고 싶은 분</li>
+          </ul>
+        </article>
+
+        <article class="info-block payment-card">
+          <p class="eyebrow">Fee</p>
+          <h2>강습비/입금 안내</h2>
+          <dl>
+            <div>
+              <dt>강습비</dt>
+              <dd id="priceText">60,000원</dd>
+            </div>
+            <div>
+              <dt>입금계좌</dt>
+              <dd>
+                <span id="bankText">카카오뱅크 3333351975536</span>
+                <button type="button" class="copy-button" data-copy-account>복사</button>
+              </dd>
+            </div>
+            <div>
+              <dt>예금주</dt>
+              <dd id="holderText">이기연</dd>
+            </div>
+            <div>
+              <dt>입금자명</dt>
+              <dd id="depositorPreview">입문_닉네임</dd>
+            </div>
+          </dl>
+          <p id="timebarNotice">타임 바 입장료 별도</p>
+        </article>
+      </section>
+
+      <section class="notice-strip">
+        <h2>신청 전 확인해주세요</h2>
+        <ul>
+          <li id="ageNotice">만45세 이하 신청 가능</li>
+          <li id="paymentNotice">입금 선착순 남녀 각각 25명</li>
+          <li>입금자명이 다르면 입금 확인이 늦어질 수 있습니다.</li>
+        </ul>
+      </section>
+
+      <section id="apply" class="apply-section">
+        <div class="section-heading">
+          <p class="eyebrow">Apply</p>
+          <h2>입문 강습 신청</h2>
+        </div>
+
+        <form id="introForm" class="intro-form" novalidate>
+          <div class="field-grid">
+            <label>
+              <span>닉네임</span>
+              <input id="nickname" name="nickname" type="text" autocomplete="nickname" placeholder="예: 스위티" />
+              <small class="field-error" id="nicknameError" role="alert"></small>
+            </label>
+            <label>
+              <span>이름</span>
+              <input id="realName" name="realName" type="text" autocomplete="name" placeholder="예: 홍길동" />
+              <small class="field-error" id="realNameError" role="alert"></small>
+            </label>
+            <fieldset class="radio-field">
+              <legend>성별</legend>
+              <label><input type="radio" name="gender" value="남성" /> <span>남성</span></label>
+              <label><input type="radio" name="gender" value="여성" /> <span>여성</span></label>
+              <small class="field-error" id="genderError" role="alert"></small>
+            </fieldset>
+            <label>
+              <span>연락처</span>
+              <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" />
+              <small class="field-error" id="phoneError" role="alert"></small>
+            </label>
+            <label>
+              <span>경력</span>
+              <select id="experience" name="experience">
+                <option value="">선택해주세요</option>
+                <option>스윙댄스가 처음이신분</option>
+                <option>1년차 미만</option>
+                <option>1년차 이상</option>
+              </select>
+              <small class="field-error" id="experienceError" role="alert"></small>
+            </label>
+            <label>
+              <span>신청 경로</span>
+              <select id="source" name="source">
+                <option value="">선택해주세요</option>
+                <option>지인소개</option>
+                <option>유튜브</option>
+                <option>인스타</option>
+                <option>검색</option>
+                <option>기타</option>
+              </select>
+              <small class="field-error" id="sourceError" role="alert"></small>
+            </label>
+            <label>
+              <span>소개해주신 분</span>
+              <input id="referrer" name="referrer" type="text" placeholder="선택 입력" />
+            </label>
+            <label class="wide">
+              <span>하고 싶은 말</span>
+              <textarea id="message" name="message" rows="4" placeholder="선택 입력"></textarea>
+            </label>
+          </div>
+
+          <aside class="form-summary" aria-label="입금 요약">
+            <div>
+              <span>입금 금액</span>
+              <strong id="summaryPrice">60,000원</strong>
+            </div>
+            <div>
+              <span>입금자명</span>
+              <strong id="summaryDepositor">입문_닉네임</strong>
+            </div>
+            <button class="submit-button" type="submit">신청하기</button>
+            <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
+          </aside>
+        </form>
+      </section>
+    </main>
+
+    <div id="submittingOverlay" class="submitting-overlay" role="status" aria-live="assertive" hidden>
+      <div>
+        <span class="spinner" aria-hidden="true"></span>
+        <strong>신청 저장 중입니다</strong>
+        <p>창을 닫지 말고 잠시만 기다려주세요.</p>
+      </div>
+    </div>
+
+    <dialog id="completeDialog" class="complete-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <h2>신청이 완료되었습니다.</h2>
+      <p>아래 정보로 입금해주시면 입금 확인 후 신청이 확정됩니다.</p>
+      <dl>
+        <div>
+          <dt>입금 금액</dt>
+          <dd id="completeAmount">60,000원</dd>
+        </div>
+        <div>
+          <dt>입금자명</dt>
+          <dd id="completeDepositor">입문_닉네임</dd>
+        </div>
+        <div>
+          <dt>계좌</dt>
+          <dd id="completeBank">카카오뱅크 3333351975536</dd>
+        </div>
+      </dl>
+      <a href="./students.html">신청확인 보기</a>
+    </dialog>
+
+    <script src="./intro.js?v=20260522-intro-site"></script>
+  </body>
+</html>

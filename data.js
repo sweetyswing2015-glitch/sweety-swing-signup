@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260522-kst-time";
+  const CACHE_VERSION = "20260522-intro-site";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -44,7 +44,7 @@
     today: "",
     firstIntermediateLabel: "134기 첫 중급 수강자",
     firstIntermediateDescription: "초급 반값 할인 / 트레이닝 중복 할인",
-    introSignupUrl: "#",
+    introSignupUrl: "./intro/",
     bankAccount: {
       bank: "카카오뱅크",
       accountNumber: "3333-35-1975536",
