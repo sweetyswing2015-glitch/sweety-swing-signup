@@ -10,7 +10,7 @@ const defaultConfig = {
   },
   depositorPrefix: "입문",
   refundDeadline: "",
-  ageNotice: "만45세 이하 신청 가능",
+  ageNotice: "만45세 이하 신청 가능 (1980년 6월생까지 신청가능)",
   maleCapacity: 25,
   femaleCapacity: 25,
   mainImageUrl: "../assets/intro-hero.png",
@@ -26,6 +26,7 @@ const defaultConfig = {
 
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
 let isSubmitting = false;
+let submitRequestedFromMobile = false;
 
 const form = document.querySelector("#introForm");
 const fields = {
@@ -38,9 +39,14 @@ const fields = {
   message: document.querySelector("#message"),
 };
 const submitButton = document.querySelector(".submit-button");
+const mobileSubmitButton = document.querySelector("#mobileSubmit");
+const mobileTotal = document.querySelector(".mobile-total");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
 const completeDialog = document.querySelector("#completeDialog");
+const posterDialog = document.querySelector("#posterDialog");
+const posterLarge = document.querySelector("#posterLarge");
+const posterImage = document.querySelector("#posterImage");
 
 function formatWon(value) {
   return `${Number(value || 0).toLocaleString("ko-KR")}원`;
@@ -108,10 +114,12 @@ function applyConfig(nextConfig = {}) {
   config.lessonPlace = textOrDefault(config.lessonPlace, defaultConfig.lessonPlace);
   config.spaceFeeNotice = textOrDefault(config.spaceFeeNotice || config.timebarNotice, defaultConfig.spaceFeeNotice);
   config.timebarNotice = textOrDefault(config.timebarNotice || config.spaceFeeNotice, defaultConfig.timebarNotice);
+  config.ageNotice = textOrDefault(config.ageNotice, defaultConfig.ageNotice);
 
   setText("#termLabel", config.termLabel);
   setText("#priceText", formatWon(config.price));
   setText("#summaryPrice", formatWon(config.price));
+  setText("#mobileSummaryPrice", formatWon(config.price));
   setText("#bankText", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
   setText("#holderText", config.bankAccount.accountHolder);
   setText("#completeBank", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
@@ -125,7 +133,6 @@ function applyConfig(nextConfig = {}) {
 
   const heroImage = document.querySelector("#heroImage");
   if (heroImage && (config.mainImageUrl || config.heroImageUrl)) heroImage.src = normalizeImageUrl(config.mainImageUrl || config.heroImageUrl);
-  const posterImage = document.querySelector("#posterImage");
   if (posterImage && config.posterImageUrl) posterImage.src = normalizeImageUrl(config.posterImageUrl);
   updateDepositorPreview();
 }
@@ -144,7 +151,6 @@ function setOptionalRow(rowSelector, textSelector, value) {
 
 function updateDepositorPreview() {
   const depositorName = getDepositorName();
-  setText("#depositorPreview", depositorName);
   setText("#summaryDepositor", depositorName);
 }
 
@@ -199,6 +205,26 @@ function validateForm() {
   return isValid;
 }
 
+function getFirstInvalidField() {
+  if (!fields.nickname.value.trim()) return fields.nickname;
+  if (!fields.realName.value.trim()) return fields.realName;
+  if (!getGender()) return document.querySelector('input[name="gender"]');
+  if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(fields.phone.value.trim())) return fields.phone;
+  if (!fields.experience.value) return fields.experience;
+  if (!fields.source.value) return fields.source;
+  return null;
+}
+
+function focusFirstInvalidField({ scrollToApplyFirst = false } = {}) {
+  const target = getFirstInvalidField();
+  const applySection = document.querySelector("#apply");
+  const scrollTarget = scrollToApplyFirst ? applySection : target?.closest("label, fieldset") || applySection;
+  scrollTarget?.scrollIntoView({ behavior: "smooth", block: scrollToApplyFirst ? "start" : "center" });
+  if (target && typeof target.focus === "function") {
+    window.setTimeout(() => target.focus({ preventScroll: true }), scrollToApplyFirst ? 360 : 160);
+  }
+}
+
 function buildPayload() {
   return {
     nickname: fields.nickname.value.trim(),
@@ -217,7 +243,9 @@ function setSubmitting(nextSubmitting) {
   document.body.classList.toggle("is-submitting", isSubmitting);
   submittingOverlay.hidden = !isSubmitting;
   submitButton.disabled = isSubmitting;
+  if (mobileSubmitButton) mobileSubmitButton.disabled = isSubmitting;
   submitButton.textContent = isSubmitting ? "신청 저장 중" : "신청하기";
+  if (mobileSubmitButton) mobileSubmitButton.textContent = isSubmitting ? "저장 중" : "신청하기";
 }
 
 function showCompleteDialog(record) {
@@ -267,13 +295,56 @@ async function refreshConfig() {
   }
 }
 
+function setFloatingSubmitHidden(hidden) {
+  mobileTotal?.classList.toggle("is-inline-submit-visible", hidden);
+}
+
+function isInlineSubmitVisible() {
+  if (!submitButton || submitButton.offsetParent === null) return false;
+  const rect = submitButton.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  return rect.bottom > 0 && rect.right > 0 && rect.top < viewportHeight && rect.left < viewportWidth;
+}
+
+function setupFloatingSubmitVisibility() {
+  if (!mobileTotal || !submitButton) return;
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setFloatingSubmitHidden(Boolean(entry?.isIntersecting));
+      },
+      { threshold: 0 },
+    );
+    observer.observe(submitButton);
+    return;
+  }
+
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    setFloatingSubmitHidden(isInlineSubmitVisible());
+  };
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(update);
+  };
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", requestUpdate);
+  requestUpdate();
+}
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (isSubmitting) return;
+  const shouldScrollApplyFirst = submitRequestedFromMobile;
+  submitRequestedFromMobile = false;
 
   if (!validateForm()) {
     setStatus("입력 내용을 확인해주세요.", { error: true });
-    document.querySelector(".field-error:not(:empty)")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    focusFirstInvalidField({ scrollToApplyFirst: shouldScrollApplyFirst });
     return;
   }
 
@@ -304,10 +375,25 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  const posterButton = event.target.closest(".poster-open-button");
+  if (posterButton && posterDialog && posterLarge && posterImage) {
+    posterLarge.src = posterImage.currentSrc || posterImage.src;
+    posterLarge.alt = posterImage.alt || "입문 강습 포스터";
+    posterDialog.showModal();
+    return;
+  }
+
   if (event.target.matches(".dialog-close")) {
     event.target.closest("dialog")?.close();
   }
 });
 
+mobileSubmitButton?.addEventListener("click", () => {
+  if (isSubmitting) return;
+  submitRequestedFromMobile = true;
+  form.requestSubmit();
+});
+
 applyConfig(defaultConfig);
 refreshConfig();
+setupFloatingSubmitVisibility();

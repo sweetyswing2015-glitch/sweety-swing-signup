@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260523-intro-square-hero" />
+    <link rel="stylesheet" href="./intro.css?v=20260523-intro-mobile-submit" />
   </head>
   <body>
     <header class="intro-header">
@@ -22,9 +22,13 @@
       <section class="hero" id="top">
         <div class="hero-copy">
           <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
-          <h1>처음이어도 괜찮아요, 오늘부터 같이 스윙해요 💛</h1>
+          <h1>
+            <span>처음이어도 괜찮아요,</span>
+            <span>오늘부터 같이 스윙해요 💛</span>
+          </h1>
           <p>
-            기본 스텝부터 파트너와 춤추는 즐거움까지, 편하게 웃으면서 하나씩 배워요.
+            <span>기본 스텝부터 파트너와 춤추는 즐거움까지,</span>
+            <span>편하게 웃으면서 하나씩 배워요.</span>
           </p>
         </div>
         <figure class="hero-visual">
@@ -32,28 +36,17 @@
         </figure>
       </section>
 
-      <section class="intro-band">
-        <div>
-          <p class="eyebrow">Welcome</p>
-          <h2>혼자 와도 괜찮고, 춤이 처음이어도 괜찮아요 🙂</h2>
-        </div>
-        <p>
-          리듬을 듣고, 가볍게 걸음을 맞추고, 파트너와 자연스럽게 춤추는 감각을 익혀요. 첫 강습 때 같이 만나요!
-        </p>
-      </section>
-
       <section class="content-grid">
         <article class="info-block poster-card">
-          <p class="eyebrow">Poster</p>
-          <h2>강습 포스터</h2>
-          <div class="poster-frame">
+          <button class="poster-frame poster-open-button" type="button" aria-label="입문 강습 포스터 크게 보기">
             <img id="posterImage" src="../assets/intro-poster.png" alt="입문 강습 포스터" />
-          </div>
+          </button>
         </article>
 
         <article class="info-block recommend-card">
+          <span class="music-doodle" aria-hidden="true">♪</span>
           <p class="eyebrow">Recommend</p>
-          <h2>이런 분께 추천해요</h2>
+          <h2>이런 분께 추천해요 💛</h2>
           <ul class="check-list">
             <li>스윙댄스를 한 번쯤 해보고 싶었던 분</li>
             <li>동호회가 처음이라 분위기를 먼저 경험해보고 싶은 분</li>
@@ -62,9 +55,8 @@
           <div class="mini-section">
             <h3>신청 전 확인해주세요</h3>
             <ul class="notice-list">
-              <li id="ageNotice">만45세 이하 신청 가능</li>
+              <li id="ageNotice">만45세 이하 신청 가능 (1980년 6월생까지 신청가능)</li>
               <li id="paymentNotice">입금 선착순 남녀 각각 25명</li>
-              <li>입금자명은 자동으로 안내되는 이름 그대로 넣어주세요.</li>
             </ul>
           </div>
         </article>
@@ -74,47 +66,20 @@
           <h2>강습 정보</h2>
           <dl class="compact-list">
             <div id="lessonPeriodRow">
-              <dt>강습기간</dt>
+              <dt><span aria-hidden="true">📅</span> 강습기간</dt>
               <dd id="lessonPeriodText">6월20일~8월15일(총6회강습)</dd>
             </div>
             <div id="lessonTimeRow">
-              <dt>강습시간</dt>
+              <dt><span aria-hidden="true">🕰️</span> 강습시간</dt>
               <dd id="lessonTimeText">토요일 PM 06:20~07:55</dd>
             </div>
             <div id="lessonPlaceRow">
-              <dt>장소</dt>
+              <dt><span aria-hidden="true">📍</span> 장소</dt>
               <dd id="lessonPlaceText">선릉 Swing Time 바깥쪽 홀</dd>
             </div>
             <div>
-              <dt>공간이용료</dt>
+              <dt><span aria-hidden="true">🎟️</span> 공간이용료</dt>
               <dd id="spaceFeeText">공간이용료 12,000원 현장 결제</dd>
-            </div>
-          </dl>
-        </article>
-
-        <article class="info-block payment-card">
-          <p class="eyebrow">Fee</p>
-          <h2>강습비 입금안내</h2>
-          <div class="fee-summary">
-            <span>강습비</span>
-            <strong id="priceText">60,000원</strong>
-          </div>
-          <p id="timebarNotice">공간이용료 12,000원 현장 결제</p>
-          <dl class="payment-lines">
-            <div>
-              <dt>계좌</dt>
-              <dd>
-                <span id="bankText">카카오뱅크 3333351975536</span>
-                <button type="button" class="copy-button" data-copy-account>복사</button>
-              </dd>
-            </div>
-            <div>
-              <dt>예금주</dt>
-              <dd id="holderText">이기연</dd>
-            </div>
-            <div>
-              <dt>입금자명</dt>
-              <dd id="depositorPreview">입문_닉네임</dd>
             </div>
           </dl>
         </article>
@@ -181,21 +146,50 @@
             </label>
           </div>
 
-          <aside class="form-summary" aria-label="입금 요약">
-            <div>
+          <aside class="form-summary" aria-label="강습비 및 입금 요약">
+            <div class="summary-fee">
+              <span>강습비</span>
+              <strong id="priceText">60,000원</strong>
+            </div>
+            <div class="summary-line">
+              <span>현장 결제</span>
+              <strong id="timebarNotice">12,000원 현장 결제</strong>
+            </div>
+            <div class="summary-line">
               <span>입금 금액</span>
               <strong id="summaryPrice">60,000원</strong>
             </div>
-            <div>
-              <span>입금자명</span>
-              <strong id="summaryDepositor">입문_닉네임</strong>
-            </div>
+            <dl class="summary-payment">
+              <div>
+                <dt>계좌</dt>
+                <dd>
+                  <span id="bankText">카카오뱅크 3333351975536</span>
+                  <button type="button" class="copy-button" data-copy-account>복사</button>
+                </dd>
+              </div>
+              <div>
+                <dt>예금주</dt>
+                <dd id="holderText">이기연</dd>
+              </div>
+              <div>
+                <dt>입금자명</dt>
+                <dd id="summaryDepositor">입문_닉네임</dd>
+              </div>
+            </dl>
             <button class="submit-button" type="submit">신청하기</button>
             <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
           </aside>
         </form>
       </section>
     </main>
+
+    <div class="mobile-total" aria-label="모바일 입금 금액">
+      <div>
+        <span>입금 금액</span>
+        <strong id="mobileSummaryPrice">60,000원</strong>
+      </div>
+      <button type="button" id="mobileSubmit">신청하기</button>
+    </div>
 
     <div id="submittingOverlay" class="submitting-overlay" role="status" aria-live="assertive" hidden>
       <div>
@@ -226,6 +220,11 @@
       <a href="./students.html">신청확인 보기</a>
     </dialog>
 
-    <script src="./intro.js?v=20260523-intro-cards"></script>
+    <dialog id="posterDialog" class="poster-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <img id="posterLarge" alt="" />
+    </dialog>
+
+    <script src="./intro.js?v=20260523-intro-mobile-submit"></script>
   </body>
 </html>
