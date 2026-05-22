@@ -405,6 +405,13 @@ function clearErrors() {
   });
 }
 
+function resetSignupForm() {
+  signupForm.reset();
+  clearErrors();
+  updateLessonCards();
+  updateSummary();
+}
+
 function validateForm() {
   clearErrors();
   const selectedLessons = getSelectedLessons();
@@ -662,7 +669,7 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
     console.log("신청 데이터", payload);
     completeDepositor.textContent = payload.recommendedDepositorName;
     completeAmount.textContent = formatWon(payload.finalAmount);
-    setFormStatus("");
+    resetSignupForm();
     completeDialog.showModal();
   } catch (error) {
     console.error(error);
