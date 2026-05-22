@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260522-swing-experience";
+  const CACHE_VERSION = "20260522-kst-time";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -22,6 +22,18 @@
   }
 
   migrateLocalCache();
+
+  function formatKstDateTime(date = new Date()) {
+    return new Intl.DateTimeFormat("sv-SE", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
 
   const defaultConfig = {
     termLabel: "137기 정규 강습 신청",
@@ -418,7 +430,7 @@
   }
 
   function addLocalApplication(payload) {
-    const now = new Date().toISOString();
+    const now = formatKstDateTime();
     const record = {
       ...payload,
       id: payload.id || makeId(),
@@ -426,7 +438,7 @@
       paymentStatus: payload.paymentStatus || "unpaid",
       memo: payload.memo || "",
       paidAt: payload.paidAt || "",
-      submittedAt: payload.submittedAt || now,
+      submittedAt: now,
       updatedAt: now,
     };
     const applications = getApplications();
@@ -444,7 +456,7 @@
   }
 
   function updateLocalApplication(id, patch) {
-    const now = new Date().toISOString();
+    const now = formatKstDateTime();
     const applications = getApplications();
     const next = applications.map((application) => {
       if (application.id !== id) return application;

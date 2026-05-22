@@ -483,7 +483,6 @@ function buildPayload() {
     finalAmount: price.finalAmount,
     bankAccount,
     recommendedDepositorName: getDepositorName(selectedLessons, document.querySelector("#nickname").value, config),
-    submittedAt: new Date().toISOString(),
   };
 }
 
