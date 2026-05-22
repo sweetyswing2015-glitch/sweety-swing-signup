@@ -250,6 +250,18 @@ function normalizeSwingExperience(value) {
   return "";
 }
 
+function formatSwingExperienceForInput(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const yearMonthMatch = text.match(/^(\d+)\s*년\s*(\d+)\s*개월$/);
+  if (yearMonthMatch) return `${Number(yearMonthMatch[1])}년 ${Number(yearMonthMatch[2])}개월`;
+  const yearMatch = text.match(/^(\d+)\s*년$/);
+  if (yearMatch) return `${Number(yearMatch[1])}년`;
+  const monthMatch = text.match(/^(\d+)\s*개월$/);
+  if (monthMatch) return `${Number(monthMatch[1])}개월`;
+  return "";
+}
+
 function buildSelectedClasses(selectedLessons) {
   return selectedLessons.map((lesson) => ({
     id: lesson.id,
@@ -574,8 +586,8 @@ document.querySelector("#phone").addEventListener("input", (event) => {
   event.target.value = normalizePhone(event.target.value);
 });
 swingExperienceInput?.addEventListener("blur", (event) => {
-  const normalized = normalizeSwingExperience(event.target.value);
-  if (normalized) event.target.value = normalized;
+  const formatted = formatSwingExperienceForInput(event.target.value);
+  if (formatted) event.target.value = formatted;
 });
 
 document.addEventListener("click", (event) => {
