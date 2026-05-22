@@ -114,7 +114,7 @@ function initSettingsPage() {
               <input type="text" data-field="name" value="${escapeHtml(lesson.name)}" />
             </label>
             <label>
-              <span>입금자명용 강좌명</span>
+              <span>짧은강습명</span>
               <input type="text" data-field="shortName" value="${escapeHtml(lesson.shortName)}" />
             </label>
             <label>

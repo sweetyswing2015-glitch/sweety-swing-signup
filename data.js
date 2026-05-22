@@ -101,7 +101,6 @@
         label: "3개 이상 중복 수강 할인",
       },
     ],
-    depositPriority: ["intermediate", "pre-intermediate", "beginner", "training-a", "training-b"],
     lessons: [
       {
         id: "beginner",
@@ -263,9 +262,6 @@
       discountRules: Array.isArray(saved.discountRules)
         ? saved.discountRules.map(normalizeDiscountRule)
         : buildDefaultDiscountRules(saved.discounts || defaultConfig.discounts),
-      depositPriority: Array.isArray(saved.depositPriority)
-        ? saved.depositPriority.map(normalizeLessonId)
-        : clone(defaultConfig.depositPriority),
     };
 
     const savedLessons = Array.isArray(saved.lessons) ? saved.lessons.map(normalizeLesson) : [];
