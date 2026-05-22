@@ -13,9 +13,13 @@ const defaultConfig = {
   ageNotice: "만45세 이하 신청 가능",
   maleCapacity: 25,
   femaleCapacity: 25,
+  mainImageUrl: "../assets/poster-beginner.png",
   heroImageUrl: "../assets/poster-beginner.png",
   posterImageUrl: "../assets/poster-beginner.png",
-  timebarNotice: "타임 바 입장료 별도",
+  lessonTime: "",
+  lessonPlace: "",
+  spaceFeeNotice: "공간이용료 12,000원 현장 결제",
+  timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 선착순 남녀 각각 25명",
 };
 
@@ -83,6 +87,15 @@ function setText(selector, value) {
   if (node) node.textContent = value;
 }
 
+function normalizeImageUrl(value) {
+  const url = String(value || "").trim();
+  if (url.startsWith("./assets/")) return `../${url.slice(2)}`;
+  if (url.startsWith("assets/")) return `../${url}`;
+  const driveId = url.match(/drive\.google\.com\/file\/d\/([^/]+)/)?.[1] || url.match(/[?&]id=([^&]+)/)?.[1];
+  if (driveId) return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`;
+  return url;
+}
+
 function applyConfig(nextConfig = {}) {
   config = {
     ...defaultConfig,
@@ -97,12 +110,24 @@ function applyConfig(nextConfig = {}) {
   setText("#holderText", config.bankAccount.accountHolder);
   setText("#completeBank", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
   setText("#timebarNotice", config.timebarNotice);
+  setText("#spaceFeeText", config.spaceFeeNotice || config.timebarNotice);
   setText("#ageNotice", config.ageNotice);
   setText("#paymentNotice", config.paymentNotice);
+  setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
+  setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
 
   const heroImage = document.querySelector("#heroImage");
-  if (heroImage && config.heroImageUrl) heroImage.src = config.heroImageUrl;
+  if (heroImage && (config.mainImageUrl || config.heroImageUrl)) heroImage.src = normalizeImageUrl(config.mainImageUrl || config.heroImageUrl);
+  const posterImage = document.querySelector("#posterImage");
+  if (posterImage && config.posterImageUrl) posterImage.src = normalizeImageUrl(config.posterImageUrl);
   updateDepositorPreview();
+}
+
+function setOptionalRow(rowSelector, textSelector, value) {
+  const row = document.querySelector(rowSelector);
+  const text = String(value || "").trim();
+  if (row) row.hidden = !text;
+  if (text) setText(textSelector, text);
 }
 
 function updateDepositorPreview() {

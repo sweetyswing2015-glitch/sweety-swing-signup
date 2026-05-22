@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 입문 강습 신청</title>
-    <link rel="stylesheet" href="./intro.css?v=20260522-intro-site" />
+    <link rel="stylesheet" href="./intro.css?v=20260523-intro-polish" />
   </head>
   <body>
     <header class="intro-header">
@@ -20,14 +20,10 @@
       <section class="hero" id="top">
         <div class="hero-copy">
           <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
-          <h1>처음이어도 괜찮아요. 같이 스윙을 시작해요.</h1>
+          <h1>처음이어도 괜찮아요, 오늘부터 같이 스윙해요 💛</h1>
           <p>
-            스위티스윙 입문 강습은 기본 스텝부터 파트너와 춤추는 즐거움까지 천천히 익히는 첫 수업입니다.
+            기본 스텝부터 파트너와 춤추는 즐거움까지, 편하게 웃으면서 하나씩 배워요.
           </p>
-          <div class="hero-actions">
-            <a class="primary-link" href="#apply">입문 강습 신청하기</a>
-            <a class="secondary-link" href="./students.html">신청확인</a>
-          </div>
         </div>
         <figure class="hero-visual">
           <img id="heroImage" src="../assets/poster-beginner.png" alt="스위티스윙 입문 강습 이미지" />
@@ -37,10 +33,10 @@
       <section class="intro-band">
         <div>
           <p class="eyebrow">Welcome</p>
-          <h2>스윙댄스가 처음인 사람을 위한 수업</h2>
+          <h2>혼자 와도 괜찮고, 춤이 처음이어도 괜찮아요 🙂</h2>
         </div>
         <p>
-          리듬을 듣고, 걸음을 맞추고, 서로의 움직임을 존중하는 법을 배웁니다. 혼자 오셔도 괜찮고 춤 경험이 없어도 괜찮습니다.
+          리듬을 듣고, 가볍게 걸음을 맞추고, 파트너와 자연스럽게 춤추는 감각을 익혀요. 첫 강습 때 같이 만나요!
         </p>
       </section>
 
@@ -55,16 +51,44 @@
           </ul>
         </article>
 
+        <article class="info-block class-info-card">
+          <p class="eyebrow">Class</p>
+          <h2>강습 정보</h2>
+          <dl class="compact-list">
+            <div id="lessonTimeRow">
+              <dt>강습시간</dt>
+              <dd id="lessonTimeText">추후 안내</dd>
+            </div>
+            <div id="lessonPlaceRow">
+              <dt>장소</dt>
+              <dd id="lessonPlaceText">추후 안내</dd>
+            </div>
+            <div>
+              <dt>공간이용료</dt>
+              <dd id="spaceFeeText">공간이용료 12,000원 현장 결제</dd>
+            </div>
+          </dl>
+        </article>
+
+        <article class="info-block poster-card">
+          <p class="eyebrow">Poster</p>
+          <h2>입문 강습 포스터</h2>
+          <div class="poster-frame">
+            <img id="posterImage" src="../assets/poster-beginner.png" alt="입문 강습 포스터" />
+          </div>
+        </article>
+
         <article class="info-block payment-card">
           <p class="eyebrow">Fee</p>
           <h2>강습비/입금 안내</h2>
-          <dl>
+          <div class="fee-summary">
+            <span>강습비</span>
+            <strong id="priceText">60,000원</strong>
+          </div>
+          <p id="timebarNotice">공간이용료 12,000원 현장 결제</p>
+          <dl class="payment-lines">
             <div>
-              <dt>강습비</dt>
-              <dd id="priceText">60,000원</dd>
-            </div>
-            <div>
-              <dt>입금계좌</dt>
+              <dt>계좌</dt>
               <dd>
                 <span id="bankText">카카오뱅크 3333351975536</span>
                 <button type="button" class="copy-button" data-copy-account>복사</button>
@@ -79,7 +103,6 @@
               <dd id="depositorPreview">입문_닉네임</dd>
             </div>
           </dl>
-          <p id="timebarNotice">타임 바 입장료 별도</p>
         </article>
       </section>
 
@@ -88,7 +111,7 @@
         <ul>
           <li id="ageNotice">만45세 이하 신청 가능</li>
           <li id="paymentNotice">입금 선착순 남녀 각각 25명</li>
-          <li>입금자명이 다르면 입금 확인이 늦어질 수 있습니다.</li>
+          <li>입금자명은 자동으로 안내되는 이름 그대로 넣어주세요.</li>
         </ul>
       </section>
 
@@ -179,8 +202,8 @@
 
     <dialog id="completeDialog" class="complete-dialog">
       <button class="dialog-close" type="button" aria-label="닫기">×</button>
-      <h2>신청이 완료되었습니다.</h2>
-      <p>아래 정보로 입금해주시면 입금 확인 후 신청이 확정됩니다.</p>
+      <h2>신청 완료!</h2>
+      <p>아래 정보로 입금해주시면 확인 후 신청이 확정돼요.</p>
       <dl>
         <div>
           <dt>입금 금액</dt>
@@ -198,6 +221,6 @@
       <a href="./students.html">신청확인 보기</a>
     </dialog>
 
-    <script src="./intro.js?v=20260522-intro-site"></script>
+    <script src="./intro.js?v=20260523-intro-polish"></script>
   </body>
 </html>
