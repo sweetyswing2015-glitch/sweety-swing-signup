@@ -89,8 +89,6 @@ function updateDiscountRuleValues(config, values) {
 function initSettingsPage() {
   const config = Store.getConfig();
   $("#termLabelInput").value = config.termLabel;
-  $("#firstIntermediateLabelInput").value = config.firstIntermediateLabel;
-  $("#firstIntermediateDescriptionInput").value = config.firstIntermediateDescription;
   $("#introSignupUrlInput").value = config.introSignupUrl === "#" ? "" : config.introSignupUrl;
   $("#bankInput").value = config.bankAccount.bank;
   $("#accountNumberInput").value = config.bankAccount.accountNumber;
@@ -169,8 +167,6 @@ function initSettingsPage() {
     const next = {
       ...current,
       termLabel: $("#termLabelInput").value.trim() || current.termLabel,
-      firstIntermediateLabel: $("#firstIntermediateLabelInput").value.trim() || current.firstIntermediateLabel,
-      firstIntermediateDescription: $("#firstIntermediateDescriptionInput").value.trim() || current.firstIntermediateDescription,
       introSignupUrl: $("#introSignupUrlInput").value.trim() || "#",
       bankAccount: {
         bank: $("#bankInput").value.trim() || current.bankAccount.bank,
