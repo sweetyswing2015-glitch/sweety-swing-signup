@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260522-settings-cleanup";
+  const CACHE_VERSION = "20260522-applicant-type-cleanup";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -48,7 +48,7 @@
         id: "first-intermediate-beginner-half",
         name: "첫 중급자 초급 반값 할인",
         enabled: true,
-        applicantType: "first_intermediate_134",
+        applicantType: "first_intermediate",
         requiresLessonId: "intermediate",
         targetLessonId: "beginner",
         targetCategory: "",
@@ -62,7 +62,7 @@
         id: "first-intermediate-training",
         name: "첫 중급자 트레이닝 중복 할인",
         enabled: true,
-        applicantType: "first_intermediate_134",
+        applicantType: "first_intermediate",
         requiresLessonId: "intermediate",
         targetLessonId: "",
         targetCategory: "training",
@@ -161,7 +161,7 @@
   };
 
   const applicantTypeLabels = {
-    first_intermediate_134: "134기 첫 중급 수강자",
+    first_intermediate: "첫 중급 수강자",
     general: "그 외 강습생",
   };
 
@@ -542,9 +542,9 @@
       });
 
     if (
-      applicantType === "first_intermediate_134" &&
+      applicantType === "first_intermediate" &&
       selectedLessons.length > 0 &&
-      discountRules.some((rule) => rule.enabled !== false && rule.applicantType === "first_intermediate_134" && rule.requiresLessonId === "intermediate") &&
+      discountRules.some((rule) => rule.enabled !== false && rule.applicantType === "first_intermediate" && rule.requiresLessonId === "intermediate") &&
       !ids.has("intermediate")
     ) {
       hint = `${config.firstIntermediateLabel} 할인은 중급 강습을 함께 선택하면 적용됩니다.`;

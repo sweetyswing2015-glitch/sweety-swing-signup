@@ -249,13 +249,13 @@ function initSettingsPage() {
     const beginner = sampleLessons.find((lesson) => lesson.id === "beginner");
     const trainingA = sampleLessons.find((lesson) => lesson.id === "training-a");
     const selected = [intermediate, beginner, trainingA].filter(Boolean);
-    const price = Store.calculate(selected, "first_intermediate_134", Store.getConfig());
+    const price = Store.calculate(selected, "first_intermediate", Store.getConfig());
     try {
       await Store.addApplication({
         nickname: "로빈",
         realName: "홍길동",
         phone: "010-1234-5678",
-        applicantType: "first_intermediate_134",
+        applicantType: "first_intermediate",
         selectedClasses: selected.map((lesson, index) => ({
           id: lesson.id,
           name: lesson.name,
