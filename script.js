@@ -45,8 +45,9 @@ const swingExperienceField = document.querySelector("#swingExperienceField");
 const swingExperienceInput = document.querySelector("#swingExperience");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
+const inlineSubmitButton = document.querySelector('#signupForm button[type="submit"]');
 const submitButtons = [
-  document.querySelector('#signupForm button[type="submit"]'),
+  inlineSubmitButton,
   document.querySelector("#mobileSubmit"),
 ].filter(Boolean);
 let isSubmitting = false;
@@ -554,6 +555,48 @@ function updateSubmitButtons() {
   });
 }
 
+function setFloatingSubmitHidden(shouldHide) {
+  mobileTotal?.classList.toggle("is-inline-submit-visible", shouldHide);
+}
+
+function isInlineSubmitVisible() {
+  if (!inlineSubmitButton || inlineSubmitButton.offsetParent === null) return false;
+  const rect = inlineSubmitButton.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  return rect.bottom > 0 && rect.right > 0 && rect.top < viewportHeight && rect.left < viewportWidth;
+}
+
+function setupFloatingSubmitVisibility() {
+  if (!mobileTotal || !inlineSubmitButton) return;
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setFloatingSubmitHidden(Boolean(entry?.isIntersecting));
+      },
+      { threshold: 0 },
+    );
+    observer.observe(inlineSubmitButton);
+    return;
+  }
+
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    setFloatingSubmitHidden(isInlineSubmitVisible());
+  };
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(update);
+  };
+
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", requestUpdate);
+  requestUpdate();
+}
+
 async function refreshPageConfig() {
   if (!USE_REMOTE_API) {
     isConfigReady = true;
@@ -687,3 +730,5 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
     setSubmitting(false);
   }
 });
+
+setupFloatingSubmitVisibility();

@@ -1495,6 +1495,17 @@ td select {
     background: rgba(255, 250, 240, 0.96);
     box-shadow: var(--shadow);
     backdrop-filter: blur(12px);
+    transition:
+      opacity 0.16s ease,
+      visibility 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .mobile-total.is-inline-submit-visible {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
   }
 
   .mobile-total span {
