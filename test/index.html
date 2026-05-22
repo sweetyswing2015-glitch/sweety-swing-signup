@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 강습 신청</title>
     <base href="../" />
-    <link rel="stylesheet" href="./styles.css?v=20260522-swing-input" />
+    <link rel="stylesheet" href="./styles.css?v=20260522-submit-overlay" />
   </head>
   <body data-page-mode="test">
     <header class="site-header">
@@ -201,6 +201,14 @@
       <button type="button" id="mobileSubmit">신청하기</button>
     </div>
 
+    <div id="submittingOverlay" class="submitting-overlay" role="status" aria-live="assertive" hidden>
+      <div class="submitting-box">
+        <span class="loading-spinner" aria-hidden="true"></span>
+        <strong>신청 저장 중입니다</strong>
+        <p>창을 닫거나 다시 누르지 말고 잠시만 기다려주세요.</p>
+      </div>
+    </div>
+
     <dialog id="posterDialog" class="poster-dialog">
       <button class="dialog-close" type="button" aria-label="닫기">×</button>
       <img id="posterLarge" alt="" />
@@ -223,7 +231,7 @@
       <p>입금 확인 후 신청이 확정됩니다.</p>
     </dialog>
 
-    <script src="./data.js?v=20260522-swing-input"></script>
-    <script src="./script.js?v=20260522-swing-input"></script>
+    <script src="./data.js?v=20260522-submit-overlay"></script>
+    <script src="./script.js?v=20260522-submit-overlay"></script>
   </body>
 </html>

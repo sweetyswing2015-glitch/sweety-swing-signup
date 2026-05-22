@@ -44,6 +44,7 @@ const configLoadingText = document.querySelector("#configLoadingText");
 const swingExperienceField = document.querySelector("#swingExperienceField");
 const swingExperienceInput = document.querySelector("#swingExperience");
 const formStatus = document.querySelector("#formStatus");
+const submittingOverlay = document.querySelector("#submittingOverlay");
 const submitButtons = [
   document.querySelector('#signupForm button[type="submit"]'),
   document.querySelector("#mobileSubmit"),
@@ -535,6 +536,10 @@ async function copyAccountNumber(button) {
 }
 
 function updateSubmitButtons() {
+  document.body.classList.toggle("is-submitting", isSubmitting);
+  signupForm?.setAttribute("aria-busy", String(isSubmitting));
+  if (submittingOverlay) submittingOverlay.hidden = !isSubmitting;
+
   submitButtons.forEach((button) => {
     if (!button.dataset.originalText) button.dataset.originalText = button.textContent;
     button.disabled = isSubmitting || !isConfigReady;

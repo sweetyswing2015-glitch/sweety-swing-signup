@@ -763,6 +763,53 @@ main {
   color: #b42318;
 }
 
+.submitting-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(21, 17, 13, 0.48);
+  backdrop-filter: blur(4px);
+}
+
+.submitting-box {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: min(360px, 100%);
+  padding: 28px 24px;
+  border: 1px solid rgba(21, 17, 13, 0.12);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(21, 17, 13, 0.28);
+  color: var(--ink);
+  text-align: center;
+}
+
+.submitting-box strong {
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.submitting-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+body.is-submitting {
+  cursor: wait;
+}
+
+body.is-submitting .submit-button,
+body.is-submitting .mobile-total button {
+  cursor: wait;
+}
+
 .mobile-total {
   display: none;
 }
