@@ -289,6 +289,7 @@ main {
 .lesson-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  align-items: start;
   gap: 16px;
 }
 
@@ -346,8 +347,9 @@ main {
 .lesson-card {
   display: grid;
   gap: 12px;
+  align-content: start;
   min-width: 0;
-  padding: 14px;
+  padding: 14px 14px 12px;
   border: 2px solid rgba(21, 17, 13, 0.12);
   border-radius: 8px;
   background: #fffdf7;
@@ -496,6 +498,10 @@ main {
 
 .role-error {
   margin: -2px 0 0;
+}
+
+.role-error:empty {
+  display: none;
 }
 
 .choice-group {
