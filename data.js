@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260522-first-intermediate-offset";
+  const CACHE_VERSION = "20260522-swing-experience";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -201,6 +201,7 @@
   function normalizeApplication(application) {
     return {
       ...application,
+      swingExperience: application.swingExperience || "",
       selectedClasses: Array.isArray(application.selectedClasses)
         ? application.selectedClasses.map(normalizeLesson)
         : [],
@@ -588,6 +589,7 @@
         "닉네임",
         "이름",
         "연락처",
+        "스윙경력",
         "신청자유형",
         "강습",
         "역할",
@@ -604,6 +606,7 @@
         application.nickname,
         application.realName,
         application.phone,
+        application.swingExperience,
         applicantTypeLabels[application.applicantType] || application.applicantType,
         (application.selectedClasses || []).map((item) => item.name).join(" / "),
         (application.selectedClasses || []).map((item) => `${item.name}:${roleLabels[item.role] || item.role}`).join(" / "),

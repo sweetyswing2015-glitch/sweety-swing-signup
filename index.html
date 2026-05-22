@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 강습 신청</title>
-    <link rel="stylesheet" href="./styles.css?v=20260521-fast-loading" />
+    <link rel="stylesheet" href="./styles.css?v=20260522-swing-experience" />
   </head>
   <body>
     <header class="site-header">
@@ -111,6 +111,12 @@
                 <small>연락처는 신청 확인 및 안내 용도로만 사용되며 공개되지 않습니다.</small>
                 <small class="field-error" id="phoneError" role="alert"></small>
               </label>
+              <label id="swingExperienceField" class="wide conditional-field" hidden>
+                <span>스윙경력</span>
+                <input id="swingExperience" name="swingExperience" type="text" inputmode="numeric" placeholder="예: 2년 6개월" />
+                <small>트레이닝 수업 신청 시에만 입력하며 운영진에게만 공개됩니다. 양식: 0년 0개월</small>
+                <small class="field-error" id="swingExperienceError" role="alert"></small>
+              </label>
             </div>
           </section>
 
@@ -216,7 +222,7 @@
       <p>입금 확인 후 신청이 확정됩니다.</p>
     </dialog>
 
-    <script src="./data.js?v=20260521-fast-loading"></script>
-    <script src="./script.js?v=20260521-fast-loading"></script>
+    <script src="./data.js?v=20260522-swing-experience"></script>
+    <script src="./script.js?v=20260522-swing-experience"></script>
   </body>
 </html>

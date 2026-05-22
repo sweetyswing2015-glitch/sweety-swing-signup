@@ -550,6 +550,10 @@ main {
   grid-column: 1 / -1;
 }
 
+.conditional-field[hidden] {
+  display: none;
+}
+
 .field-grid span {
   font-weight: 900;
 }

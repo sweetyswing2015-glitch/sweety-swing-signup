@@ -41,6 +41,8 @@ const signupForm = document.querySelector("#signupForm");
 const mobileTotal = document.querySelector(".mobile-total");
 const configLoadingBar = document.querySelector("#configLoadingBar");
 const configLoadingText = document.querySelector("#configLoadingText");
+const swingExperienceField = document.querySelector("#swingExperienceField");
+const swingExperienceInput = document.querySelector("#swingExperience");
 const submitButtons = [
   document.querySelector('#signupForm button[type="submit"]'),
   document.querySelector("#mobileSubmit"),
@@ -233,6 +235,28 @@ function getRole(lessonId) {
   return document.querySelector(`input[name="role-${lessonId}"]:checked`)?.value ?? "";
 }
 
+function hasTrainingLesson(selectedLessons = getSelectedLessons()) {
+  return selectedLessons.some((lesson) => lesson.category === "training");
+}
+
+function normalizeSwingExperience(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/^(\d+)\s*년\s*(\d+)\s*개월$/);
+  if (!match) return "";
+  return `${Number(match[1])}년 ${Number(match[2])}개월`;
+}
+
+function buildSelectedClasses(selectedLessons) {
+  return selectedLessons.map((lesson) => ({
+    id: lesson.id,
+    name: lesson.name,
+    shortName: lesson.shortName,
+    category: lesson.category,
+    price: lesson.price,
+    role: getRole(lesson.id),
+  }));
+}
+
 function shouldSkipLessonCardToggle(target) {
   return Boolean(
     target.closest(".poster-button, .role-box, .select-line, a, button, input, select, textarea, label"),
@@ -269,13 +293,22 @@ function updateLessonCards() {
       setRoleError(lesson.id, "");
     }
   });
+  updateSwingExperienceVisibility();
 }
 
-function updateSummary() {
-  const selectedLessons = getSelectedLessons();
-  const applicantType = getApplicantType();
-  const price = calculate(selectedLessons, applicantType, config);
-  const depositorName = getDepositorName(selectedLessons, document.querySelector("#nickname").value, config);
+function updateSwingExperienceVisibility() {
+  if (!swingExperienceField || !swingExperienceInput) return;
+  const shouldShow = hasTrainingLesson();
+  swingExperienceField.hidden = !shouldShow;
+  swingExperienceInput.required = shouldShow;
+  swingExperienceInput.setAttribute("aria-required", String(shouldShow));
+  if (!shouldShow) {
+    swingExperienceInput.value = "";
+    setError("swingExperienceError", "");
+  }
+}
+
+function renderSummary(selectedLessons, price, depositorName) {
 
   selectedList.innerHTML = selectedLessons.length
     ? selectedLessons
@@ -308,6 +341,15 @@ function updateSummary() {
   }
 }
 
+function updateSummary() {
+  const selectedLessons = getSelectedLessons();
+  const applicantType = getApplicantType();
+  const price = calculate(selectedLessons, applicantType, config);
+  const depositorName = getDepositorName(selectedLessons, document.querySelector("#nickname").value, config);
+
+  renderSummary(selectedLessons, price, depositorName);
+}
+
 function setError(id, message) {
   const node = document.querySelector(`#${id}`);
   if (node) node.textContent = message;
@@ -332,7 +374,7 @@ function focusFirstInvalidLessonCard() {
 }
 
 function clearErrors() {
-  ["lessonError", "typeError", "nicknameError", "realNameError", "phoneError"].forEach((id) => setError(id, ""));
+  ["lessonError", "typeError", "nicknameError", "realNameError", "phoneError", "swingExperienceError"].forEach((id) => setError(id, ""));
   document.querySelectorAll(".lesson-card").forEach((card) => card.classList.remove("has-error"));
   document.querySelectorAll("[data-role-error]").forEach((node) => {
     node.textContent = "";
@@ -346,6 +388,8 @@ function validateForm() {
   const nickname = document.querySelector("#nickname").value.trim();
   const realName = document.querySelector("#realName").value.trim();
   const phone = document.querySelector("#phone").value.trim();
+  const needsSwingExperience = hasTrainingLesson(selectedLessons);
+  const swingExperience = normalizeSwingExperience(swingExperienceInput?.value || "");
   let isValid = true;
 
   if (selectedLessons.length === 0) {
@@ -381,6 +425,11 @@ function validateForm() {
     isValid = false;
   }
 
+  if (needsSwingExperience && !swingExperience) {
+    setError("swingExperienceError", "스윙경력을 0년 0개월 형식으로 입력해주세요.");
+    isValid = false;
+  }
+
   return isValid;
 }
 
@@ -393,15 +442,9 @@ function buildPayload() {
     nickname: document.querySelector("#nickname").value.trim(),
     realName: document.querySelector("#realName").value.trim(),
     phone: document.querySelector("#phone").value.trim(),
+    swingExperience: hasTrainingLesson(selectedLessons) ? normalizeSwingExperience(swingExperienceInput?.value || "") : "",
     applicantType,
-    selectedClasses: selectedLessons.map((lesson) => ({
-      id: lesson.id,
-      name: lesson.name,
-      shortName: lesson.shortName,
-      category: lesson.category,
-      price: lesson.price,
-      role: getRole(lesson.id),
-    })),
+    selectedClasses: buildSelectedClasses(selectedLessons),
     subtotal: price.subtotal,
     discountAmount: price.discountAmount,
     discountDetails: price.details,
@@ -518,6 +561,10 @@ document.addEventListener("change", (event) => {
 document.querySelector("#nickname").addEventListener("input", updateSummary);
 document.querySelector("#phone").addEventListener("input", (event) => {
   event.target.value = normalizePhone(event.target.value);
+});
+swingExperienceInput?.addEventListener("blur", (event) => {
+  const normalized = normalizeSwingExperience(event.target.value);
+  if (normalized) event.target.value = normalized;
 });
 
 document.addEventListener("click", (event) => {
