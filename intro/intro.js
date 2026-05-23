@@ -10,15 +10,15 @@ const defaultConfig = {
   },
   depositorPrefix: "입문",
   refundDeadline: "",
-  ageNotice: "만45세 이하 신청 가능 (1980년 6월생까지 신청가능)",
+  ageNotice: "*만45세 이하 신청 가능\n(1980년 6월생까지 신청가능)",
   maleCapacity: 25,
   femaleCapacity: 25,
   mainImageUrl: "../assets/intro-hero.png",
   heroImageUrl: "../assets/intro-hero.png",
   posterImageUrl: "../assets/intro-poster.png",
-  lessonPeriod: "6월20일~8월15일(총6회강습)",
+  lessonPeriod: "6월20일~8월15일(기간 중 6회)",
   lessonTime: "토요일 PM 06:20~07:55",
-  lessonPlace: "선릉 Swing Time 바깥쪽 홀",
+  lessonPlace: "선릉역 5번 출구 스윙타임 바깥홀",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 선착순 남녀 각각 25명",
@@ -41,6 +41,7 @@ const fields = {
 const submitButton = document.querySelector(".submit-button");
 const mobileSubmitButton = document.querySelector("#mobileSubmit");
 const mobileTotal = document.querySelector(".mobile-total");
+const referrerField = document.querySelector("#referrerField");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
 const completeDialog = document.querySelector("#completeDialog");
@@ -124,9 +125,7 @@ function applyConfig(nextConfig = {}) {
   setText("#holderText", config.bankAccount.accountHolder);
   setText("#completeBank", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
   setText("#timebarNotice", config.timebarNotice);
-  setText("#spaceFeeText", config.spaceFeeNotice || config.timebarNotice);
   setText("#ageNotice", config.ageNotice);
-  setText("#paymentNotice", config.paymentNotice);
   setOptionalRow("#lessonPeriodRow", "#lessonPeriodText", config.lessonPeriod);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
@@ -152,6 +151,12 @@ function setOptionalRow(rowSelector, textSelector, value) {
 function updateDepositorPreview() {
   const depositorName = getDepositorName();
   setText("#summaryDepositor", depositorName);
+}
+
+function updateReferrerVisibility() {
+  const shouldShow = fields.source.value === "지인소개";
+  referrerField?.classList.toggle("is-hidden", !shouldShow);
+  if (!shouldShow) fields.referrer.value = "";
 }
 
 function setError(id, message) {
@@ -233,7 +238,7 @@ function buildPayload() {
     phone: fields.phone.value.trim(),
     experience: fields.experience.value,
     source: fields.source.value,
-    referrer: fields.referrer.value.trim(),
+    referrer: fields.source.value === "지인소개" ? fields.referrer.value.trim() : "",
     message: fields.message.value.trim(),
   };
 }
@@ -261,6 +266,7 @@ function resetForm() {
   form.reset();
   clearErrors();
   updateDepositorPreview();
+  updateReferrerVisibility();
 }
 
 async function copyAccountNumber(button) {
@@ -367,6 +373,7 @@ fields.nickname.addEventListener("input", updateDepositorPreview);
 fields.phone.addEventListener("input", (event) => {
   event.target.value = normalizePhone(event.target.value);
 });
+fields.source.addEventListener("change", updateReferrerVisibility);
 
 document.addEventListener("click", (event) => {
   const copyButton = event.target.closest("[data-copy-account]");
@@ -395,5 +402,6 @@ mobileSubmitButton?.addEventListener("click", () => {
 });
 
 applyConfig(defaultConfig);
+updateReferrerVisibility();
 refreshConfig();
 setupFloatingSubmitVisibility();
