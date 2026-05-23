@@ -115,7 +115,7 @@ function applyConfig(nextConfig = {}) {
   config.lessonPlace = textOrDefault(config.lessonPlace, defaultConfig.lessonPlace);
   config.spaceFeeNotice = textOrDefault(config.spaceFeeNotice || config.timebarNotice, defaultConfig.spaceFeeNotice);
   config.timebarNotice = textOrDefault(config.timebarNotice || config.spaceFeeNotice, defaultConfig.timebarNotice);
-  config.ageNotice = textOrDefault(config.ageNotice, defaultConfig.ageNotice);
+  config.ageNotice = normalizeAgeNotice(config.ageNotice);
 
   setText("#termLabel", config.termLabel);
   setText("#priceText", formatWon(config.price));
@@ -139,6 +139,11 @@ function applyConfig(nextConfig = {}) {
 function textOrDefault(value, fallback) {
   const text = String(value || "").trim();
   return text || fallback;
+}
+
+function normalizeAgeNotice(value) {
+  const text = textOrDefault(value, defaultConfig.ageNotice);
+  return text.includes("1980년 6월생") ? text : defaultConfig.ageNotice;
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {
