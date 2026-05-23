@@ -468,6 +468,10 @@ textarea:focus {
   grid-column: 1 / -1;
 }
 
+.radio-field legend {
+  margin-bottom: 2px;
+}
+
 .radio-field label {
   display: flex;
   align-items: center;
@@ -803,9 +807,18 @@ body.is-submitting {
   }
 
   .hero h1 {
-    max-width: 12ch;
-    font-size: clamp(2.1rem, 9vw, 3rem);
-    line-height: 1.12;
+    max-width: none;
+    font-size: clamp(1.85rem, 7.4vw, 2.3rem);
+    line-height: 1.15;
+  }
+
+  .hero h1 span {
+    white-space: nowrap;
+  }
+
+  .hero-copy > p:not(.eyebrow) {
+    font-size: clamp(1rem, 4.4vw, 1.18rem);
+    line-height: 1.62;
   }
 
   .hero-visual img {
@@ -821,6 +834,31 @@ body.is-submitting {
 
   .field-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .field-grid label,
+  .radio-field {
+    gap: 6px;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 13px 14px;
+  }
+
+  .radio-field {
+    column-gap: 10px;
+    row-gap: 12px;
+  }
+
+  .radio-field legend {
+    margin-bottom: 8px;
+  }
+
+  .radio-field label {
+    padding: 13px 14px;
   }
 
   .form-summary {
@@ -833,6 +871,20 @@ body.is-submitting {
   .complete-dialog dl div {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .lesson-summary .compact-list {
+    gap: 11px;
+  }
+
+  .lesson-summary .compact-list div {
+    grid-template-columns: 96px 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .lesson-summary .compact-list dt {
+    white-space: nowrap;
   }
 
   .mobile-total {
@@ -915,8 +967,8 @@ body.is-submitting {
   }
 
   .hero h1 {
-    max-width: 11.6ch;
-    font-size: clamp(1.95rem, 8.2vw, 2.55rem);
+    max-width: none;
+    font-size: clamp(1.82rem, 7.2vw, 2.18rem);
   }
 
   .content-grid {
