@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 신청확인</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260523-intro-polish" />
+    <link rel="stylesheet" href="./intro.css?v=20260523-intro-students-gviz" />
   </head>
   <body data-page="intro-students">
     <header class="intro-header">
@@ -23,6 +23,11 @@
         <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
         <h1>입문 강습 신청확인</h1>
       </section>
+
+      <div id="loadingState" class="loading-state page-loading" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <strong>신청 현황을 불러오는 중입니다.</strong>
+      </div>
 
       <section class="summary-cards" aria-label="신청 요약">
         <article>
@@ -48,10 +53,6 @@
           <h2>신청 명단</h2>
           <button type="button" id="refreshButton">새로고침</button>
         </div>
-        <div id="loadingState" class="loading-state" role="status">
-          <span class="spinner" aria-hidden="true"></span>
-          <strong>명단을 불러오는 중입니다.</strong>
-        </div>
         <div id="emptyState" class="empty-state" hidden>아직 신청자가 없습니다.</div>
         <table id="rosterTable" class="intro-roster" hidden>
           <thead>
@@ -66,6 +67,6 @@
     </main>
 
     <p id="toast" class="toast" hidden></p>
-    <script src="./intro-students.js?v=20260523-intro-polish"></script>
+    <script src="./intro-students.js?v=20260523-intro-students-gviz"></script>
   </body>
 </html>

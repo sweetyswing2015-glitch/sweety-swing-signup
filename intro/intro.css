@@ -790,6 +790,23 @@ textarea:focus {
   font-weight: 800;
 }
 
+.page-loading {
+  grid-template-columns: auto 1fr;
+  justify-items: start;
+  align-items: center;
+  margin: -6px 0 18px;
+  border: 1px solid rgba(21, 17, 13, 0.12);
+  padding: 16px 18px;
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: 0 8px 22px rgba(55, 37, 22, 0.06);
+}
+
+.page-loading .spinner {
+  width: 28px;
+  height: 28px;
+  border-width: 3px;
+}
+
 .loading-state[hidden],
 .empty-state[hidden],
 .intro-roster[hidden] {
