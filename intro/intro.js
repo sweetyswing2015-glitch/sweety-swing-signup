@@ -10,7 +10,7 @@ const defaultConfig = {
   },
   depositorPrefix: "입문",
   refundDeadline: "",
-  ageNotice: "*만45세 이하 신청 가능\n(1980년 6월생까지 신청가능)",
+  ageNotice: "*만45세 이하 신청 가능\n(1980년 6월생까지)",
   maleCapacity: 25,
   femaleCapacity: 25,
   mainImageUrl: "../assets/intro-hero.png",
@@ -143,7 +143,7 @@ function textOrDefault(value, fallback) {
 
 function normalizeAgeNotice(value) {
   const text = textOrDefault(value, defaultConfig.ageNotice);
-  return text.includes("1980년 6월생") ? text : defaultConfig.ageNotice;
+  return text.includes("1980년 6월생") ? text.replace("(1980년 6월생까지 신청가능)", "(1980년 6월생까지)") : defaultConfig.ageNotice;
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {

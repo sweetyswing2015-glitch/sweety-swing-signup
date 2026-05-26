@@ -453,7 +453,7 @@ dd {
 
 .intro-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 400px);
   gap: 28px;
   align-items: start;
 }
@@ -585,7 +585,7 @@ textarea:focus {
 
 .summary-payment dd {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px 10px;
   align-items: center;
   min-width: 0;
@@ -593,8 +593,9 @@ textarea:focus {
 }
 
 .summary-payment #bankText {
-  flex: 1 1 160px;
+  flex: 0 1 auto;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .summary-payment dd span {
@@ -971,6 +972,10 @@ body.is-submitting {
 
   .form-summary {
     position: static;
+  }
+
+  .summary-payment dd {
+    flex-wrap: wrap;
   }
 
   .summary-payment div,
