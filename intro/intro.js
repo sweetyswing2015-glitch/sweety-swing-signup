@@ -16,7 +16,7 @@ const defaultConfig = {
   mainImageUrl: "../assets/intro-hero.png",
   heroImageUrl: "../assets/intro-hero.png",
   posterImageUrl: "../assets/intro-poster.png",
-  lessonPeriod: "6월20일~8월15일(기간 중 6회)",
+  lessonPeriod: "6월20일~8월15일\n(기간 내 총 6회 강습)",
   lessonTime: "토요일 PM 06:20~07:55",
   lessonPlace: "선릉역 5번 출구 스윙타임 바깥홀",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
@@ -111,6 +111,7 @@ function applyConfig(nextConfig = {}) {
     bankAccount: { ...defaultConfig.bankAccount, ...(nextConfig.bankAccount || {}) },
   };
   config.lessonPeriod = textOrDefault(config.lessonPeriod, defaultConfig.lessonPeriod);
+  config.lessonPeriod = normalizeLessonPeriod(config.lessonPeriod);
   config.lessonTime = textOrDefault(config.lessonTime, defaultConfig.lessonTime);
   config.lessonPlace = textOrDefault(config.lessonPlace, defaultConfig.lessonPlace);
   config.spaceFeeNotice = textOrDefault(config.spaceFeeNotice || config.timebarNotice, defaultConfig.spaceFeeNotice);
@@ -144,6 +145,14 @@ function textOrDefault(value, fallback) {
 function normalizeAgeNotice(value) {
   const text = textOrDefault(value, defaultConfig.ageNotice);
   return text.includes("1980년 6월생") ? text.replace("(1980년 6월생까지 신청가능)", "(1980년 6월생까지)") : defaultConfig.ageNotice;
+}
+
+function normalizeLessonPeriod(value) {
+  const text = textOrDefault(value, defaultConfig.lessonPeriod);
+  if (text.includes("6월20일") && text.includes("8월15일")) {
+    return "6월20일~8월15일\n(기간 내 총 6회 강습)";
+  }
+  return text;
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {

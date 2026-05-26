@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260526-intro-summary-layout" />
+    <link rel="stylesheet" href="./intro.css?v=20260526-intro-summary-align" />
   </head>
   <body>
     <header class="intro-header">
@@ -57,7 +57,8 @@
             <dl class="compact-list">
               <div id="lessonPeriodRow">
                 <dt><span aria-hidden="true">📅</span> 강습기간</dt>
-                <dd id="lessonPeriodText">6월20일~8월15일(기간 중 6회)</dd>
+                <dd id="lessonPeriodText">6월20일~8월15일
+(기간 내 총 6회 강습)</dd>
               </div>
               <div id="lessonTimeRow">
                 <dt><span aria-hidden="true">🕰️</span> 강습시간</dt>
@@ -156,13 +157,15 @@
                   <button type="button" class="copy-button" data-copy-account>복사</button>
                 </dd>
               </div>
-              <div>
-                <dt>예금주</dt>
-                <dd id="holderText">이기연</dd>
-              </div>
-              <div>
-                <dt>입금자명</dt>
-                <dd id="summaryDepositor">입문_닉네임</dd>
+              <div class="summary-pair-row">
+                <div class="summary-pair-item">
+                  <dt>예금주</dt>
+                  <dd id="holderText">이기연</dd>
+                </div>
+                <div class="summary-pair-item">
+                  <dt>입금자명</dt>
+                  <dd id="summaryDepositor">입문_닉네임</dd>
+                </div>
               </div>
             </dl>
             <button class="submit-button" type="submit">신청하기</button>
@@ -214,6 +217,6 @@
       <img id="posterLarge" alt="" />
     </dialog>
 
-    <script src="./intro.js?v=20260526-intro-summary-layout"></script>
+    <script src="./intro.js?v=20260526-intro-summary-align"></script>
   </body>
 </html>
