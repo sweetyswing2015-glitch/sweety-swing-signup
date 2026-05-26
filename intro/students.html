@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 신청확인</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260526-intro-summary-align" />
+    <link rel="stylesheet" href="./intro.css?v=20260526-intro-form-roster-polish" />
   </head>
   <body data-page="intro-students">
     <header class="intro-header">
@@ -21,7 +21,10 @@
     <main class="students-main">
       <section class="students-hero">
         <p class="eyebrow" id="termLabel">입문 정규강습 신청</p>
-        <h1>입문 강습 신청확인</h1>
+        <div class="students-title-row">
+          <h1>입문 강습 신청확인</h1>
+          <button type="button" id="refreshButton">새로고침</button>
+        </div>
       </section>
 
       <div id="loadingState" class="loading-state page-loading" role="status">
@@ -51,7 +54,6 @@
       <section class="roster-panel">
         <div class="roster-head">
           <h2>신청 명단</h2>
-          <button type="button" id="refreshButton">새로고침</button>
         </div>
         <div id="emptyState" class="empty-state" hidden>아직 신청자가 없습니다.</div>
         <table id="rosterTable" class="intro-roster" hidden>
