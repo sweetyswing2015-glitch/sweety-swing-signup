@@ -574,6 +574,26 @@ textarea:focus {
   background: var(--cream);
 }
 
+body.is-config-loading .form-summary {
+  min-height: 376px;
+}
+
+body.is-config-loading .form-summary > * {
+  visibility: hidden;
+}
+
+body.is-config-loading .form-summary::after {
+  content: "";
+  align-self: stretch;
+  min-height: 298px;
+  border-radius: 10px;
+  background:
+    linear-gradient(var(--white), var(--white)) 0 0 / 46% 26px no-repeat,
+    linear-gradient(rgba(255, 253, 248, 0.78), rgba(255, 253, 248, 0.78)) 0 48px / 62% 34px no-repeat,
+    linear-gradient(rgba(255, 253, 248, 0.66), rgba(255, 253, 248, 0.66)) 0 108px / 100% 122px no-repeat,
+    linear-gradient(rgba(255, 253, 248, 0.78), rgba(255, 253, 248, 0.78)) 0 254px / 100% 58px no-repeat;
+}
+
 .summary-fee,
 .summary-line {
   display: grid;

@@ -1,4 +1,6 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
+const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v2";
+const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 
 const defaultConfig = {
   termLabel: "입문 정규강습 신청",
@@ -102,6 +104,15 @@ function normalizeImageUrl(value) {
   return url;
 }
 
+function setConfigLoading(isLoading) {
+  document.body.classList.toggle("is-config-loading", isLoading);
+  document.body.setAttribute("aria-busy", String(isLoading));
+  if (!isSubmitting) {
+    submitButton.disabled = isLoading;
+    if (mobileSubmitButton) mobileSubmitButton.disabled = isLoading;
+  }
+}
+
 function applyConfig(nextConfig = {}) {
   config = {
     ...defaultConfig,
@@ -161,6 +172,25 @@ function setOptionalText(selector, value) {
   const text = String(value || "").trim();
   node.hidden = !text;
   if (text) node.textContent = text;
+}
+
+function readCachedConfig() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CONFIG_CACHE_KEY) || "null");
+    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
+    return cached.config;
+  } catch (error) {
+    console.warn("Intro config cache read failed", error);
+    return null;
+  }
+}
+
+function writeCachedConfig(nextConfig) {
+  try {
+    localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), config: nextConfig }));
+  } catch (error) {
+    console.warn("Intro config cache write failed", error);
+  }
 }
 
 function updateDepositorPreview() {
@@ -307,12 +337,16 @@ async function copyAccountNumber(button) {
 }
 
 async function refreshConfig() {
+  setConfigLoading(true);
   try {
     const nextConfig = await apiGet("getIntroConfig");
+    writeCachedConfig(nextConfig);
     applyConfig(nextConfig);
   } catch (error) {
     console.warn(error);
-    applyConfig(defaultConfig);
+    applyConfig(readCachedConfig() || defaultConfig);
+  } finally {
+    setConfigLoading(false);
   }
 }
 
@@ -416,7 +450,7 @@ mobileSubmitButton?.addEventListener("click", () => {
   form.requestSubmit();
 });
 
-applyConfig(defaultConfig);
+applyConfig(readCachedConfig() || defaultConfig);
 updateReferrerVisibility();
 refreshConfig();
 setupFloatingSubmitVisibility();
