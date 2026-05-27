@@ -380,13 +380,23 @@ p {
   gap: 8px;
 }
 
+.compact-list dd {
+  min-width: 0;
+}
+
 .compact-list dt span {
   width: 1.35em;
   text-align: center;
 }
 
-#lessonPeriodText {
+#lessonPeriodText,
+#lessonPlaceText,
+.summary-note {
   white-space: pre-line;
+}
+
+#lessonPlaceText {
+  word-break: keep-all;
 }
 
 .age-note {
@@ -485,10 +495,16 @@ dd {
 
 .field-grid .wide {
   grid-column: 1 / -1;
+  margin-top: 8px;
 }
 
 .field-grid .is-hidden {
   display: none;
+}
+
+#referrerField {
+  grid-column: 2;
+  margin-top: -4px;
 }
 
 label > span,
@@ -630,6 +646,14 @@ textarea:focus {
 
 .summary-payment strong {
   font-size: 1.35rem;
+}
+
+.summary-note {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 750;
+  line-height: 1.55;
 }
 
 .submit-button {
@@ -982,6 +1006,15 @@ body.is-submitting {
     gap: 12px;
   }
 
+  #referrerField {
+    grid-column: 1 / -1;
+    margin-top: -2px;
+  }
+
+  .field-grid .wide {
+    margin-top: 10px;
+  }
+
   .field-grid label,
   .radio-field {
     gap: 8px;
@@ -1037,13 +1070,17 @@ body.is-submitting {
   }
 
   .lesson-summary .compact-list div {
-    grid-template-columns: 96px 1fr;
-    gap: 10px;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 8px;
     align-items: start;
   }
 
   .lesson-summary .compact-list dt {
     white-space: nowrap;
+  }
+
+  .lesson-summary .compact-list dd {
+    font-size: clamp(0.9rem, 3.55vw, 1rem);
   }
 
   .mobile-total {

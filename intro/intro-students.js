@@ -8,7 +8,9 @@ const fallbackData = {
   summary: { total: 0, male: 0, female: 0, paid: 0 },
 };
 const CACHE_KEY = "sweetySwingIntroStudentsPageData:v1";
+const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v1";
 const CACHE_MAX_AGE_MS = 5 * 60 * 1000;
+let currentConfig = fallbackData.config;
 
 const loadingState = document.querySelector("#loadingState");
 const loadingText = loadingState?.querySelector("strong");
@@ -112,7 +114,7 @@ async function getRosterFromSheet() {
     .filter((row) => (row.nickname || row.gender) && !(row.nickname === "닉네임" && row.gender === "성별"));
 
   return {
-    config: fallbackData.config,
+    config: currentConfig,
     roster,
     summary: normalizeSummary(roster),
     generatedAt: new Date().toISOString(),
@@ -157,6 +159,45 @@ function writeCachedData(data) {
   }
 }
 
+function readCachedConfig() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(CONFIG_CACHE_KEY) || "null");
+    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CACHE_MAX_AGE_MS) return null;
+    return cached.config;
+  } catch (error) {
+    console.warn("Intro config cache read failed", error);
+    return null;
+  }
+}
+
+function writeCachedConfig(config) {
+  try {
+    localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), config }));
+  } catch (error) {
+    console.warn("Intro config cache write failed", error);
+  }
+}
+
+function applyConfig(config = fallbackData.config) {
+  currentConfig = { ...fallbackData.config, ...config };
+  setText("#termLabel", currentConfig.termLabel || fallbackData.config.termLabel);
+}
+
+async function loadIntroConfig() {
+  const cachedConfig = readCachedConfig();
+  if (cachedConfig) applyConfig(cachedConfig);
+
+  try {
+    const config = await apiGet("getIntroConfig");
+    writeCachedConfig(config);
+    applyConfig(config);
+    return config;
+  } catch (error) {
+    console.warn("Intro config load failed", error);
+    return cachedConfig || currentConfig;
+  }
+}
+
 function showToast(message) {
   toast.textContent = message;
   toast.hidden = false;
@@ -178,7 +219,7 @@ function render(data) {
   const roster = Array.isArray(data.roster) ? data.roster : [];
   const summary = normalizeSummary(roster, data.summary || {});
 
-  setText("#termLabel", data.config?.termLabel || fallbackData.config.termLabel);
+  setText("#termLabel", data.config?.termLabel || currentConfig.termLabel || fallbackData.config.termLabel);
   setText("#totalCount", summary.total);
   setText("#paidCount", summary.paid);
   setText("#maleCount", summary.male);
@@ -238,4 +279,6 @@ document.querySelector("#refreshButton").addEventListener("click", () => {
   loadRoster({ silent: true, useCache: false });
 });
 
+applyConfig(readCachedConfig() || fallbackData.config);
+loadIntroConfig();
 loadRoster();

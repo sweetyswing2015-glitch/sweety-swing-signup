@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260526-intro-form-roster-polish" />
+    <link rel="stylesheet" href="./intro.css?v=20260527-intro-config-fields" />
   </head>
   <body>
     <header class="intro-header">
@@ -140,7 +140,7 @@
               <span>강습비</span>
               <strong id="priceText">60,000원</strong>
             </div>
-            <div class="summary-line">
+            <div id="spaceFeeRow" class="summary-line">
               <span>현장 결제</span>
               <strong id="timebarNotice">12,000원 현장 결제</strong>
             </div>
@@ -148,6 +148,10 @@
               <div>
                 <dt>입금 금액</dt>
                 <dd><strong id="summaryPrice">60,000원</strong></dd>
+              </div>
+              <div id="refundDeadlineRow" hidden>
+                <dt>환불마감일</dt>
+                <dd id="refundDeadlineText"></dd>
               </div>
               <div>
                 <dt>계좌</dt>
@@ -167,6 +171,7 @@
                 </div>
               </div>
             </dl>
+            <p id="paymentNoticeText" class="summary-note">입금 확인 후 신청이 확정됩니다.</p>
             <button class="submit-button" type="submit">신청하기</button>
             <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
           </aside>
@@ -216,6 +221,6 @@
       <img id="posterLarge" alt="" />
     </dialog>
 
-    <script src="./intro.js?v=20260526-intro-form-roster-polish"></script>
+    <script src="./intro.js?v=20260527-intro-config-fields"></script>
   </body>
 </html>

@@ -11,8 +11,6 @@ const defaultConfig = {
   depositorPrefix: "입문",
   refundDeadline: "",
   ageNotice: "*만45세 이하 신청 가능\n(1980년 6월생까지)",
-  maleCapacity: 25,
-  femaleCapacity: 25,
   mainImageUrl: "../assets/intro-hero.png",
   heroImageUrl: "../assets/intro-hero.png",
   posterImageUrl: "../assets/intro-poster.png",
@@ -21,7 +19,7 @@ const defaultConfig = {
   lessonPlace: "선릉역 5번 출구 스윙타임 바깥홀",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
-  paymentNotice: "입금 선착순 남녀 각각 25명",
+  paymentNotice: "입금 확인 후 신청이 확정됩니다.",
 };
 
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
@@ -110,13 +108,14 @@ function applyConfig(nextConfig = {}) {
     ...nextConfig,
     bankAccount: { ...defaultConfig.bankAccount, ...(nextConfig.bankAccount || {}) },
   };
-  config.lessonPeriod = textOrDefault(config.lessonPeriod, defaultConfig.lessonPeriod);
-  config.lessonPeriod = normalizeLessonPeriod(config.lessonPeriod);
-  config.lessonTime = textOrDefault(config.lessonTime, defaultConfig.lessonTime);
-  config.lessonPlace = textOrDefault(config.lessonPlace, defaultConfig.lessonPlace);
-  config.spaceFeeNotice = textOrDefault(config.spaceFeeNotice || config.timebarNotice, defaultConfig.spaceFeeNotice);
-  config.timebarNotice = textOrDefault(config.timebarNotice || config.spaceFeeNotice, defaultConfig.timebarNotice);
-  config.ageNotice = normalizeAgeNotice(config.ageNotice);
+  config.lessonPeriod = optionalConfigText(nextConfig, "lessonPeriod", defaultConfig.lessonPeriod);
+  config.lessonTime = optionalConfigText(nextConfig, "lessonTime", defaultConfig.lessonTime);
+  config.lessonPlace = optionalConfigText(nextConfig, "lessonPlace", defaultConfig.lessonPlace);
+  config.spaceFeeNotice = optionalConfigText(nextConfig, "spaceFeeNotice", defaultConfig.spaceFeeNotice);
+  config.timebarNotice = optionalConfigText(nextConfig, "timebarNotice", config.spaceFeeNotice || defaultConfig.timebarNotice);
+  config.ageNotice = optionalConfigText(nextConfig, "ageNotice", defaultConfig.ageNotice);
+  config.refundDeadline = optionalConfigText(nextConfig, "refundDeadline", defaultConfig.refundDeadline);
+  config.paymentNotice = optionalConfigText(nextConfig, "paymentNotice", defaultConfig.paymentNotice);
 
   setText("#termLabel", config.termLabel);
   setText("#priceText", formatWon(config.price));
@@ -125,11 +124,13 @@ function applyConfig(nextConfig = {}) {
   setText("#bankText", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
   setText("#holderText", config.bankAccount.accountHolder);
   setText("#completeBank", `${config.bankAccount.bank} ${config.bankAccount.accountNumber}`);
-  setText("#timebarNotice", config.timebarNotice);
-  setText("#ageNotice", config.ageNotice);
+  setOptionalRow("#spaceFeeRow", "#timebarNotice", config.timebarNotice);
+  setOptionalText("#ageNotice", config.ageNotice);
   setOptionalRow("#lessonPeriodRow", "#lessonPeriodText", config.lessonPeriod);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
+  setOptionalRow("#refundDeadlineRow", "#refundDeadlineText", config.refundDeadline);
+  setOptionalText("#paymentNoticeText", config.paymentNotice);
 
   const heroImage = document.querySelector("#heroImage");
   if (heroImage && (config.mainImageUrl || config.heroImageUrl)) heroImage.src = normalizeImageUrl(config.mainImageUrl || config.heroImageUrl);
@@ -142,17 +143,9 @@ function textOrDefault(value, fallback) {
   return text || fallback;
 }
 
-function normalizeAgeNotice(value) {
-  const text = textOrDefault(value, defaultConfig.ageNotice);
-  return text.includes("1980년 6월생") ? text.replace("(1980년 6월생까지 신청가능)", "(1980년 6월생까지)") : defaultConfig.ageNotice;
-}
-
-function normalizeLessonPeriod(value) {
-  const text = textOrDefault(value, defaultConfig.lessonPeriod);
-  if (text.includes("6월20일") && text.includes("8월15일")) {
-    return "6월20일~8월15일\n(기간 내 총 6회 강습)";
-  }
-  return text;
+function optionalConfigText(source, key, fallback = "") {
+  if (!Object.prototype.hasOwnProperty.call(source, key)) return fallback;
+  return String(source[key] ?? "").trim();
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {
@@ -160,6 +153,14 @@ function setOptionalRow(rowSelector, textSelector, value) {
   const text = String(value || "").trim();
   if (row) row.hidden = !text;
   if (text) setText(textSelector, text);
+}
+
+function setOptionalText(selector, value) {
+  const node = document.querySelector(selector);
+  if (!node) return;
+  const text = String(value || "").trim();
+  node.hidden = !text;
+  if (text) node.textContent = text;
 }
 
 function updateDepositorPreview() {
