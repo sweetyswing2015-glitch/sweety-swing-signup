@@ -890,7 +890,8 @@ textarea:focus {
 
 .loading-state[hidden],
 .empty-state[hidden],
-.intro-roster[hidden] {
+.intro-roster[hidden],
+.intro-gender-roster[hidden] {
   display: none;
 }
 
@@ -925,6 +926,77 @@ textarea:focus {
   font-size: 0.76rem;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.intro-gender-roster {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(21, 17, 13, 0.12);
+  background: var(--white);
+}
+
+.intro-roster-column {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: clamp(16px, 3vw, 22px);
+}
+
+.intro-roster-column + .intro-roster-column {
+  border-left: 1px solid rgba(21, 17, 13, 0.1);
+}
+
+.intro-roster-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--teal);
+}
+
+.intro-roster-head h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.3vw, 1.35rem);
+  line-height: 1.2;
+}
+
+.intro-roster-head span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.intro-roster-list {
+  display: grid;
+  gap: 8px;
+}
+
+.intro-roster-person {
+  display: flex;
+  min-width: 0;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+}
+
+.intro-roster-person strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.intro-roster-empty {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 750;
 }
 
 .toast {

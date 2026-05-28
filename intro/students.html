@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 신청확인</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260528-summary-depositor-align" />
+    <link rel="stylesheet" href="./intro.css?v=20260528-intro-gender-roster" />
   </head>
   <body data-page="intro-students">
     <header class="intro-header">
@@ -56,19 +56,11 @@
           <h2>신청 명단</h2>
         </div>
         <div id="emptyState" class="empty-state" hidden>아직 신청자가 없습니다.</div>
-        <table id="rosterTable" class="intro-roster" hidden>
-          <thead>
-            <tr>
-              <th>닉네임</th>
-              <th>성별</th>
-            </tr>
-          </thead>
-          <tbody id="rosterBody"></tbody>
-        </table>
+        <div id="rosterGrid" class="intro-gender-roster" hidden></div>
       </section>
     </main>
 
     <p id="toast" class="toast" hidden></p>
-    <script src="./intro-students.js?v=20260527-intro-config-fields"></script>
+    <script src="./intro-students.js?v=20260528-intro-gender-roster"></script>
   </body>
 </html>
