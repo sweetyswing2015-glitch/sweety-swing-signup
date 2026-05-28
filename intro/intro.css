@@ -95,6 +95,61 @@ main {
   margin: 0 auto;
 }
 
+.oneday-promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  margin: clamp(18px, 4vw, 34px) 0 0;
+  border: 1px solid rgba(36, 117, 107, 0.22);
+  border-radius: 8px;
+  padding: clamp(18px, 3vw, 26px);
+  background:
+    linear-gradient(135deg, rgba(36, 117, 107, 0.13), transparent 44%),
+    linear-gradient(315deg, rgba(245, 200, 75, 0.22), transparent 40%),
+    #f5fffb;
+  box-shadow: 0 12px 30px rgba(55, 37, 22, 0.08);
+}
+
+.oneday-promo[hidden] {
+  display: none;
+}
+
+.oneday-promo .eyebrow {
+  margin-bottom: 7px;
+}
+
+.oneday-promo h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 2.15rem);
+  line-height: 1.16;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.oneday-promo p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-weight: 750;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+
+.oneday-promo a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #b79623;
+  border-radius: 999px;
+  padding: 0 22px;
+  background: var(--yellow);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
 .hero {
   min-height: min(680px, calc(100svh - 86px));
   display: grid;
@@ -1052,6 +1107,15 @@ body.is-submitting {
     min-height: auto;
     grid-template-columns: 1fr;
     padding-top: 28px;
+  }
+
+  .oneday-promo {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .oneday-promo a {
+    width: 100%;
   }
 
   .hero h1 {

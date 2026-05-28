@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 원데이 클래스 신청</title>
+    <link rel="icon" type="image/png" href="../assets/favicon.png" />
+    <link rel="apple-touch-icon" href="../assets/favicon.png" />
+    <link rel="stylesheet" href="./oneday.css?v=20260528-oneday-launch" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="원데이 신청 페이지 상단으로 이동">
+        <img src="../assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav aria-label="원데이 신청 페이지">
+        <a href="../intro/">입문 신청</a>
+        <a href="./students.html">신청확인</a>
+      </nav>
+    </header>
+
+    <main class="oneday-main">
+      <section class="signup-shell" id="top">
+        <article class="story-panel">
+          <p class="eyebrow">One-day class</p>
+          <h1 id="classTitle">스위티스윙 6월 스윙댄스 원데이 클래스</h1>
+          <p class="lead">
+            스윙댄스가 궁금했다면, 가볍게 하루 먼저 만나보세요. 처음이어도 편하게 따라올 수 있게 준비해둘게요.
+          </p>
+
+          <dl class="lesson-list" aria-label="원데이 강습 정보">
+            <div id="lessonDateRow">
+              <dt>일자</dt>
+              <dd id="lessonDateText">6월 13일(토)</dd>
+            </div>
+            <div id="lessonTimeRow">
+              <dt>시간</dt>
+              <dd id="lessonTimeText">오후 5:30 ~ 7:20</dd>
+            </div>
+            <div id="lessonPlaceRow">
+              <dt>장소</dt>
+              <dd id="lessonPlaceText">Swing Time Bar (선릉역 5번 출구)</dd>
+            </div>
+            <div id="lessonFeeRow">
+              <dt>강습비</dt>
+              <dd id="lessonFeeText">무료!</dd>
+            </div>
+          </dl>
+
+          <p id="spaceFeeText" class="space-fee">공간이용료 12,000원 현장 결제</p>
+        </article>
+
+        <form id="onedayForm" class="form-panel" novalidate>
+          <div class="form-heading">
+            <p class="eyebrow">Apply</p>
+            <h2>원데이 신청</h2>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              <span>닉네임</span>
+              <input id="nickname" name="nickname" type="text" autocomplete="nickname" placeholder="예: 스위티" />
+              <small class="field-error" id="nicknameError" role="alert"></small>
+            </label>
+            <label>
+              <span>이름</span>
+              <input id="realName" name="realName" type="text" autocomplete="name" placeholder="예: 홍길동" />
+              <small class="field-error" id="realNameError" role="alert"></small>
+            </label>
+            <fieldset class="radio-field">
+              <legend>성별</legend>
+              <label><input type="radio" name="gender" value="남성" /> <span>남성</span></label>
+              <label><input type="radio" name="gender" value="여성" /> <span>여성</span></label>
+              <small class="field-error" id="genderError" role="alert"></small>
+            </fieldset>
+            <label>
+              <span>연락처</span>
+              <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" />
+              <small class="field-error" id="phoneError" role="alert"></small>
+            </label>
+            <label>
+              <span>스윙 경험</span>
+              <select id="experience" name="experience">
+                <option value="">선택해주세요</option>
+                <option>스윙댄스가 처음이신 분</option>
+                <option>1년차 미만</option>
+                <option>1년차 이상</option>
+              </select>
+              <small class="field-error" id="experienceError" role="alert"></small>
+            </label>
+            <label>
+              <span>신청 경로</span>
+              <select id="source" name="source">
+                <option value="">선택해주세요</option>
+                <option>지인소개</option>
+                <option>유튜브</option>
+                <option>인스타</option>
+                <option>검색</option>
+                <option>기타</option>
+              </select>
+              <small class="field-error" id="sourceError" role="alert"></small>
+            </label>
+            <label id="referrerField" class="is-hidden">
+              <span>소개해주신 분</span>
+              <input id="referrer" name="referrer" type="text" placeholder="선택 입력" />
+            </label>
+            <label class="wide">
+              <span>하고 싶은 말</span>
+              <textarea id="message" name="message" rows="4" placeholder="선택 입력"></textarea>
+            </label>
+          </div>
+
+          <button class="submit-button" type="submit">신청하기</button>
+          <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <div id="submittingOverlay" class="submitting-overlay" role="status" aria-live="assertive" hidden>
+      <div>
+        <span class="spinner" aria-hidden="true"></span>
+        <strong>신청 저장 중입니다</strong>
+        <p>창을 닫지 말고 잠시만 기다려주세요.</p>
+      </div>
+    </div>
+
+    <dialog id="completeDialog" class="complete-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <h2>신청 완료!</h2>
+      <p id="completeMessage">신청이 완료되었습니다. 강습 때 만나요 :)</p>
+      <a href="./students.html">신청확인 보기</a>
+    </dialog>
+
+    <script src="./oneday.js?v=20260528-oneday-launch"></script>
+  </body>
+</html>

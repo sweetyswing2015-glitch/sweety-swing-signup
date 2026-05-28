@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>스위티스윙 원데이 신청확인</title>
+    <link rel="icon" type="image/png" href="../assets/favicon.png" />
+    <link rel="apple-touch-icon" href="../assets/favicon.png" />
+    <link rel="stylesheet" href="./oneday.css?v=20260528-oneday-launch" />
+  </head>
+  <body data-page="oneday-students">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="원데이 신청 페이지로 이동">
+        <img src="../assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
+      </a>
+      <nav aria-label="원데이 신청확인">
+        <a href="./">원데이 신청</a>
+        <a href="../intro/">입문 신청</a>
+      </nav>
+    </header>
+
+    <main class="students-main">
+      <section class="students-hero">
+        <p class="eyebrow" id="classLabel">스위티스윙 원데이 클래스</p>
+        <div class="students-title-row">
+          <h1>원데이 신청확인</h1>
+          <button type="button" id="refreshButton">새로고침</button>
+        </div>
+      </section>
+
+      <div id="loadingState" class="loading-state page-loading" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <strong>신청 현황을 불러오는 중입니다.</strong>
+      </div>
+
+      <section class="summary-cards" aria-label="신청 요약">
+        <article>
+          <span>총 신청</span>
+          <strong id="totalCount">0</strong>
+        </article>
+        <article>
+          <span>남성</span>
+          <strong id="maleCount">0</strong>
+        </article>
+        <article>
+          <span>여성</span>
+          <strong id="femaleCount">0</strong>
+        </article>
+      </section>
+
+      <section class="roster-panel">
+        <div class="roster-head">
+          <h2>신청 명단</h2>
+        </div>
+        <div id="emptyState" class="empty-state" hidden>아직 신청자가 없습니다.</div>
+        <div id="rosterGrid" class="gender-roster" hidden></div>
+      </section>
+    </main>
+
+    <p id="toast" class="toast" hidden></p>
+    <script src="./oneday-students.js?v=20260528-oneday-launch"></script>
+  </body>
+</html>

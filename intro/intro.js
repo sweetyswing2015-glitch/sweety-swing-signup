@@ -1,6 +1,8 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
 const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v3";
+const ONEDAY_CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
+const ONEDAY_SIGNUP_URL = "../oneday/";
 
 const defaultConfig = {
   termLabel: "입문 정규강습 신청",
@@ -22,6 +24,13 @@ const defaultConfig = {
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 확인 후 신청이 확정됩니다.",
+};
+
+const defaultOnedayPromoConfig = {
+  promoTitle: "입문 전에 원데이로 먼저 스윙 한입!",
+  promoText: "가볍게 놀러 와서 스윙댄스가 내 취향인지 확인해보세요.",
+  promoCta: "원데이 신청하기",
+  promoEndsAt: "2026-06-13 17:30",
 };
 
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
@@ -214,6 +223,80 @@ function writeCachedConfig(nextConfig) {
     localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), config: nextConfig }));
   } catch (error) {
     console.warn("Intro config cache write failed", error);
+  }
+}
+
+function readCachedOnedayConfig() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(ONEDAY_CONFIG_CACHE_KEY) || "null");
+    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
+    return cached.config;
+  } catch (error) {
+    console.warn("Oneday config cache read failed", error);
+    return null;
+  }
+}
+
+function writeCachedOnedayConfig(nextConfig) {
+  try {
+    localStorage.setItem(ONEDAY_CONFIG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), config: nextConfig }));
+  } catch (error) {
+    console.warn("Oneday config cache write failed", error);
+  }
+}
+
+function parseKstDateTime(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  if (/^\d{4}-\d{2}-\d{2}T/.test(text)) {
+    const date = new Date(text);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const match = text.match(/^(\d{4})[./-](\d{1,2})[./-](\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?/);
+  if (!match) return null;
+  const [, year, month, day, hour = "23", minute = "59"] = match;
+  const date = new Date(
+    `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${hour.padStart(2, "0")}:${minute}:00+09:00`,
+  );
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function shouldShowOnedayPromo(promoEndsAt) {
+  const endsAt = parseKstDateTime(promoEndsAt);
+  return Boolean(endsAt && Date.now() < endsAt.getTime());
+}
+
+function applyOnedayPromo(nextConfig = {}) {
+  const promo = {
+    ...defaultOnedayPromoConfig,
+    ...nextConfig,
+  };
+  const promoTitle = textOrDefault(promo.promoTitle, defaultOnedayPromoConfig.promoTitle);
+  const promoText = textOrDefault(promo.promoText, defaultOnedayPromoConfig.promoText);
+  const promoCta = textOrDefault(promo.promoCta, defaultOnedayPromoConfig.promoCta);
+  const promoEndsAt = Object.prototype.hasOwnProperty.call(nextConfig, "promoEndsAt")
+    ? String(nextConfig.promoEndsAt || "").trim()
+    : defaultOnedayPromoConfig.promoEndsAt;
+  const promoNode = document.querySelector("#onedayPromo");
+  if (!promoNode) return;
+
+  setText("#onedayPromoTitle", promoTitle);
+  setText("#onedayPromoText", promoText);
+  setText("#onedayPromoCta", promoCta);
+  const promoLink = document.querySelector("#onedayPromoLink");
+  if (promoLink) promoLink.href = ONEDAY_SIGNUP_URL;
+  promoNode.hidden = !shouldShowOnedayPromo(promoEndsAt);
+}
+
+async function refreshOnedayPromo() {
+  try {
+    const onedayConfig = await apiGet("getOnedayConfig");
+    writeCachedOnedayConfig(onedayConfig);
+    applyOnedayPromo(onedayConfig);
+  } catch (error) {
+    console.warn("Oneday promo config load failed", error);
+    applyOnedayPromo(readCachedOnedayConfig() || { promoEndsAt: "" });
   }
 }
 
@@ -481,6 +564,8 @@ mobileSubmitButton?.addEventListener("click", () => {
 });
 
 applyConfig(readCachedConfig() || defaultConfig);
+applyOnedayPromo(readCachedOnedayConfig() || { promoEndsAt: "" });
 updateReferrerVisibility();
 refreshConfig();
+refreshOnedayPromo();
 setupFloatingSubmitVisibility();
