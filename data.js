@@ -189,6 +189,8 @@
     issue: "확인 필요",
     refunded: "환불",
   };
+  const applicationStatusCodes = Object.fromEntries(Object.entries(applicationStatusLabels).map(([code, label]) => [label, code]));
+  const paymentStatusCodes = Object.fromEntries(Object.entries(paymentStatusLabels).map(([code, label]) => [label, code]));
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -227,8 +229,8 @@
       lessonName: row.lessonName || row.className || row.name || "",
       nickname: row.nickname || "",
       role: row.role || "",
-      status: row.status || "submitted",
-      paymentStatus: row.paymentStatus || "unpaid",
+      status: applicationStatusCodes[row.status] || row.status || "submitted",
+      paymentStatus: paymentStatusCodes[row.paymentStatus] || row.paymentStatus || "unpaid",
       submittedAt: row.submittedAt || "",
     };
   }
@@ -339,8 +341,9 @@
   }
 
   function publicRosterRowsFromApplications(applications = getApplications()) {
-    return applications.flatMap((application) =>
-      (application.selectedClasses || []).map((selectedClass) => ({
+    return applications.flatMap((application) => {
+      if (application.status === "cancelled" || application.paymentStatus === "refunded") return [];
+      return (application.selectedClasses || []).map((selectedClass) => ({
         termId: application.termId,
         termName: application.termName,
         lessonId: selectedClass.id,
@@ -350,8 +353,8 @@
         status: application.status,
         paymentStatus: application.paymentStatus,
         submittedAt: application.submittedAt,
-      })),
-    );
+      }));
+    });
   }
 
   function makeId() {

@@ -153,7 +153,7 @@ function normalizeRosterRows(roster = []) {
       status: normalizeStatus(row.status),
       submittedAt: row.submittedAt || "",
     }))
-    .filter((row) => row.nickname && row.status !== "cancelled")
+    .filter((row) => row.nickname && row.status !== "cancelled" && row.paymentStatus !== "refunded")
     .sort(compareRosterRows);
 }
 

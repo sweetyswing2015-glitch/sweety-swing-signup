@@ -317,7 +317,7 @@ function initStudentsPage() {
   function render() {
     const filter = $("#lessonFilter").value;
     const lessons = config.lessons.filter((lesson) => lesson.enabled !== false && (filter === "all" || lesson.id === filter));
-    const publicRows = Store.getPublicRosterRows().filter((row) => row.status !== "cancelled");
+    const publicRows = Store.getPublicRosterRows().filter((row) => row.status !== "cancelled" && row.paymentStatus !== "refunded");
     $("#rosterContent").innerHTML = lessons
       .map((lesson) => {
         const rows = publicRows.filter((row) => row.lessonId === lesson.id);
