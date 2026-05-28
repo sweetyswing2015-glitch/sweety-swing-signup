@@ -104,11 +104,142 @@ a {
   padding: clamp(28px, 5vw, 62px) 0 80px;
 }
 
-.signup-shell {
+.hero-section {
+  min-height: min(600px, calc(100svh - 82px));
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+  gap: clamp(24px, 5vw, 58px);
+  align-items: center;
+  padding: clamp(18px, 3vw, 36px) 0 clamp(28px, 5vw, 58px);
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.hero-cta {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  border: 1px solid #be9a2b;
+  border-radius: 999px;
+  padding: 0 24px;
+  background: var(--yellow);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 950;
+}
+
+.hero-visual,
+.poster-card,
+.photo-gallery figure {
+  margin: 0;
+}
+
+.hero-visual[hidden],
+.poster-card[hidden],
+.photo-gallery-section[hidden] {
+  display: none;
+}
+
+.hero-visual {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-visual::before,
+.hero-visual::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  width: clamp(86px, 11vw, 136px);
+  height: clamp(26px, 3vw, 38px);
+  background:
+    linear-gradient(90deg, rgba(246, 201, 83, 0.5), rgba(55, 183, 214, 0.42)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.2) 0 2px,
+      rgba(255, 255, 255, 0.05) 2px 9px
+    );
+  box-shadow: 0 7px 16px rgba(16, 37, 40, 0.12);
+  clip-path: polygon(4% 7%, 96% 0, 100% 80%, 91% 100%, 3% 91%, 0 22%);
+  pointer-events: none;
+}
+
+.hero-visual::before {
+  top: -12px;
+  left: -14px;
+  transform: rotate(-15deg);
+}
+
+.hero-visual::after {
+  right: -14px;
+  bottom: -12px;
+  transform: rotate(-13deg);
+}
+
+.hero-visual img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  border: 10px solid var(--surface);
+  box-shadow: var(--shadow);
+  object-fit: cover;
+  transform: rotate(1deg);
+}
+
+.class-showcase {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1fr);
   gap: clamp(20px, 4vw, 38px);
   align-items: start;
+  margin-bottom: 34px;
+}
+
+#posterCard[hidden] + .story-panel {
+  grid-column: 1 / -1;
+}
+
+.poster-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(251, 255, 253, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.poster-frame {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.poster-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.poster-open-button:focus-visible {
+  outline: 4px solid rgba(55, 183, 214, 0.25);
+  outline-offset: 4px;
+}
+
+.signup-shell {
+  display: block;
+  max-width: 760px;
+  margin: 0 auto;
+  scroll-margin-top: 96px;
 }
 
 .story-panel,
@@ -121,8 +252,7 @@ a {
 }
 
 .story-panel {
-  position: sticky;
-  top: 108px;
+  position: relative;
   display: grid;
   gap: 20px;
   padding: clamp(28px, 4vw, 42px);
@@ -169,6 +299,15 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.story-panel h2,
+.section-heading h2 {
+  margin-bottom: 2px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
 .lead {
   max-width: 620px;
   margin-bottom: 4px;
@@ -206,9 +345,52 @@ dd {
 }
 
 #lessonPlaceText,
+#lessonPlacePlain,
 .space-fee {
   word-break: keep-all;
   overflow-wrap: anywhere;
+}
+
+#lessonPlaceText,
+#lessonPlacePlain {
+  white-space: pre-line;
+}
+
+.map-place-button {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-bottom: 2px solid rgba(20, 122, 117, 0.28);
+  padding: 0 0 2px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 950;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-place-button[hidden],
+.map-place-action[hidden] {
+  display: none;
+}
+
+.map-place-button:hover {
+  border-bottom-color: var(--teal);
+  color: var(--teal);
+}
+
+.map-place-action {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: rgba(20, 122, 117, 0.12);
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 950;
+  white-space: nowrap;
 }
 
 .space-fee {
@@ -220,6 +402,88 @@ dd {
   color: #a74434;
   font-weight: 900;
   line-height: 1.45;
+}
+
+.photo-gallery-section {
+  margin: 0 0 34px;
+  padding: clamp(28px, 5vw, 46px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(251, 255, 253, 0.92);
+  box-shadow: var(--shadow);
+}
+
+.photo-gallery-section .section-heading {
+  margin-bottom: 20px;
+}
+
+.photo-gallery {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.photo-gallery figure {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.photo-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.photo-gallery figcaption {
+  padding: 12px 16px;
+  color: var(--muted);
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+.gallery-nav {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gallery-nav:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.gallery-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.gallery-dot {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(16, 37, 40, 0.22);
+  cursor: pointer;
+}
+
+.gallery-dot[aria-current="true"] {
+  background: var(--teal);
 }
 
 .form-panel {
@@ -404,6 +668,79 @@ textarea:focus {
 
 .complete-dialog::backdrop {
   background: rgba(16, 37, 40, 0.6);
+}
+
+.poster-dialog,
+.map-dialog {
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.poster-dialog::backdrop,
+.map-dialog::backdrop {
+  background: rgba(16, 37, 40, 0.62);
+}
+
+.poster-dialog {
+  width: min(860px, calc(100% - 28px));
+  padding: 0;
+}
+
+.poster-dialog img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 88vh;
+  margin: 0 auto;
+  object-fit: contain;
+  background: var(--panel);
+}
+
+.map-dialog {
+  width: min(390px, calc(100% - 32px));
+  padding: 30px 24px 24px;
+}
+
+.map-dialog h2 {
+  margin-bottom: 8px;
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+.map-dialog p:not(.eyebrow) {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-weight: 850;
+  line-height: 1.5;
+}
+
+.map-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.map-actions a {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 950;
+}
+
+.map-actions a:first-child {
+  border-color: #be9a2b;
+  background: var(--yellow);
+}
+
+.map-actions a[hidden] {
+  display: none;
 }
 
 .complete-dialog h2 {
@@ -636,12 +973,51 @@ body.is-submitting {
     width: min(100% - 28px, 680px);
   }
 
+  .hero-section,
+  .class-showcase,
   .signup-shell {
     grid-template-columns: 1fr;
   }
 
-  .story-panel {
-    position: static;
+  .hero-section {
+    min-height: auto;
+    padding-top: 18px;
+  }
+
+  .hero-visual img {
+    transform: none;
+  }
+
+  .hero-visual::before {
+    left: 0;
+  }
+
+  .hero-visual::after {
+    right: 0;
+  }
+
+  #posterCard[hidden] + .story-panel {
+    grid-column: auto;
+  }
+
+  .photo-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    background: rgba(251, 255, 253, 0.9);
+    transform: translateY(-50%);
+  }
+
+  .gallery-prev {
+    left: 10px;
+  }
+
+  .gallery-next {
+    right: 10px;
   }
 
   .field-grid {
@@ -685,8 +1061,19 @@ body.is-submitting {
 
   .story-panel,
   .form-panel,
+  .photo-gallery-section,
   .roster-panel {
     padding: 22px 18px;
+  }
+
+  .map-place-button {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .photo-gallery img {
+    aspect-ratio: 4 / 3;
   }
 
   .lesson-list div {

@@ -6,7 +6,7 @@
     <title>스위티스윙 원데이 클래스 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./oneday.css?v=20260528-oneday-launch" />
+    <link rel="stylesheet" href="./oneday.css?v=20260528-map-gallery" />
   </head>
   <body>
     <header class="site-header">
@@ -20,13 +20,30 @@
     </header>
 
     <main class="oneday-main">
-      <section class="signup-shell" id="top">
-        <article class="story-panel">
+      <section class="hero-section" id="top">
+        <div class="hero-copy">
           <p class="eyebrow">One-day class</p>
           <h1 id="classTitle">스위티스윙 6월 스윙댄스 원데이 클래스</h1>
           <p class="lead">
             스윙댄스가 궁금했다면, 가볍게 하루 먼저 만나보세요. 처음이어도 편하게 따라올 수 있게 준비해둘게요.
           </p>
+          <a class="hero-cta" href="#apply">원데이 신청하기</a>
+        </div>
+        <figure id="heroVisual" class="hero-visual" hidden>
+          <img id="heroImage" src="" alt="원데이 클래스 사진" />
+        </figure>
+      </section>
+
+      <section class="class-showcase" aria-label="원데이 강습 안내">
+        <article id="posterCard" class="poster-card" hidden>
+          <button class="poster-frame poster-open-button" type="button" aria-label="원데이 포스터 크게 보기">
+            <img id="posterImage" src="" alt="원데이 클래스 포스터" />
+          </button>
+        </article>
+
+        <article class="story-panel">
+          <p class="eyebrow">One-day class</p>
+          <h2>강습 정보</h2>
 
           <dl class="lesson-list" aria-label="원데이 강습 정보">
             <div id="lessonDateRow">
@@ -39,7 +56,13 @@
             </div>
             <div id="lessonPlaceRow">
               <dt>장소</dt>
-              <dd id="lessonPlaceText">Swing Time Bar (선릉역 5번 출구)</dd>
+              <dd>
+                <button id="lessonPlaceButton" class="map-place-button" type="button" hidden>
+                  <span id="lessonPlaceText">Swing Time Bar (선릉역 5번 출구)</span>
+                  <span class="map-place-action">지도 선택</span>
+                </button>
+                <span id="lessonPlacePlain">Swing Time Bar (선릉역 5번 출구)</span>
+              </dd>
             </div>
             <div id="lessonFeeRow">
               <dt>강습비</dt>
@@ -49,7 +72,25 @@
 
           <p id="spaceFeeText" class="space-fee">공간이용료 12,000원 현장 결제</p>
         </article>
+      </section>
 
+      <section id="photoGallery" class="photo-gallery-section" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Gallery</p>
+          <h2>스위티스윙 순간들</h2>
+        </div>
+        <div class="photo-gallery">
+          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
+          <figure>
+            <img id="galleryImage" src="" alt="" />
+            <figcaption id="galleryCaption" hidden></figcaption>
+          </figure>
+          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
+        </div>
+        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
+      </section>
+
+      <section class="signup-shell" id="apply">
         <form id="onedayForm" class="form-panel" novalidate>
           <div class="form-heading">
             <p class="eyebrow">Apply</p>
@@ -131,6 +172,22 @@
       <a href="./students.html">신청확인 보기</a>
     </dialog>
 
-    <script src="./oneday.js?v=20260528-oneday-launch"></script>
+    <dialog id="posterDialog" class="poster-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <img id="posterLarge" src="" alt="원데이 클래스 포스터 크게 보기" />
+    </dialog>
+
+    <dialog id="mapDialog" class="map-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">Map</p>
+      <h2>지도 앱 선택</h2>
+      <p id="mapPlaceName">Swing Time Bar (선릉역 5번 출구)</p>
+      <div class="map-actions">
+        <a id="kakaoMapLink" href="#" target="_blank" rel="noopener">카카오맵</a>
+        <a id="naverMapLink" href="#" target="_blank" rel="noopener">네이버지도</a>
+      </div>
+    </dialog>
+
+    <script src="./oneday.js?v=20260528-map-gallery"></script>
   </body>
 </html>

@@ -305,6 +305,91 @@ p {
   align-items: stretch;
 }
 
+.photo-gallery-section {
+  margin: 0 0 34px;
+  padding: clamp(28px, 5vw, 46px);
+  border: 1px solid var(--line);
+  background: rgba(255, 253, 248, 0.9);
+  box-shadow: 0 10px 30px rgba(55, 37, 22, 0.08);
+}
+
+.photo-gallery-section[hidden] {
+  display: none;
+}
+
+.photo-gallery-section .section-heading {
+  margin-bottom: 20px;
+}
+
+.photo-gallery {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.photo-gallery figure {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.photo-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.photo-gallery figcaption {
+  padding: 12px 16px;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.gallery-nav {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gallery-nav:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.gallery-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.gallery-dot {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(21, 17, 13, 0.22);
+  cursor: pointer;
+}
+
+.gallery-dot[aria-current="true"] {
+  background: var(--teal);
+}
+
 .info-block {
   padding: clamp(26px, 4vw, 42px);
   border: 1px solid var(--line);
@@ -462,12 +547,104 @@ p {
 
 #lessonPeriodText,
 #lessonPlaceText,
+#lessonPlacePlain,
 .summary-note {
   white-space: pre-line;
 }
 
-#lessonPlaceText {
+#lessonPlaceText,
+#lessonPlacePlain {
   word-break: keep-all;
+}
+
+.map-place-button {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-bottom: 2px solid rgba(36, 117, 107, 0.28);
+  padding: 0 0 2px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 900;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-place-button[hidden],
+.map-place-action[hidden] {
+  display: none;
+}
+
+.map-place-button:hover {
+  border-bottom-color: var(--teal);
+  color: var(--teal);
+}
+
+.map-place-action {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: rgba(36, 117, 107, 0.12);
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.map-dialog {
+  width: min(390px, calc(100% - 32px));
+  border: 0;
+  border-radius: 18px;
+  padding: 30px 24px 24px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.map-dialog::backdrop {
+  background: rgba(21, 17, 13, 0.56);
+}
+
+.map-dialog h2 {
+  margin-bottom: 8px;
+  font-size: 1.65rem;
+  line-height: 1.15;
+}
+
+.map-dialog p:not(.eyebrow) {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.map-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.map-actions a {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--cream);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 950;
+}
+
+.map-actions a:first-child {
+  border-color: #b79623;
+  background: var(--yellow);
+}
+
+.map-actions a[hidden] {
+  display: none;
 }
 
 .age-note {
@@ -1239,6 +1416,26 @@ body.is-submitting {
     font-size: clamp(0.9rem, 3.55vw, 1rem);
   }
 
+  .photo-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    background: rgba(255, 253, 248, 0.9);
+    transform: translateY(-50%);
+  }
+
+  .gallery-prev {
+    left: 10px;
+  }
+
+  .gallery-next {
+    right: 10px;
+  }
+
   .mobile-total {
     position: fixed;
     right: 12px;
@@ -1330,9 +1527,20 @@ body.is-submitting {
   .intro-band,
   .notice-strip,
   .apply-section,
+  .photo-gallery-section,
   .roster-panel,
   .info-block {
     padding: 24px 18px;
+  }
+
+  .map-place-button {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .photo-gallery img {
+    aspect-ratio: 4 / 3;
   }
 
   .poster-card {

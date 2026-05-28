@@ -1,6 +1,7 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
 const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v3";
 const ONEDAY_CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
+const GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 const ONEDAY_SIGNUP_URL = "../oneday/";
 
@@ -21,6 +22,8 @@ const defaultConfig = {
   lessonPeriod: "6월20일~8월15일\n(기간 중 총 6회 강습)",
   lessonTime: "토요일 PM 06:20~07:55",
   lessonPlace: "선릉 Swing Time 바깥쪽 홀",
+  kakaoMapUrl: "",
+  naverMapUrl: "",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 확인 후 신청이 확정됩니다.",
@@ -37,6 +40,9 @@ let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } }
 let isSubmitting = false;
 let submitRequestedFromMobile = false;
 let hasResolvedRemoteConfig = false;
+let galleryItems = [];
+let galleryIndex = 0;
+let galleryTimer = null;
 
 const form = document.querySelector("#introForm");
 const fields = {
@@ -58,6 +64,11 @@ const completeDialog = document.querySelector("#completeDialog");
 const posterDialog = document.querySelector("#posterDialog");
 const posterLarge = document.querySelector("#posterLarge");
 const posterImage = document.querySelector("#posterImage");
+const mapDialog = document.querySelector("#mapDialog");
+const gallerySection = document.querySelector("#photoGallery");
+const galleryImage = document.querySelector("#galleryImage");
+const galleryCaption = document.querySelector("#galleryCaption");
+const galleryDots = document.querySelector("#galleryDots");
 
 function formatWon(value) {
   return `${Number(value || 0).toLocaleString("ko-KR")}원`;
@@ -148,6 +159,8 @@ function applyConfig(nextConfig = {}) {
   config.lessonPeriod = optionalConfigText(nextConfig, "lessonPeriod", defaultConfig.lessonPeriod);
   config.lessonTime = optionalConfigText(nextConfig, "lessonTime", defaultConfig.lessonTime);
   config.lessonPlace = optionalConfigText(nextConfig, "lessonPlace", defaultConfig.lessonPlace);
+  config.kakaoMapUrl = optionalConfigText(nextConfig, "kakaoMapUrl", defaultConfig.kakaoMapUrl);
+  config.naverMapUrl = optionalConfigText(nextConfig, "naverMapUrl", defaultConfig.naverMapUrl);
   config.spaceFeeNotice = optionalConfigText(nextConfig, "spaceFeeNotice", defaultConfig.spaceFeeNotice);
   config.timebarNotice = optionalConfigText(nextConfig, "timebarNotice", config.spaceFeeNotice || defaultConfig.timebarNotice);
   config.ageNotice = optionalConfigText(nextConfig, "ageNotice", defaultConfig.ageNotice);
@@ -165,7 +178,7 @@ function applyConfig(nextConfig = {}) {
   setOptionalText("#ageNotice", config.ageNotice);
   setOptionalRow("#lessonPeriodRow", "#lessonPeriodText", config.lessonPeriod);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
-  setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
+  setLessonPlace(config.lessonPlace);
   setOptionalRow("#refundDeadlineRow", "#refundDeadlineText", config.refundDeadline, {
     preserveEmpty: !hasResolvedRemoteConfig,
   });
@@ -205,6 +218,150 @@ function setOptionalText(selector, value) {
   const text = String(value || "").trim();
   node.hidden = !text;
   if (text) node.textContent = text;
+}
+
+function normalizeExternalUrl(value) {
+  const url = String(value || "").trim();
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  return "";
+}
+
+function hasMapLinks() {
+  return Boolean(normalizeExternalUrl(config.kakaoMapUrl) || normalizeExternalUrl(config.naverMapUrl));
+}
+
+function setLessonPlace(value) {
+  const row = document.querySelector("#lessonPlaceRow");
+  const button = document.querySelector("#lessonPlaceButton");
+  const buttonText = document.querySelector("#lessonPlaceText");
+  const plain = document.querySelector("#lessonPlacePlain");
+  const text = String(value || "").trim();
+  const useMapButton = Boolean(text && hasMapLinks());
+
+  if (row) row.hidden = !text;
+  if (buttonText) buttonText.textContent = text;
+  if (plain) plain.textContent = text;
+  if (button) button.hidden = !useMapButton;
+  if (plain) plain.hidden = useMapButton || !text;
+}
+
+function openMapDialog() {
+  if (!mapDialog || !hasMapLinks()) return;
+  const kakaoUrl = normalizeExternalUrl(config.kakaoMapUrl);
+  const naverUrl = normalizeExternalUrl(config.naverMapUrl);
+  const kakaoLink = document.querySelector("#kakaoMapLink");
+  const naverLink = document.querySelector("#naverMapLink");
+
+  setText("#mapPlaceName", config.lessonPlace);
+  if (kakaoLink) {
+    kakaoLink.href = kakaoUrl || "#";
+    kakaoLink.hidden = !kakaoUrl;
+  }
+  if (naverLink) {
+    naverLink.href = naverUrl || "#";
+    naverLink.hidden = !naverUrl;
+  }
+  mapDialog.showModal();
+}
+
+function readCachedGallery() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(GALLERY_CACHE_KEY) || "null");
+    if (!cached?.items || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return [];
+    return normalizeGalleryItems(cached.items);
+  } catch (error) {
+    console.warn("Shared photo gallery cache read failed", error);
+    return [];
+  }
+}
+
+function writeCachedGallery(items) {
+  try {
+    localStorage.setItem(GALLERY_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), items }));
+  } catch (error) {
+    console.warn("Shared photo gallery cache write failed", error);
+  }
+}
+
+function normalizeGalleryItems(data) {
+  const rawItems = Array.isArray(data) ? data : data?.photos || [];
+  return rawItems
+    .map((item, index) => ({
+      order: Number(item.order || index + 1),
+      url: normalizeImageUrl(item.url || item.photoUrl || item.imageUrl || ""),
+      caption: String(item.caption || item.description || item.alt || "").trim(),
+    }))
+    .filter((item) => item.url)
+    .sort((a, b) => (Number.isFinite(a.order) ? a.order : 9999) - (Number.isFinite(b.order) ? b.order : 9999));
+}
+
+function renderGallery(items) {
+  stopGalleryAutoPlay();
+  galleryItems = normalizeGalleryItems(items);
+  galleryIndex = 0;
+  if (!gallerySection) return;
+  gallerySection.hidden = galleryItems.length === 0;
+  buildGalleryDots();
+  showGalleryItem(0);
+  setGalleryAutoPlay();
+}
+
+function buildGalleryDots() {
+  if (!galleryDots) return;
+  galleryDots.replaceChildren();
+  galleryItems.forEach((item, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "gallery-dot";
+    button.dataset.galleryDot = String(index);
+    button.setAttribute("aria-label", `${index + 1}번째 사진 보기`);
+    button.setAttribute("aria-current", index === galleryIndex ? "true" : "false");
+    galleryDots.append(button);
+  });
+}
+
+function showGalleryItem(index) {
+  if (!galleryItems.length || !galleryImage) return;
+  galleryIndex = (index + galleryItems.length) % galleryItems.length;
+  const item = galleryItems[galleryIndex];
+  galleryImage.src = item.url;
+  galleryImage.alt = item.caption || "스위티스윙 사진";
+  if (galleryCaption) {
+    galleryCaption.textContent = item.caption;
+    galleryCaption.hidden = !item.caption;
+  }
+  galleryDots?.querySelectorAll(".gallery-dot").forEach((dot, dotIndex) => {
+    dot.setAttribute("aria-current", dotIndex === galleryIndex ? "true" : "false");
+  });
+}
+
+function stopGalleryAutoPlay() {
+  if (!galleryTimer) return;
+  window.clearInterval(galleryTimer);
+  galleryTimer = null;
+}
+
+function setGalleryAutoPlay() {
+  stopGalleryAutoPlay();
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion || galleryItems.length < 2) return;
+  galleryTimer = window.setInterval(() => showGalleryItem(galleryIndex + 1), 4500);
+}
+
+async function loadSharedGallery() {
+  const cachedItems = readCachedGallery();
+  if (cachedItems.length) renderGallery(cachedItems);
+
+  try {
+    const data = await apiGet("getSharedPhotoGallery");
+    const items = normalizeGalleryItems(data);
+    writeCachedGallery(items);
+    renderGallery(items);
+  } catch (error) {
+    console.warn("Shared photo gallery load failed", error);
+    if (!cachedItems.length) renderGallery([]);
+  }
 }
 
 function readCachedConfig() {
@@ -472,24 +629,48 @@ function isInlineSubmitVisible() {
   return rect.bottom > 0 && rect.right > 0 && rect.top < viewportHeight && rect.left < viewportWidth;
 }
 
+function isApplySectionVisible() {
+  const applySection = document.querySelector("#apply");
+  if (!applySection) return true;
+  const rect = applySection.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  return rect.bottom > 0 && rect.top < viewportHeight;
+}
+
 function setupFloatingSubmitVisibility() {
   if (!mobileTotal || !submitButton) return;
+  const applySection = document.querySelector("#apply");
 
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
+  if ("IntersectionObserver" in window && applySection) {
+    let inlineSubmitVisible = false;
+    let applySectionVisible = false;
+    const update = () => setFloatingSubmitHidden(inlineSubmitVisible || !applySectionVisible);
+
+    setFloatingSubmitHidden(true);
+
+    const submitObserver = new IntersectionObserver(
       ([entry]) => {
-        setFloatingSubmitHidden(Boolean(entry?.isIntersecting));
+        inlineSubmitVisible = Boolean(entry?.isIntersecting);
+        update();
       },
       { threshold: 0 },
     );
-    observer.observe(submitButton);
+    const applyObserver = new IntersectionObserver(
+      ([entry]) => {
+        applySectionVisible = Boolean(entry?.isIntersecting);
+        update();
+      },
+      { threshold: 0 },
+    );
+    submitObserver.observe(submitButton);
+    applyObserver.observe(applySection);
     return;
   }
 
   let ticking = false;
   const update = () => {
     ticking = false;
-    setFloatingSubmitHidden(isInlineSubmitVisible());
+    setFloatingSubmitHidden(isInlineSubmitVisible() || !isApplySectionVisible());
   };
   const requestUpdate = () => {
     if (ticking) return;
@@ -552,10 +733,39 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.closest("#lessonPlaceButton")) {
+    openMapDialog();
+    return;
+  }
+
+  if (event.target.closest(".gallery-prev")) {
+    showGalleryItem(galleryIndex - 1);
+    setGalleryAutoPlay();
+    return;
+  }
+
+  if (event.target.closest(".gallery-next")) {
+    showGalleryItem(galleryIndex + 1);
+    setGalleryAutoPlay();
+    return;
+  }
+
+  const galleryDot = event.target.closest("[data-gallery-dot]");
+  if (galleryDot) {
+    showGalleryItem(Number(galleryDot.dataset.galleryDot || 0));
+    setGalleryAutoPlay();
+    return;
+  }
+
   if (event.target.matches(".dialog-close")) {
     event.target.closest("dialog")?.close();
   }
 });
+
+gallerySection?.addEventListener("mouseenter", stopGalleryAutoPlay);
+gallerySection?.addEventListener("mouseleave", setGalleryAutoPlay);
+gallerySection?.addEventListener("focusin", stopGalleryAutoPlay);
+gallerySection?.addEventListener("focusout", setGalleryAutoPlay);
 
 mobileSubmitButton?.addEventListener("click", () => {
   if (isSubmitting) return;
@@ -568,4 +778,5 @@ applyOnedayPromo(readCachedOnedayConfig() || { promoEndsAt: "" });
 updateReferrerVisibility();
 refreshConfig();
 refreshOnedayPromo();
+loadSharedGallery();
 setupFloatingSubmitVisibility();

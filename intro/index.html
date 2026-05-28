@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260528-oneday-promo" />
+    <link rel="stylesheet" href="./intro.css?v=20260528-map-gallery" />
   </head>
   <body>
     <header class="intro-header">
@@ -77,12 +77,34 @@
               </div>
               <div id="lessonPlaceRow">
                 <dt><span aria-hidden="true">📍</span> 장소</dt>
-                <dd id="lessonPlaceText">선릉 Swing Time 바깥쪽 홀</dd>
+                <dd>
+                  <button id="lessonPlaceButton" class="map-place-button" type="button" hidden>
+                    <span id="lessonPlaceText">선릉 Swing Time 바깥쪽 홀</span>
+                    <span class="map-place-action">지도 선택</span>
+                  </button>
+                  <span id="lessonPlacePlain">선릉 Swing Time 바깥쪽 홀</span>
+                </dd>
               </div>
             </dl>
             <p id="ageNotice" class="age-note">만45세 이하 신청 가능 (1980년 6월생까지)</p>
           </div>
         </article>
+      </section>
+
+      <section id="photoGallery" class="photo-gallery-section" hidden>
+        <div class="section-heading">
+          <p class="eyebrow">Gallery</p>
+          <h2>스위티스윙 순간들</h2>
+        </div>
+        <div class="photo-gallery">
+          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
+          <figure>
+            <img id="galleryImage" src="" alt="" />
+            <figcaption id="galleryCaption" hidden></figcaption>
+          </figure>
+          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
+        </div>
+        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
       </section>
 
       <section id="apply" class="apply-section">
@@ -232,6 +254,17 @@
       <img id="posterLarge" alt="" />
     </dialog>
 
-    <script src="./intro.js?v=20260528-oneday-promo"></script>
+    <dialog id="mapDialog" class="map-dialog">
+      <button class="dialog-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">Map</p>
+      <h2>지도 앱 선택</h2>
+      <p id="mapPlaceName">선릉 Swing Time 바깥쪽 홀</p>
+      <div class="map-actions">
+        <a id="kakaoMapLink" href="#" target="_blank" rel="noopener">카카오맵</a>
+        <a id="naverMapLink" href="#" target="_blank" rel="noopener">네이버지도</a>
+      </div>
+    </dialog>
+
+    <script src="./intro.js?v=20260528-map-gallery"></script>
   </body>
 </html>
