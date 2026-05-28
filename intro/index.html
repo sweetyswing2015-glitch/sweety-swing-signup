@@ -6,9 +6,9 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260527-intro-config-ready" />
+    <link rel="stylesheet" href="./intro.css?v=20260528-intro-refund-stable" />
   </head>
-  <body class="is-config-loading">
+  <body>
     <header class="intro-header">
       <a class="brand" href="./" aria-label="스위티스윙 입문 신청 상단으로 이동">
         <img src="../assets/sweety-swing-logo-transparent.svg" alt="Sweety Swing Lindy Hop" />
@@ -149,7 +149,7 @@
                 <dt>입금 금액</dt>
                 <dd><strong id="summaryPrice">60,000원</strong></dd>
               </div>
-              <div id="refundDeadlineRow" hidden>
+              <div id="refundDeadlineRow" class="is-pending" aria-hidden="true">
                 <dt>환불마감일</dt>
                 <dd id="refundDeadlineText"></dd>
               </div>
@@ -221,6 +221,6 @@
       <img id="posterLarge" alt="" />
     </dialog>
 
-    <script src="./intro.js?v=20260527-intro-config-ready"></script>
+    <script src="./intro.js?v=20260528-intro-refund-stable"></script>
   </body>
 </html>

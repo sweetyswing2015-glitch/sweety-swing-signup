@@ -27,6 +27,7 @@ const defaultConfig = {
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
 let isSubmitting = false;
 let submitRequestedFromMobile = false;
+let hasResolvedRemoteConfig = false;
 
 const form = document.querySelector("#introForm");
 const fields = {
@@ -104,15 +105,6 @@ function normalizeImageUrl(value) {
   return url;
 }
 
-function setConfigLoading(isLoading) {
-  document.body.classList.toggle("is-config-loading", isLoading);
-  document.body.setAttribute("aria-busy", String(isLoading));
-  if (!isSubmitting) {
-    submitButton.disabled = isLoading;
-    if (mobileSubmitButton) mobileSubmitButton.disabled = isLoading;
-  }
-}
-
 function applyConfig(nextConfig = {}) {
   config = {
     ...defaultConfig,
@@ -140,7 +132,9 @@ function applyConfig(nextConfig = {}) {
   setOptionalRow("#lessonPeriodRow", "#lessonPeriodText", config.lessonPeriod);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setOptionalRow("#lessonPlaceRow", "#lessonPlaceText", config.lessonPlace);
-  setOptionalRow("#refundDeadlineRow", "#refundDeadlineText", config.refundDeadline);
+  setOptionalRow("#refundDeadlineRow", "#refundDeadlineText", config.refundDeadline, {
+    preserveEmpty: !hasResolvedRemoteConfig,
+  });
   setOptionalText("#paymentNoticeText", config.paymentNotice);
 
   const heroImage = document.querySelector("#heroImage");
@@ -159,11 +153,16 @@ function optionalConfigText(source, key, fallback = "") {
   return String(source[key] ?? "").trim();
 }
 
-function setOptionalRow(rowSelector, textSelector, value) {
+function setOptionalRow(rowSelector, textSelector, value, { preserveEmpty = false } = {}) {
   const row = document.querySelector(rowSelector);
   const text = String(value || "").trim();
-  if (row) row.hidden = !text;
-  if (text) setText(textSelector, text);
+  if (row) {
+    row.hidden = !text && !preserveEmpty;
+    row.classList.toggle("is-pending", !text && preserveEmpty);
+    if (!text && preserveEmpty) row.setAttribute("aria-hidden", "true");
+    else row.removeAttribute("aria-hidden");
+  }
+  setText(textSelector, text);
 }
 
 function setOptionalText(selector, value) {
@@ -337,16 +336,15 @@ async function copyAccountNumber(button) {
 }
 
 async function refreshConfig() {
-  setConfigLoading(true);
   try {
     const nextConfig = await apiGet("getIntroConfig");
     writeCachedConfig(nextConfig);
+    hasResolvedRemoteConfig = true;
     applyConfig(nextConfig);
   } catch (error) {
     console.warn(error);
+    hasResolvedRemoteConfig = true;
     applyConfig(readCachedConfig() || defaultConfig);
-  } finally {
-    setConfigLoading(false);
   }
 }
 
