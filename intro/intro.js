@@ -82,8 +82,33 @@ async function apiPost(action, payload = {}) {
     body: JSON.stringify({ action, ...payload }),
   });
   const data = await response.json();
-  if (!response.ok || data?.error) throw new Error(data?.error || "Google Sheets API request failed");
+  if (!response.ok || data?.error) {
+    const error = new Error(data?.error || "Google Sheets API request failed");
+    error.action = action;
+    error.status = response.status;
+    error.response = data;
+    throw error;
+  }
   return data;
+}
+
+async function reportIntroApplicationError(error, payload) {
+  if (!payload) return;
+  try {
+    await apiPost("reportApplicationError", {
+      payload: {
+        action: error.action || "addIntroApplication",
+        message: error.message,
+        nickname: payload.nickname,
+        selectedClasses: ["입문 강습", payload.gender, payload.experience].filter(Boolean).join(" / "),
+        pageUrl: window.location.href,
+        userAgent: window.navigator.userAgent,
+        details: error.response || { status: error.status || "" },
+      },
+    });
+  } catch (reportError) {
+    console.warn("입문 신청 오류 보고 실패", reportError);
+  }
 }
 
 function getDepositorName(nickname = fields.nickname.value) {
@@ -284,6 +309,10 @@ function buildPayload() {
     source: fields.source.value,
     referrer: fields.source.value === "지인소개" ? fields.referrer.value.trim() : "",
     message: fields.message.value.trim(),
+    clientContext: {
+      pageUrl: window.location.href,
+      userAgent: window.navigator.userAgent,
+    },
   };
 }
 
@@ -401,14 +430,17 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  let requestPayload;
   try {
     setSubmitting(true);
     setStatus("신청 저장 중입니다. 잠시만 기다려주세요.");
-    const record = await apiPost("addIntroApplication", { payload: buildPayload() });
+    requestPayload = buildPayload();
+    const record = await apiPost("addIntroApplication", { payload: requestPayload });
     showCompleteDialog(record);
     resetForm();
   } catch (error) {
     console.error(error);
+    await reportIntroApplicationError(error, requestPayload);
     setStatus("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.", { error: true });
     alert("신청 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
   } finally {
