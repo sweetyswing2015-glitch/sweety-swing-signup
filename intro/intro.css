@@ -273,6 +273,22 @@ p {
   overflow: hidden;
 }
 
+@media (min-width: 861px) {
+  .recommend-card {
+    justify-content: center;
+    gap: clamp(16px, 1.75vw, 22px);
+  }
+
+  .recommend-card .eyebrow,
+  .recommend-card h2 {
+    margin-bottom: 0;
+  }
+
+  .recommend-card .lesson-summary {
+    margin-top: clamp(2px, 0.5vw, 8px);
+  }
+}
+
 .recommend-card .eyebrow,
 .recommend-card h2,
 .recommend-card ul,
