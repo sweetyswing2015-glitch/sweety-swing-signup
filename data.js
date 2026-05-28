@@ -383,7 +383,13 @@
       body: JSON.stringify({ action, ...payload }),
     });
     const data = await response.json();
-    if (!response.ok || data?.error) throw new Error(data?.error || "Google Sheets API request failed");
+    if (!response.ok || data?.error) {
+      const error = new Error(data?.error || "Google Sheets API request failed");
+      error.action = action;
+      error.status = response.status;
+      error.response = data;
+      throw error;
+    }
     return data;
   }
 
@@ -453,6 +459,16 @@
     const applications = getApplications().filter((application) => application.id !== record.id);
     saveApplications([record, ...applications]);
     return record;
+  }
+
+  async function reportApplicationError(payload) {
+    if (!USE_REMOTE_API) return { ok: false, skipped: true };
+    try {
+      return await apiPost("reportApplicationError", { payload });
+    } catch (error) {
+      console.warn("신청 오류 보고 실패", error);
+      return { ok: false, error: error.message };
+    }
   }
 
   function updateLocalApplication(id, patch) {
@@ -657,6 +673,7 @@
     refreshPublicRosterRows,
     refreshStudentsPageData,
     addApplication,
+    reportApplicationError,
     updateApplication,
     deleteApplication,
     clearApplications,

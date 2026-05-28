@@ -6,6 +6,7 @@ const {
   getDepositorName,
   getEnabledLessons,
   refreshConfig,
+  reportApplicationError,
   roleLabels,
   USE_REMOTE_API,
 } = window.SweetySwingData;
@@ -483,7 +484,28 @@ function buildPayload() {
     finalAmount: price.finalAmount,
     bankAccount,
     recommendedDepositorName: getDepositorName(selectedLessons, document.querySelector("#nickname").value, config),
+    clientContext: {
+      pageUrl: window.location.href,
+      userAgent: window.navigator.userAgent,
+    },
   };
+}
+
+async function reportSignupSaveError(error, payload) {
+  if (!payload || typeof reportApplicationError !== "function") return;
+  try {
+    await reportApplicationError({
+      action: error.action || "addApplication",
+      message: error.message,
+      nickname: payload.nickname,
+      selectedClasses: payload.selectedClasses,
+      pageUrl: window.location.href,
+      userAgent: window.navigator.userAgent,
+      details: error.response || { status: error.status || "" },
+    });
+  } catch (reportError) {
+    console.warn("신청 오류 보고 처리 실패", reportError);
+  }
 }
 
 function normalizePhone(value) {
@@ -704,17 +726,20 @@ document.querySelector("#signupForm").addEventListener("submit", async (event) =
     return;
   }
 
+  let requestPayload;
   try {
     setSubmitting(true);
     setFormStatus("신청 저장 중입니다. 잠시만 기다려주세요.");
-    const payload = await addApplication(buildPayload());
-    console.log("신청 데이터", payload);
-    completeDepositor.textContent = payload.recommendedDepositorName;
-    completeAmount.textContent = formatWon(payload.finalAmount);
+    requestPayload = buildPayload();
+    const savedApplication = await addApplication(requestPayload);
+    console.log("신청 데이터", savedApplication);
+    completeDepositor.textContent = savedApplication.recommendedDepositorName;
+    completeAmount.textContent = formatWon(savedApplication.finalAmount);
     resetSignupForm();
     completeDialog.showModal();
   } catch (error) {
     console.error(error);
+    await reportSignupSaveError(error, requestPayload);
     if (error.message.includes("현재 강습 신청 기간")) {
       config.signupOpen = false;
       applySignupPeriodState();
