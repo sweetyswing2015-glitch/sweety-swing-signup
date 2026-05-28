@@ -628,8 +628,8 @@ textarea:focus {
 }
 
 .summary-payment > .summary-pair-row {
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: minmax(118px, 0.58fr) minmax(0, 1.42fr);
+  gap: 8px;
 }
 
 .summary-pair-item {
