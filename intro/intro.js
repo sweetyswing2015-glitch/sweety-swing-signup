@@ -1,5 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
-const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v2";
+const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v3";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 
 const defaultConfig = {
@@ -8,17 +8,17 @@ const defaultConfig = {
   bankAccount: {
     bank: "카카오뱅크",
     accountNumber: "3333351975536",
-    accountHolder: "이기연",
+    accountHolder: "이기봉",
   },
   depositorPrefix: "입문",
-  refundDeadline: "",
-  ageNotice: "*만45세 이하 신청 가능\n(1980년 6월생까지)",
-  mainImageUrl: "../assets/intro-hero.png",
-  heroImageUrl: "../assets/intro-hero.png",
-  posterImageUrl: "../assets/intro-poster.png",
-  lessonPeriod: "6월20일~8월15일\n(기간 내 총 6회 강습)",
+  refundDeadline: "6월19일",
+  ageNotice: "만45세 이하 신청 가능 (1980년 6월생까지)",
+  mainImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
+  heroImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
+  posterImageUrl: "./assets/intro-poster.png?v=137-regular-20260523004234",
+  lessonPeriod: "6월20일~8월15일\n(기간 중 총 6회 강습)",
   lessonTime: "토요일 PM 06:20~07:55",
-  lessonPlace: "선릉역 5번 출구 스윙타임 바깥홀",
+  lessonPlace: "선릉 Swing Time 바깥쪽 홀",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
   timebarNotice: "공간이용료 12,000원 현장 결제",
   paymentNotice: "입금 확인 후 신청이 확정됩니다.",
