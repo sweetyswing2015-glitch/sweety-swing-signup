@@ -395,10 +395,11 @@ function writeCachedConfig(nextConfig) {
   }
 }
 
-function readCachedOnedayConfig() {
+function readCachedOnedayConfig({ allowStale = false } = {}) {
   try {
     const cached = JSON.parse(localStorage.getItem(ONEDAY_CONFIG_CACHE_KEY) || "null");
-    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
+    if (!cached?.config) return null;
+    if (!allowStale && Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
     return cached.config;
   } catch (error) {
     console.warn("Oneday config cache read failed", error);
@@ -471,7 +472,7 @@ async function refreshOnedayPromo() {
     applyOnedayPromo(onedayConfig);
   } catch (error) {
     console.warn("Oneday promo config load failed", error);
-    applyOnedayPromo(readCachedOnedayConfig() || { promoEndsAt: "" });
+    applyOnedayPromo(readCachedOnedayConfig({ allowStale: true }) || defaultOnedayPromoConfig);
   }
 }
 
@@ -792,7 +793,7 @@ mobileSubmitButton?.addEventListener("click", () => {
 });
 
 applyConfig(readCachedConfig() || defaultConfig);
-applyOnedayPromo(readCachedOnedayConfig() || { promoEndsAt: "" });
+applyOnedayPromo(readCachedOnedayConfig({ allowStale: true }) || defaultOnedayPromoConfig);
 updateReferrerVisibility();
 refreshConfig();
 refreshOnedayPromo();
