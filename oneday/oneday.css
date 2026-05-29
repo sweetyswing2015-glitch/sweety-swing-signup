@@ -47,6 +47,10 @@ a {
   color: inherit;
 }
 
+.sheet-value {
+  white-space: pre-line;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -185,7 +189,7 @@ a {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 1 / 1;
   border: 10px solid var(--surface);
   box-shadow: var(--shadow);
   object-fit: cover;
@@ -194,9 +198,9 @@ a {
 
 .class-showcase {
   display: grid;
-  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(20px, 4vw, 38px);
-  align-items: start;
+  align-items: stretch;
   margin-bottom: 34px;
 }
 
@@ -212,10 +216,19 @@ a {
   box-shadow: var(--shadow);
 }
 
+.poster-card:not([hidden]),
+.poster-card:not([hidden]) + .story-panel {
+  aspect-ratio: 1 / 1;
+}
+
+.poster-card:not([hidden]) + .story-panel {
+  align-content: center;
+}
+
 .poster-frame {
   display: grid;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  height: 100%;
   place-items: center;
   border: 0;
   padding: 0;
@@ -998,6 +1011,16 @@ body.is-submitting {
 
   #posterCard[hidden] + .story-panel {
     grid-column: auto;
+  }
+
+  .poster-card:not([hidden]),
+  .poster-card:not([hidden]) + .story-panel {
+    aspect-ratio: auto;
+  }
+
+  .poster-frame {
+    height: auto;
+    aspect-ratio: 4 / 5;
   }
 
   .photo-gallery {

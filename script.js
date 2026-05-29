@@ -58,6 +58,13 @@ function $all(selector, root = document) {
   return Array.from(root.querySelectorAll(selector));
 }
 
+function setSheetText(selector, value) {
+  const node = typeof selector === "string" ? document.querySelector(selector) : selector;
+  if (!node) return;
+  node.textContent = value;
+  node.classList.add("sheet-value");
+}
+
 function applyConfigState(nextConfig) {
   config = nextConfig || getConfig();
   applyPageModeOverrides();
@@ -86,19 +93,19 @@ function applyPageModeOverrides() {
 }
 
 function applyConfigText() {
-  document.querySelector("#termLabel").textContent = config.termLabel;
-  document.querySelector("#firstIntermediateTitle").textContent = config.firstIntermediateLabel;
-  document.querySelector("#firstIntermediateDescription").textContent = config.firstIntermediateDescription;
+  setSheetText("#termLabel", config.termLabel);
+  setSheetText("#firstIntermediateTitle", config.firstIntermediateLabel);
+  setSheetText("#firstIntermediateDescription", config.firstIntermediateDescription);
 
   const introLink = document.querySelector("#introSignupLink");
   introLink.href = config.introSignupUrl || "#";
   introLink.toggleAttribute("aria-disabled", !config.introSignupUrl || config.introSignupUrl === "#");
 
   document.querySelectorAll("[data-bank-account]").forEach((node) => {
-    node.textContent = `${bankAccount.bank} ${bankAccount.accountNumber}`;
+    setSheetText(node, `${bankAccount.bank} ${bankAccount.accountNumber}`);
   });
   document.querySelectorAll("[data-bank-holder]").forEach((node) => {
-    node.textContent = `예금주: ${bankAccount.accountHolder}`;
+    setSheetText(node, `예금주: ${bankAccount.accountHolder}`);
   });
 }
 
@@ -129,7 +136,7 @@ function applySignupPeriodState() {
   signupForm.hidden = !isOpen;
   mobileTotal.hidden = !isOpen;
   if (!isOpen) {
-    closedNoticeMessage.textContent = getClosedMessage();
+    setSheetText(closedNoticeMessage, getClosedMessage());
   }
 
   closedIntroSignupLink.href = config.introSignupUrl || "#";
@@ -153,17 +160,17 @@ function renderLessons() {
           </button>
           <div class="lesson-head">
             <div>
-              <h3>${lesson.name}</h3>
+              <h3 class="sheet-value">${lesson.name}</h3>
               <p>${lesson.category === "training" ? "트레이닝 강습" : "정규 강습"}</p>
             </div>
             <span class="price-badge">${formatWon(lesson.price)}</span>
           </div>
           <label class="select-line">
             <input type="checkbox" name="lesson" value="${lesson.id}" />
-            <span>${lesson.name} 신청</span>
+            <span class="sheet-value">${lesson.name} 신청</span>
           </label>
           <fieldset class="role-box" aria-label="${lesson.name} 역할 선택">
-            <legend>${lesson.name} 역할</legend>
+            <legend class="sheet-value">${lesson.name} 역할</legend>
             <div class="role-options">
               <label>
                 <input type="radio" name="role-${lesson.id}" value="leader" aria-describedby="role-error-${lesson.id}" disabled />
@@ -336,7 +343,7 @@ function renderSummary(selectedLessons, price, depositorName) {
           return `
             <div class="selected-item">
               <div>
-                <strong>${lesson.name}</strong>
+                <strong class="sheet-value">${lesson.name}</strong>
                 <span>${role ? roleLabels[role] : "역할 미선택"}</span>
               </div>
               <b>${formatWon(lesson.price)}</b>
@@ -354,9 +361,9 @@ function renderSummary(selectedLessons, price, depositorName) {
   summaryDepositor.textContent = depositorName;
 
   if (price.details.length > 0) {
-    discountDetails.innerHTML = price.details.map((detail) => `<li>${detail}</li>`).join("");
+    discountDetails.innerHTML = price.details.map((detail) => `<li class="sheet-value">${detail}</li>`).join("");
   } else {
-    discountDetails.innerHTML = `<li>${price.hint || "적용된 할인이 없습니다."}</li>`;
+    discountDetails.innerHTML = `<li class="sheet-value">${price.hint || "적용된 할인이 없습니다."}</li>`;
   }
 }
 

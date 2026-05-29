@@ -47,6 +47,10 @@ a {
   display: none !important;
 }
 
+.sheet-value {
+  white-space: pre-line;
+}
+
 .site-header {
   position: sticky;
   top: 0;

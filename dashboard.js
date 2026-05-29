@@ -18,6 +18,13 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function setSheetText(selector, value) {
+  const node = typeof selector === "string" ? $(selector) : selector;
+  if (!node) return;
+  node.textContent = value;
+  node.classList.add("sheet-value");
+}
+
 function formatDate(value) {
   if (!value) return "-";
   return new Intl.DateTimeFormat("ko-KR", {
@@ -54,7 +61,7 @@ function lessonOptions(config, selected = "all") {
 
 function selectedClassText(application) {
   return (application.selectedClasses || [])
-    .map((item) => `${escapeHtml(item.name)} <span>${Store.roleLabels[item.role] || item.role}</span>`)
+    .map((item) => `<span class="sheet-value">${escapeHtml(item.name)}</span> <span>${Store.roleLabels[item.role] || item.role}</span>`)
     .join("<br />");
 }
 
@@ -286,7 +293,7 @@ function initStudentsPage() {
   const enabledLessonIds = new Set(config.lessons.filter((lesson) => lesson.enabled !== false).map((lesson) => lesson.id));
   const selectedFilter = currentFilter === "all" || enabledLessonIds.has(currentFilter) ? currentFilter : "all";
 
-  $("#rosterTerm").textContent = config.termLabel;
+  setSheetText("#rosterTerm", config.termLabel);
   $("#lessonFilter").innerHTML = lessonOptions(config, selectedFilter);
   $("#lessonFilter").disabled = false;
 
@@ -294,7 +301,7 @@ function initStudentsPage() {
     const paidBadge = row.paymentStatus === "paid" ? `<span class="paid-badge">입금확인</span>` : "";
     return `
       <div class="role-roster-person">
-        <strong>${escapeHtml(row.nickname)}</strong>
+        <strong class="sheet-value">${escapeHtml(row.nickname)}</strong>
         ${paidBadge}
       </div>
     `;
@@ -331,7 +338,7 @@ function initStudentsPage() {
             <div class="section-title row-title">
               <div>
                 <p class="eyebrow">${lesson.category === "training" ? "Training" : "Class"}</p>
-                <h2>${escapeHtml(lesson.name)}</h2>
+                <h2 class="sheet-value">${escapeHtml(lesson.name)}</h2>
               </div>
               <p class="count-pill">총 ${rows.length}명 · 리더 ${leaderCount} · 팔뤄 ${followerCount} · 입금확인 ${paidCount}</p>
             </div>
@@ -355,7 +362,7 @@ function initStudentsPage() {
 
 function renderStudentsLoading() {
   const config = Store.getConfig();
-  $("#rosterTerm").textContent = config.termLabel || "신청확인";
+  setSheetText("#rosterTerm", config.termLabel || "신청확인");
   $("#lessonFilter").innerHTML = `<option>명단 불러오는 중</option>`;
   $("#lessonFilter").disabled = true;
   $("#rosterContent").innerHTML = `
@@ -394,8 +401,8 @@ function renderManagementTable(targetId, mode) {
       (application) => `
         <tr>
           <td>
-            <strong>${escapeHtml(application.nickname)}</strong>
-            <span class="subtext">${escapeHtml([application.realName, application.phone, application.swingExperience ? `스윙경력 ${application.swingExperience}` : ""].filter(Boolean).join(" · "))}</span>
+            <strong class="sheet-value">${escapeHtml(application.nickname)}</strong>
+            <span class="subtext sheet-value">${escapeHtml([application.realName, application.phone, application.swingExperience ? `스윙경력 ${application.swingExperience}` : ""].filter(Boolean).join(" · "))}</span>
           </td>
           <td>${selectedClassText(application)}</td>
           <td>${escapeHtml(Store.applicantTypeLabels[application.applicantType] || application.applicantType)}</td>

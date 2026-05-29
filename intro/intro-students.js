@@ -56,7 +56,9 @@ function escapeHtml(value) {
 
 function setText(selector, value) {
   const node = document.querySelector(selector);
-  if (node) node.textContent = value;
+  if (!node) return;
+  node.textContent = value;
+  node.classList.add("sheet-value");
 }
 
 function setLoading(isLoading, message = "신청 현황을 불러오는 중입니다.") {

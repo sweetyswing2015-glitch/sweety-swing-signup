@@ -112,7 +112,9 @@ async function reportOnedayApplicationError(error, payload) {
 
 function setText(selector, value) {
   const node = document.querySelector(selector);
-  if (node) node.textContent = value;
+  if (!node) return;
+  node.textContent = value;
+  node.classList.add("sheet-value");
 }
 
 function normalizeImageUrl(value) {
@@ -171,6 +173,8 @@ function setLessonPlace(value) {
   if (row) row.hidden = !text;
   if (buttonText) buttonText.textContent = text;
   if (plain) plain.textContent = text;
+  buttonText?.classList.add("sheet-value");
+  plain?.classList.add("sheet-value");
   if (button) button.hidden = !useMapButton;
   if (plain) plain.hidden = useMapButton || !text;
 }

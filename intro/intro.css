@@ -47,6 +47,10 @@ a {
   color: inherit;
 }
 
+.sheet-value {
+  white-space: pre-line;
+}
+
 .intro-header {
   position: sticky;
   top: 0;
