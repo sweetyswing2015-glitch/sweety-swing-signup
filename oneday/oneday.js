@@ -533,8 +533,8 @@ fields.phone.addEventListener("input", (event) => {
 fields.source.addEventListener("change", updateReferrerVisibility);
 
 document.addEventListener("click", (event) => {
-  const posterButton = event.target.closest(".poster-open-button");
-  if (posterButton && posterDialog && posterLarge && posterImage) {
+  const posterTarget = event.target.closest("#posterCard");
+  if (posterTarget && posterDialog && posterLarge && posterImage) {
     posterLarge.src = posterImage.currentSrc || posterImage.src;
     posterLarge.alt = posterImage.alt || "원데이 클래스 포스터";
     posterDialog.showModal();
