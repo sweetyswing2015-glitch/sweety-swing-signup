@@ -4,6 +4,7 @@ const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 
 const defaultConfig = {
   classTitle: "스위티스윙 6월 원데이 클래스",
+  heroLeadText: "스윙댄스가 궁금했다면, 가볍게 하루 먼저 만나보세요. 처음이어도 편하게 따라올 수 있게 준비해둘게요.",
   mainImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
   heroImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
   posterImageUrl: "./assets/oneday-poster.png?v=137-regular-20260529203900",
@@ -317,6 +318,7 @@ function applyConfig(nextConfig = {}) {
     ...nextConfig,
   };
   config.classTitle = textOrDefault(nextConfig.classTitle, defaultConfig.classTitle);
+  config.heroLeadText = visualConfigText(nextConfig, "heroLeadText", defaultConfig.heroLeadText);
   config.mainImageUrl = visualConfigText(nextConfig, "mainImageUrl", defaultConfig.mainImageUrl);
   config.heroImageUrl = visualConfigText(nextConfig, "heroImageUrl", defaultConfig.heroImageUrl);
   config.posterImageUrl = visualConfigText(nextConfig, "posterImageUrl", defaultConfig.posterImageUrl);
@@ -332,6 +334,7 @@ function applyConfig(nextConfig = {}) {
   config.successMessage = optionalConfigText(nextConfig, "successMessage", defaultConfig.successMessage);
 
   setText("#classTitle", config.classTitle);
+  setText("#heroLeadText", config.heroLeadText);
   setOptionalRow("#lessonDateRow", "#lessonDateText", config.lessonDate);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setLessonPlace(config.lessonPlace);
