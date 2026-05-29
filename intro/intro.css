@@ -587,29 +587,28 @@ p {
 
 .map-app-link {
   display: inline-grid;
-  width: 42px;
-  height: 42px;
+  width: 58px;
+  height: 58px;
   place-items: center;
-  border: 1px solid rgba(90, 70, 42, 0.16);
-  border-radius: 11px;
-  background: rgba(255, 253, 248, 0.92);
-  box-shadow: 0 8px 18px rgba(55, 37, 22, 0.1);
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  box-shadow: none;
   text-decoration: none;
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease;
+  transition: transform 0.16s ease;
 }
 
 .map-app-link:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(55, 37, 22, 0.14);
 }
 
 .map-app-link img {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  object-fit: cover;
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 15px;
+  box-shadow: 0 8px 18px rgba(55, 37, 22, 0.12);
+  object-fit: contain;
 }
 
 .age-note {
