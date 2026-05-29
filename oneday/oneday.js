@@ -3,11 +3,11 @@ const CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 
 const defaultConfig = {
-  classTitle: "스위티스윙 6월 스윙댄스 원데이 클래스",
-  mainImageUrl: "",
-  heroImageUrl: "",
-  posterImageUrl: "",
-  posterVideoUrl: "",
+  classTitle: "스위티스윙 6월 원데이 클래스",
+  mainImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
+  heroImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
+  posterImageUrl: "./assets/oneday-poster.png?v=137-regular-20260529203900",
+  posterVideoUrl: "./assets/oneday-poster-video.mov?v=137-regular-20260529212209",
   lessonDate: "6월 13일(토)",
   lessonTime: "오후 5:30 ~ 7:20",
   lessonPlace: "Swing Time Bar (선릉역 5번 출구)",
@@ -22,6 +22,9 @@ const defaultConfig = {
 let config = { ...defaultConfig };
 let isSubmitting = false;
 let isConfigReady = false;
+let posterVideoUrl = "";
+let isPosterVideoLoading = false;
+let hasPosterVideoStarted = false;
 
 const form = document.querySelector("#onedayForm");
 const fields = {
@@ -48,6 +51,9 @@ const posterCard = document.querySelector("#posterCard");
 const videoCard = document.querySelector("#videoCard");
 const signupShell = document.querySelector("#apply");
 const mapDialog = document.querySelector("#mapDialog");
+const videoPlayButton = document.querySelector("#videoPlayButton");
+const videoThumb = document.querySelector("#videoThumb");
+const videoStatus = document.querySelector("#videoStatus");
 
 function normalizePhone(value) {
   const numbers = String(value || "").replace(/\D/g, "").slice(0, 11);
@@ -130,6 +136,11 @@ function textOrDefault(value, fallback) {
 function optionalConfigText(source, key, fallback = "") {
   if (!Object.prototype.hasOwnProperty.call(source, key)) return fallback;
   return String(source[key] ?? "").trim();
+}
+
+function visualConfigText(source, key, fallback = "") {
+  if (!Object.prototype.hasOwnProperty.call(source, key)) return fallback;
+  return String(source[key] ?? "").trim() || fallback;
 }
 
 function setOptionalRow(rowSelector, textSelector, value) {
@@ -222,15 +233,81 @@ function setPosterMedia() {
     }
   }
 
+  posterVideoUrl = videoUrl;
   signupShell?.classList.toggle("has-video", Boolean(videoUrl));
-  if (videoCard) videoCard.hidden = !videoUrl;
-  if (posterVideo) {
-    if (videoUrl) {
-      if (posterVideo.src !== videoUrl) posterVideo.src = videoUrl;
-    } else {
-      posterVideo.removeAttribute("src");
-      posterVideo.load();
-    }
+  if (videoCard) videoCard.hidden = false;
+  if (videoThumb) {
+    const thumbUrl = imageUrl || normalizeImageUrl(config.mainImageUrl || config.heroImageUrl);
+    if (thumbUrl) videoThumb.src = thumbUrl;
+  }
+  if (videoPlayButton) videoPlayButton.hidden = false;
+  if (videoStatus && !isPosterVideoLoading && !hasPosterVideoStarted) {
+    videoStatus.textContent = videoUrl ? "영상 보기" : "영상 준비 중";
+  }
+
+  if (!videoUrl) {
+    resetPosterVideo("영상 준비 중");
+  }
+}
+
+function resetPosterVideo(message = "영상 보기") {
+  isPosterVideoLoading = false;
+  hasPosterVideoStarted = false;
+  videoCard?.classList.remove("is-loading", "is-playing");
+  if (videoPlayButton) videoPlayButton.hidden = false;
+  if (videoStatus) videoStatus.textContent = message;
+  if (!posterVideo) return;
+  posterVideo.pause();
+  posterVideo.hidden = true;
+  posterVideo.removeAttribute("src");
+  posterVideo.load();
+}
+
+function waitForPosterVideoReady() {
+  if (!posterVideo) return Promise.reject(new Error("영상 요소를 찾을 수 없습니다."));
+  if (posterVideo.readyState >= 2) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const cleanup = () => {
+      posterVideo.removeEventListener("loadeddata", handleReady);
+      posterVideo.removeEventListener("canplay", handleReady);
+      posterVideo.removeEventListener("error", handleError);
+    };
+    const handleReady = () => {
+      cleanup();
+      resolve();
+    };
+    const handleError = () => {
+      cleanup();
+      reject(new Error("영상을 불러오지 못했습니다."));
+    };
+    posterVideo.addEventListener("loadeddata", handleReady, { once: true });
+    posterVideo.addEventListener("canplay", handleReady, { once: true });
+    posterVideo.addEventListener("error", handleError, { once: true });
+  });
+}
+
+async function startPosterVideo() {
+  if (!posterVideoUrl || !posterVideo || isPosterVideoLoading) return;
+  isPosterVideoLoading = true;
+  videoCard?.classList.add("is-loading");
+  videoCard?.classList.remove("is-playing");
+  if (videoStatus) videoStatus.textContent = "영상 불러오는 중";
+
+  try {
+    posterVideo.hidden = false;
+    if (posterVideo.src !== posterVideoUrl) posterVideo.src = posterVideoUrl;
+    posterVideo.load();
+    await waitForPosterVideoReady();
+    isPosterVideoLoading = false;
+    hasPosterVideoStarted = true;
+    videoCard?.classList.remove("is-loading");
+    videoCard?.classList.add("is-playing");
+    if (videoPlayButton) videoPlayButton.hidden = true;
+    await posterVideo.play();
+  } catch (error) {
+    console.warn("원데이 영상 재생 실패", error);
+    resetPosterVideo("영상 다시 보기");
   }
 }
 
@@ -240,10 +317,10 @@ function applyConfig(nextConfig = {}) {
     ...nextConfig,
   };
   config.classTitle = textOrDefault(nextConfig.classTitle, defaultConfig.classTitle);
-  config.mainImageUrl = optionalConfigText(nextConfig, "mainImageUrl", defaultConfig.mainImageUrl);
-  config.heroImageUrl = optionalConfigText(nextConfig, "heroImageUrl", defaultConfig.heroImageUrl);
-  config.posterImageUrl = optionalConfigText(nextConfig, "posterImageUrl", defaultConfig.posterImageUrl);
-  config.posterVideoUrl = optionalConfigText(nextConfig, "posterVideoUrl", defaultConfig.posterVideoUrl);
+  config.mainImageUrl = visualConfigText(nextConfig, "mainImageUrl", defaultConfig.mainImageUrl);
+  config.heroImageUrl = visualConfigText(nextConfig, "heroImageUrl", defaultConfig.heroImageUrl);
+  config.posterImageUrl = visualConfigText(nextConfig, "posterImageUrl", defaultConfig.posterImageUrl);
+  config.posterVideoUrl = visualConfigText(nextConfig, "posterVideoUrl", defaultConfig.posterVideoUrl);
   config.lessonDate = optionalConfigText(nextConfig, "lessonDate", defaultConfig.lessonDate);
   config.lessonTime = optionalConfigText(nextConfig, "lessonTime", defaultConfig.lessonTime);
   config.lessonPlace = optionalConfigText(nextConfig, "lessonPlace", defaultConfig.lessonPlace);
@@ -267,10 +344,11 @@ function applyConfig(nextConfig = {}) {
   document.title = `${config.classTitle} 신청`;
 }
 
-function readCachedConfig() {
+function readCachedConfig({ allowExpired = false } = {}) {
   try {
     const cached = JSON.parse(localStorage.getItem(CONFIG_CACHE_KEY) || "null");
-    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
+    if (!cached?.config) return null;
+    if (!allowExpired && Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return null;
     return cached.config;
   } catch (error) {
     console.warn("Oneday config cache read failed", error);
@@ -295,7 +373,7 @@ async function refreshConfig() {
   } catch (error) {
     console.warn(error);
     isConfigReady = false;
-    applyConfig(readCachedConfig() || defaultConfig);
+    applyConfig(readCachedConfig({ allowExpired: true }) || defaultConfig);
     setStatus("원데이 신청 준비 중입니다. 잠시 후 다시 시도해주세요.", { error: true });
   }
 }
@@ -468,11 +546,16 @@ document.addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.closest("#videoPlayButton")) {
+    startPosterVideo();
+    return;
+  }
+
   if (event.target.matches(".dialog-close")) {
     event.target.closest("dialog")?.close();
   }
 });
 
-applyConfig(readCachedConfig() || defaultConfig);
+applyConfig(readCachedConfig({ allowExpired: true }) || defaultConfig);
 updateReferrerVisibility();
 refreshConfig();

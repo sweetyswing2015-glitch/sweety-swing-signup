@@ -4,9 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>스위티스윙 원데이 클래스 신청</title>
+    <link rel="preconnect" href="https://script.google.com" />
+    <link rel="preconnect" href="https://script.googleusercontent.com" />
+    <link rel="dns-prefetch" href="https://script.google.com" />
+    <link rel="dns-prefetch" href="https://script.googleusercontent.com" />
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./oneday.css?v=20260529-media-layout" />
+    <link rel="stylesheet" href="./oneday.css?v=20260529-stable-load" />
   </head>
   <body>
     <header class="site-header">
@@ -28,15 +32,15 @@
             스윙댄스가 궁금했다면, 가볍게 하루 먼저 만나보세요. 처음이어도 편하게 따라올 수 있게 준비해둘게요.
           </p>
         </div>
-        <figure id="heroVisual" class="hero-visual" hidden>
-          <img id="heroImage" src="" alt="원데이 클래스 사진" />
+        <figure id="heroVisual" class="hero-visual">
+          <img id="heroImage" src="../assets/intro-hero.png?v=137-regular-20260523011840" alt="원데이 클래스 사진" />
         </figure>
       </section>
 
       <section class="class-showcase" aria-label="원데이 강습 안내">
-        <article id="posterCard" class="poster-card" hidden>
+        <article id="posterCard" class="poster-card">
           <button class="poster-frame poster-open-button" type="button" aria-label="원데이 포스터 크게 보기">
-            <img id="posterImage" src="" alt="원데이 클래스 포스터" />
+            <img id="posterImage" src="../assets/oneday-poster.png?v=137-regular-20260529203900" alt="원데이 클래스 포스터" />
           </button>
         </article>
 
@@ -139,8 +143,13 @@
           <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
         </form>
 
-        <aside id="videoCard" class="video-card" aria-label="원데이 클래스 영상" hidden>
-          <video id="posterVideo" class="poster-video" muted autoplay loop playsinline controls></video>
+        <aside id="videoCard" class="video-card" aria-label="원데이 클래스 영상">
+          <button id="videoPlayButton" class="video-play-card" type="button" aria-label="원데이 클래스 영상 재생">
+            <img id="videoThumb" src="../assets/oneday-poster.png?v=137-regular-20260529203900" alt="" />
+            <span class="video-play-icon" aria-hidden="true">▶</span>
+            <span id="videoStatus" class="video-status">영상 보기</span>
+          </button>
+          <video id="posterVideo" class="poster-video" muted loop playsinline controls preload="none" hidden></video>
         </aside>
       </section>
     </main>
@@ -176,6 +185,6 @@
       </div>
     </dialog>
 
-    <script src="./oneday.js?v=20260529-media-layout"></script>
+    <script src="./oneday.js?v=20260529-stable-load"></script>
   </body>
 </html>
