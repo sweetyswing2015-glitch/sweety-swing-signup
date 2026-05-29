@@ -1,6 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
 const CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
-const GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
 
 const defaultConfig = {
@@ -23,9 +22,6 @@ const defaultConfig = {
 let config = { ...defaultConfig };
 let isSubmitting = false;
 let isConfigReady = false;
-let galleryItems = [];
-let galleryIndex = 0;
-let galleryTimer = null;
 
 const form = document.querySelector("#onedayForm");
 const fields = {
@@ -49,11 +45,9 @@ const posterVideo = document.querySelector("#posterVideo");
 const heroVisual = document.querySelector("#heroVisual");
 const heroImage = document.querySelector("#heroImage");
 const posterCard = document.querySelector("#posterCard");
+const videoCard = document.querySelector("#videoCard");
+const signupShell = document.querySelector("#apply");
 const mapDialog = document.querySelector("#mapDialog");
-const gallerySection = document.querySelector("#photoGallery");
-const galleryImage = document.querySelector("#galleryImage");
-const galleryCaption = document.querySelector("#galleryCaption");
-const galleryDots = document.querySelector("#galleryDots");
 
 function normalizePhone(value) {
   const numbers = String(value || "").replace(/\D/g, "").slice(0, 11);
@@ -213,28 +207,29 @@ function setImageRegion(wrapper, image, url, fallbackAlt) {
 }
 
 function setPosterMedia() {
-  if (!posterCard) return;
   const videoUrl = normalizeImageUrl(config.posterVideoUrl);
   const imageUrl = normalizeImageUrl(config.posterImageUrl);
-  const useVideo = Boolean(videoUrl);
 
-  posterCard.hidden = !videoUrl && !imageUrl;
-  posterCard.classList.toggle("is-video", useVideo);
-
-  if (posterVideo) {
-    posterVideo.hidden = !useVideo;
-    if (useVideo && posterVideo.src !== videoUrl) posterVideo.src = videoUrl;
-    if (!useVideo) posterVideo.removeAttribute("src");
-  }
-
+  if (posterCard) posterCard.hidden = !imageUrl;
   const imageButton = posterImage?.closest(".poster-open-button");
-  if (imageButton) imageButton.hidden = useVideo || !imageUrl;
+  if (imageButton) imageButton.hidden = !imageUrl;
   if (posterImage) {
     if (imageUrl) {
       posterImage.src = imageUrl;
       posterImage.alt = `${config.classTitle} 포스터`;
     } else {
       posterImage.removeAttribute("src");
+    }
+  }
+
+  signupShell?.classList.toggle("has-video", Boolean(videoUrl));
+  if (videoCard) videoCard.hidden = !videoUrl;
+  if (posterVideo) {
+    if (videoUrl) {
+      if (posterVideo.src !== videoUrl) posterVideo.src = videoUrl;
+    } else {
+      posterVideo.removeAttribute("src");
+      posterVideo.load();
     }
   }
 }
@@ -288,105 +283,6 @@ function writeCachedConfig(nextConfig) {
     localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), config: nextConfig }));
   } catch (error) {
     console.warn("Oneday config cache write failed", error);
-  }
-}
-
-function readCachedGallery() {
-  try {
-    const cached = JSON.parse(localStorage.getItem(GALLERY_CACHE_KEY) || "null");
-    if (!cached?.items || Date.now() - Number(cached.savedAt || 0) > CONFIG_CACHE_MAX_AGE_MS) return [];
-    return normalizeGalleryItems(cached.items);
-  } catch (error) {
-    console.warn("Shared photo gallery cache read failed", error);
-    return [];
-  }
-}
-
-function writeCachedGallery(items) {
-  try {
-    localStorage.setItem(GALLERY_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), items }));
-  } catch (error) {
-    console.warn("Shared photo gallery cache write failed", error);
-  }
-}
-
-function normalizeGalleryItems(data) {
-  const rawItems = Array.isArray(data) ? data : data?.photos || [];
-  return rawItems
-    .map((item, index) => ({
-      order: Number(item.order || index + 1),
-      url: normalizeImageUrl(item.url || item.photoUrl || item.imageUrl || ""),
-      caption: "",
-    }))
-    .filter((item) => item.url)
-    .sort((a, b) => (Number.isFinite(a.order) ? a.order : 9999) - (Number.isFinite(b.order) ? b.order : 9999));
-}
-
-function renderGallery(items) {
-  stopGalleryAutoPlay();
-  galleryItems = normalizeGalleryItems(items);
-  galleryIndex = 0;
-  if (!gallerySection) return;
-  gallerySection.hidden = galleryItems.length === 0;
-  buildGalleryDots();
-  showGalleryItem(0);
-  setGalleryAutoPlay();
-}
-
-function buildGalleryDots() {
-  if (!galleryDots) return;
-  galleryDots.replaceChildren();
-  galleryItems.forEach((item, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "gallery-dot";
-    button.dataset.galleryDot = String(index);
-    button.setAttribute("aria-label", `${index + 1}번째 사진 보기`);
-    button.setAttribute("aria-current", index === galleryIndex ? "true" : "false");
-    galleryDots.append(button);
-  });
-}
-
-function showGalleryItem(index) {
-  if (!galleryItems.length || !galleryImage) return;
-  galleryIndex = (index + galleryItems.length) % galleryItems.length;
-  const item = galleryItems[galleryIndex];
-  galleryImage.src = item.url;
-  galleryImage.alt = item.caption || "스위티스윙 사진";
-  if (galleryCaption) {
-    galleryCaption.textContent = item.caption;
-    galleryCaption.hidden = !item.caption;
-  }
-  galleryDots?.querySelectorAll(".gallery-dot").forEach((dot, dotIndex) => {
-    dot.setAttribute("aria-current", dotIndex === galleryIndex ? "true" : "false");
-  });
-}
-
-function stopGalleryAutoPlay() {
-  if (!galleryTimer) return;
-  window.clearInterval(galleryTimer);
-  galleryTimer = null;
-}
-
-function setGalleryAutoPlay() {
-  stopGalleryAutoPlay();
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (prefersReducedMotion || galleryItems.length < 2) return;
-  galleryTimer = window.setInterval(() => showGalleryItem(galleryIndex + 1), 4500);
-}
-
-async function loadSharedGallery() {
-  const cachedItems = readCachedGallery();
-  if (cachedItems.length) renderGallery(cachedItems);
-
-  try {
-    const data = await apiGet("getSharedPhotoGallery");
-    const items = normalizeGalleryItems(data);
-    writeCachedGallery(items);
-    renderGallery(items);
-  } catch (error) {
-    console.warn("Shared photo gallery load failed", error);
-    if (!cachedItems.length) renderGallery([]);
   }
 }
 
@@ -572,36 +468,11 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (event.target.closest(".gallery-prev")) {
-    showGalleryItem(galleryIndex - 1);
-    setGalleryAutoPlay();
-    return;
-  }
-
-  if (event.target.closest(".gallery-next")) {
-    showGalleryItem(galleryIndex + 1);
-    setGalleryAutoPlay();
-    return;
-  }
-
-  const galleryDot = event.target.closest("[data-gallery-dot]");
-  if (galleryDot) {
-    showGalleryItem(Number(galleryDot.dataset.galleryDot || 0));
-    setGalleryAutoPlay();
-    return;
-  }
-
   if (event.target.matches(".dialog-close")) {
     event.target.closest("dialog")?.close();
   }
 });
 
-gallerySection?.addEventListener("mouseenter", stopGalleryAutoPlay);
-gallerySection?.addEventListener("mouseleave", setGalleryAutoPlay);
-gallerySection?.addEventListener("focusin", stopGalleryAutoPlay);
-gallerySection?.addEventListener("focusout", setGalleryAutoPlay);
-
 applyConfig(readCachedConfig() || defaultConfig);
 updateReferrerVisibility();
 refreshConfig();
-loadSharedGallery();
