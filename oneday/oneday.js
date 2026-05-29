@@ -51,7 +51,6 @@ const heroImage = document.querySelector("#heroImage");
 const posterCard = document.querySelector("#posterCard");
 const videoCard = document.querySelector("#videoCard");
 const signupShell = document.querySelector("#apply");
-const mapDialog = document.querySelector("#mapDialog");
 const videoPlayButton = document.querySelector("#videoPlayButton");
 const videoThumb = document.querySelector("#videoThumb");
 const videoStatus = document.querySelector("#videoStatus");
@@ -166,35 +165,21 @@ function normalizeExternalUrl(value) {
   return "";
 }
 
-function hasMapLinks() {
-  return Boolean(normalizeExternalUrl(config.kakaoMapUrl) || normalizeExternalUrl(config.naverMapUrl));
-}
-
 function setLessonPlace(value) {
   const row = document.querySelector("#lessonPlaceRow");
-  const button = document.querySelector("#lessonPlaceButton");
-  const buttonText = document.querySelector("#lessonPlaceText");
-  const plain = document.querySelector("#lessonPlacePlain");
-  const text = String(value || "").trim();
-  const useMapButton = Boolean(text && hasMapLinks());
-
-  if (row) row.hidden = !text;
-  if (buttonText) buttonText.textContent = text;
-  if (plain) plain.textContent = text;
-  buttonText?.classList.add("sheet-value");
-  plain?.classList.add("sheet-value");
-  if (button) button.hidden = !useMapButton;
-  if (plain) plain.hidden = useMapButton || !text;
-}
-
-function openMapDialog() {
-  if (!mapDialog || !hasMapLinks()) return;
-  const kakaoUrl = normalizeExternalUrl(config.kakaoMapUrl);
-  const naverUrl = normalizeExternalUrl(config.naverMapUrl);
+  const placeText = document.querySelector("#lessonPlaceText");
+  const mapLinks = document.querySelector("#mapAppLinks");
   const kakaoLink = document.querySelector("#kakaoMapLink");
   const naverLink = document.querySelector("#naverMapLink");
+  const text = String(value || "").trim();
+  const kakaoUrl = normalizeExternalUrl(config.kakaoMapUrl);
+  const naverUrl = normalizeExternalUrl(config.naverMapUrl);
+  const hasLinks = Boolean(text && (kakaoUrl || naverUrl));
 
-  setText("#mapPlaceName", config.lessonPlace);
+  if (row) row.hidden = !text;
+  if (placeText) placeText.textContent = text;
+  placeText?.classList.add("sheet-value");
+  if (mapLinks) mapLinks.hidden = !hasLinks;
   if (kakaoLink) {
     kakaoLink.href = kakaoUrl || "#";
     kakaoLink.hidden = !kakaoUrl;
@@ -203,7 +188,6 @@ function openMapDialog() {
     naverLink.href = naverUrl || "#";
     naverLink.hidden = !naverUrl;
   }
-  mapDialog.showModal();
 }
 
 function setImageRegion(wrapper, image, url, fallbackAlt) {
@@ -541,11 +525,6 @@ document.addEventListener("click", (event) => {
     posterLarge.src = posterImage.currentSrc || posterImage.src;
     posterLarge.alt = posterImage.alt || "원데이 클래스 포스터";
     posterDialog.showModal();
-    return;
-  }
-
-  if (event.target.closest("#lessonPlaceButton")) {
-    openMapDialog();
     return;
   }
 

@@ -47,6 +47,15 @@ a {
   color: inherit;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .sheet-value {
   white-space: pre-line;
 }
@@ -551,104 +560,56 @@ p {
 
 #lessonPeriodText,
 #lessonPlaceText,
-#lessonPlacePlain,
 .summary-note {
   white-space: pre-line;
 }
 
-#lessonPlaceText,
-#lessonPlacePlain {
+#lessonPlaceText {
   word-break: keep-all;
 }
 
-.map-place-button {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 8px;
-  border: 0;
-  border-bottom: 2px solid rgba(36, 117, 107, 0.28);
-  padding: 0 0 2px;
-  background: transparent;
-  color: var(--ink);
-  font-weight: 900;
-  line-height: 1.45;
-  text-align: left;
-  cursor: pointer;
-}
-
-.map-place-button[hidden],
-.map-place-action[hidden] {
-  display: none;
-}
-
-.map-place-button:hover {
-  border-bottom-color: var(--teal);
-  color: var(--teal);
-}
-
-.map-place-action {
-  flex: 0 0 auto;
-  border-radius: 999px;
-  padding: 3px 8px;
-  background: rgba(36, 117, 107, 0.12);
-  color: var(--teal);
-  font-size: 0.76rem;
-  font-weight: 950;
-  white-space: nowrap;
-}
-
-.map-dialog {
-  width: min(390px, calc(100% - 32px));
-  border: 0;
-  border-radius: 18px;
-  padding: 30px 24px 24px;
-  background: var(--white);
-  box-shadow: var(--shadow);
-}
-
-.map-dialog::backdrop {
-  background: rgba(21, 17, 13, 0.56);
-}
-
-.map-dialog h2 {
-  margin-bottom: 8px;
-  font-size: 1.65rem;
-  line-height: 1.15;
-}
-
-.map-dialog p:not(.eyebrow) {
-  margin: 0 0 18px;
-  color: var(--muted);
-  font-weight: 800;
-  line-height: 1.5;
-}
-
-.map-actions {
+.map-place {
   display: grid;
-  gap: 10px;
+  gap: 9px;
+  justify-items: start;
 }
 
-.map-actions a {
+.map-app-links {
   display: inline-flex;
-  min-height: 50px;
+  gap: 8px;
   align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--cream);
-  color: var(--ink);
-  text-decoration: none;
-  font-weight: 950;
 }
 
-.map-actions a:first-child {
-  border-color: #b79623;
-  background: var(--yellow);
-}
-
-.map-actions a[hidden] {
+.map-app-links[hidden],
+.map-app-link[hidden] {
   display: none;
+}
+
+.map-app-link {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(90, 70, 42, 0.16);
+  border-radius: 11px;
+  background: rgba(255, 253, 248, 0.92);
+  box-shadow: 0 8px 18px rgba(55, 37, 22, 0.1);
+  text-decoration: none;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.map-app-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(55, 37, 22, 0.14);
+}
+
+.map-app-link img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .age-note {
@@ -747,7 +708,7 @@ dd {
 
 .field-grid .wide {
   grid-column: 1 / -1;
-  margin-top: 8px;
+  margin-top: 16px;
 }
 
 .field-grid .is-hidden {
@@ -756,7 +717,7 @@ dd {
 
 #referrerField {
   grid-column: 2;
-  margin-top: -4px;
+  margin-top: -2px;
 }
 
 label > span,
@@ -1349,7 +1310,7 @@ body.is-submitting {
   }
 
   .field-grid .wide {
-    margin-top: 10px;
+    margin-top: 18px;
   }
 
   .field-grid label,
@@ -1535,12 +1496,6 @@ body.is-submitting {
   .roster-panel,
   .info-block {
     padding: 24px 18px;
-  }
-
-  .map-place-button {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
   }
 
   .photo-gallery img {

@@ -9,7 +9,7 @@
     <link rel="dns-prefetch" href="https://script.googleusercontent.com" />
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260529-media-gallery" />
+    <link rel="stylesheet" href="./intro.css?v=20260529-map-icons" />
   </head>
   <body>
     <header class="intro-header">
@@ -80,12 +80,18 @@
               </div>
               <div id="lessonPlaceRow">
                 <dt><span aria-hidden="true">📍</span> 장소</dt>
-                <dd>
-                  <button id="lessonPlaceButton" class="map-place-button" type="button" hidden>
-                    <span id="lessonPlaceText">선릉 Swing Time 바깥쪽 홀</span>
-                    <span class="map-place-action">지도 선택</span>
-                  </button>
-                  <span id="lessonPlacePlain">선릉 Swing Time 바깥쪽 홀</span>
+                <dd class="map-place">
+                  <span id="lessonPlaceText" class="map-place-name">선릉 Swing Time 바깥쪽 홀</span>
+                  <span id="mapAppLinks" class="map-app-links" hidden>
+                    <a id="kakaoMapLink" class="map-app-link" href="#" target="_blank" rel="noopener" aria-label="카카오맵에서 장소 열기">
+                      <img src="../assets/map-kakao.png" alt="" />
+                      <span class="visually-hidden">카카오맵</span>
+                    </a>
+                    <a id="naverMapLink" class="map-app-link" href="#" target="_blank" rel="noopener" aria-label="네이버지도에서 장소 열기">
+                      <img src="../assets/map-naver.png" alt="" />
+                      <span class="visually-hidden">네이버지도</span>
+                    </a>
+                  </span>
                 </dd>
               </div>
             </dl>
@@ -253,17 +259,6 @@
       <img id="posterLarge" alt="" />
     </dialog>
 
-    <dialog id="mapDialog" class="map-dialog">
-      <button class="dialog-close" type="button" aria-label="닫기">×</button>
-      <p class="eyebrow">Map</p>
-      <h2>지도 앱 선택</h2>
-      <p id="mapPlaceName">선릉 Swing Time 바깥쪽 홀</p>
-      <div class="map-actions">
-        <a id="kakaoMapLink" href="#" target="_blank" rel="noopener">카카오맵</a>
-        <a id="naverMapLink" href="#" target="_blank" rel="noopener">네이버지도</a>
-      </div>
-    </dialog>
-
-    <script src="./intro.js?v=20260529-fast-oneday-banner"></script>
+    <script src="./intro.js?v=20260529-map-icons"></script>
   </body>
 </html>
