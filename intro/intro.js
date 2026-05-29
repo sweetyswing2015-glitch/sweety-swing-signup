@@ -43,6 +43,7 @@ let hasResolvedRemoteConfig = false;
 let galleryItems = [];
 let galleryIndex = 0;
 let galleryTimer = null;
+let onedayMapFallback = { kakaoMapUrl: "", naverMapUrl: "" };
 
 const form = document.querySelector("#introForm");
 const fields = {
@@ -225,12 +226,20 @@ function setOptionalText(selector, value) {
 function normalizeExternalUrl(value) {
   const url = String(value || "").trim();
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
+  if (/^(https?:|kakaomap:|nmap:|navermaps:|intent:)/i.test(url)) return url;
   return "";
 }
 
+function getEffectiveMapUrls() {
+  return {
+    kakao: normalizeExternalUrl(config.kakaoMapUrl) || normalizeExternalUrl(onedayMapFallback.kakaoMapUrl),
+    naver: normalizeExternalUrl(config.naverMapUrl) || normalizeExternalUrl(onedayMapFallback.naverMapUrl),
+  };
+}
+
 function hasMapLinks() {
-  return Boolean(normalizeExternalUrl(config.kakaoMapUrl) || normalizeExternalUrl(config.naverMapUrl));
+  const urls = getEffectiveMapUrls();
+  return Boolean(urls.kakao || urls.naver);
 }
 
 function setLessonPlace(value) {
@@ -252,8 +261,7 @@ function setLessonPlace(value) {
 
 function openMapDialog() {
   if (!mapDialog || !hasMapLinks()) return;
-  const kakaoUrl = normalizeExternalUrl(config.kakaoMapUrl);
-  const naverUrl = normalizeExternalUrl(config.naverMapUrl);
+  const { kakao: kakaoUrl, naver: naverUrl } = getEffectiveMapUrls();
   const kakaoLink = document.querySelector("#kakaoMapLink");
   const naverLink = document.querySelector("#naverMapLink");
 
@@ -294,7 +302,7 @@ function normalizeGalleryItems(data) {
     .map((item, index) => ({
       order: Number(item.order || index + 1),
       url: normalizeImageUrl(item.url || item.photoUrl || item.imageUrl || ""),
-      caption: String(item.caption || item.description || item.alt || "").trim(),
+      caption: "",
     }))
     .filter((item) => item.url)
     .sort((a, b) => (Number.isFinite(a.order) ? a.order : 9999) - (Number.isFinite(b.order) ? b.order : 9999));
@@ -433,6 +441,12 @@ function applyOnedayPromo(nextConfig = {}) {
     ...defaultOnedayPromoConfig,
     ...nextConfig,
   };
+  onedayMapFallback = {
+    kakaoMapUrl: String(nextConfig.kakaoMapUrl || "").trim(),
+    naverMapUrl: String(nextConfig.naverMapUrl || "").trim(),
+  };
+  setLessonPlace(config.lessonPlace);
+
   const promoTitle = textOrDefault(promo.promoTitle, defaultOnedayPromoConfig.promoTitle);
   const promoText = textOrDefault(promo.promoText, defaultOnedayPromoConfig.promoText);
   const promoCta = textOrDefault(promo.promoCta, defaultOnedayPromoConfig.promoCta);

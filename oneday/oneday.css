@@ -121,21 +121,6 @@ a {
   min-width: 0;
 }
 
-.hero-cta {
-  display: inline-flex;
-  min-height: 52px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-  border: 1px solid #be9a2b;
-  border-radius: 999px;
-  padding: 0 24px;
-  background: var(--yellow);
-  color: var(--ink);
-  text-decoration: none;
-  font-weight: 950;
-}
-
 .hero-visual,
 .poster-card,
 .photo-gallery figure {
@@ -225,6 +210,17 @@ a {
   align-content: center;
 }
 
+.poster-card.is-video {
+  aspect-ratio: 9 / 16;
+  justify-self: center;
+  width: min(100%, 430px);
+}
+
+.poster-card.is-video + .story-panel {
+  aspect-ratio: auto;
+  min-height: auto;
+}
+
 .poster-frame {
   display: grid;
   width: 100%;
@@ -236,11 +232,24 @@ a {
   cursor: zoom-in;
 }
 
+.poster-frame[hidden],
+.poster-video[hidden] {
+  display: none;
+}
+
 .poster-frame img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.poster-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  object-fit: cover;
 }
 
 .poster-open-button:focus-visible {
@@ -250,7 +259,7 @@ a {
 
 .signup-shell {
   display: block;
-  max-width: 760px;
+  max-width: 880px;
   margin: 0 auto;
   scroll-margin-top: 96px;
 }
@@ -419,11 +428,10 @@ dd {
 
 .photo-gallery-section {
   margin: 0 0 34px;
-  padding: clamp(28px, 5vw, 46px);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(251, 255, 253, 0.92);
-  box-shadow: var(--shadow);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .photo-gallery-section .section-heading {
@@ -440,9 +448,9 @@ dd {
 
 .photo-gallery figure {
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 0;
   border-radius: 8px;
-  background: var(--panel);
+  background: transparent;
 }
 
 .photo-gallery img {

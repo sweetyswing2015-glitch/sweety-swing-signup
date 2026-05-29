@@ -6,7 +6,7 @@
     <title>스위티스윙 원데이 클래스 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./oneday.css?v=20260529-sheet-upload" />
+    <link rel="stylesheet" href="./oneday.css?v=20260529-media-gallery" />
   </head>
   <body>
     <header class="site-header">
@@ -27,7 +27,6 @@
           <p class="lead">
             스윙댄스가 궁금했다면, 가볍게 하루 먼저 만나보세요. 처음이어도 편하게 따라올 수 있게 준비해둘게요.
           </p>
-          <a class="hero-cta" href="#apply">원데이 신청하기</a>
         </div>
         <figure id="heroVisual" class="hero-visual" hidden>
           <img id="heroImage" src="" alt="원데이 클래스 사진" />
@@ -39,6 +38,7 @@
           <button class="poster-frame poster-open-button" type="button" aria-label="원데이 포스터 크게 보기">
             <img id="posterImage" src="" alt="원데이 클래스 포스터" />
           </button>
+          <video id="posterVideo" class="poster-video" muted autoplay loop playsinline controls hidden></video>
         </article>
 
         <article class="story-panel">
@@ -72,22 +72,6 @@
 
           <p id="spaceFeeText" class="space-fee">공간이용료 12,000원 현장 결제</p>
         </article>
-      </section>
-
-      <section id="photoGallery" class="photo-gallery-section" hidden>
-        <div class="section-heading">
-          <p class="eyebrow">Gallery</p>
-          <h2>스위티스윙 순간들</h2>
-        </div>
-        <div class="photo-gallery">
-          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
-          <figure>
-            <img id="galleryImage" src="" alt="" />
-            <figcaption id="galleryCaption" hidden></figcaption>
-          </figure>
-          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
-        </div>
-        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
       </section>
 
       <section class="signup-shell" id="apply">
@@ -155,6 +139,18 @@
           <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
         </form>
       </section>
+
+      <section id="photoGallery" class="photo-gallery-section" hidden>
+        <div class="photo-gallery">
+          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
+          <figure>
+            <img id="galleryImage" src="" alt="" />
+            <figcaption id="galleryCaption" hidden></figcaption>
+          </figure>
+          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
+        </div>
+        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
+      </section>
     </main>
 
     <div id="submittingOverlay" class="submitting-overlay" role="status" aria-live="assertive" hidden>
@@ -188,6 +184,6 @@
       </div>
     </dialog>
 
-    <script src="./oneday.js?v=20260529-sheet-upload"></script>
+    <script src="./oneday.js?v=20260529-media-gallery"></script>
   </body>
 </html>

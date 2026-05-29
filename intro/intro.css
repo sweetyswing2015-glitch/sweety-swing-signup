@@ -311,10 +311,10 @@ p {
 
 .photo-gallery-section {
   margin: 0 0 34px;
-  padding: clamp(28px, 5vw, 46px);
-  border: 1px solid var(--line);
-  background: rgba(255, 253, 248, 0.9);
-  box-shadow: 0 10px 30px rgba(55, 37, 22, 0.08);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .photo-gallery-section[hidden] {
@@ -336,8 +336,8 @@ p {
 .photo-gallery figure {
   margin: 0;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--cream);
+  border: 0;
+  background: transparent;
 }
 
 .photo-gallery img {

@@ -6,7 +6,7 @@
     <title>스위티스윙 입문 강습 신청</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png" />
     <link rel="apple-touch-icon" href="../assets/favicon.png" />
-    <link rel="stylesheet" href="./intro.css?v=20260529-sheet-upload" />
+    <link rel="stylesheet" href="./intro.css?v=20260529-media-gallery" />
   </head>
   <body>
     <header class="intro-header">
@@ -89,22 +89,6 @@
             <p id="ageNotice" class="age-note">만45세 이하 신청 가능 (1980년 6월생까지)</p>
           </div>
         </article>
-      </section>
-
-      <section id="photoGallery" class="photo-gallery-section" hidden>
-        <div class="section-heading">
-          <p class="eyebrow">Gallery</p>
-          <h2>스위티스윙 순간들</h2>
-        </div>
-        <div class="photo-gallery">
-          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
-          <figure>
-            <img id="galleryImage" src="" alt="" />
-            <figcaption id="galleryCaption" hidden></figcaption>
-          </figure>
-          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
-        </div>
-        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
       </section>
 
       <section id="apply" class="apply-section">
@@ -210,6 +194,18 @@
           </aside>
         </form>
       </section>
+
+      <section id="photoGallery" class="photo-gallery-section" hidden>
+        <div class="photo-gallery">
+          <button class="gallery-nav gallery-prev" type="button" aria-label="이전 사진">‹</button>
+          <figure>
+            <img id="galleryImage" src="" alt="" />
+            <figcaption id="galleryCaption" hidden></figcaption>
+          </figure>
+          <button class="gallery-nav gallery-next" type="button" aria-label="다음 사진">›</button>
+        </div>
+        <div id="galleryDots" class="gallery-dots" aria-label="사진 선택"></div>
+      </section>
     </main>
 
     <div class="mobile-total" aria-label="모바일 입금 금액">
@@ -265,6 +261,6 @@
       </div>
     </dialog>
 
-    <script src="./intro.js?v=20260529-sheet-upload"></script>
+    <script src="./intro.js?v=20260529-map-gallery"></script>
   </body>
 </html>

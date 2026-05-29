@@ -8,6 +8,7 @@ const defaultConfig = {
   mainImageUrl: "",
   heroImageUrl: "",
   posterImageUrl: "",
+  posterVideoUrl: "",
   lessonDate: "6월 13일(토)",
   lessonTime: "오후 5:30 ~ 7:20",
   lessonPlace: "Swing Time Bar (선릉역 5번 출구)",
@@ -44,6 +45,7 @@ const completeDialog = document.querySelector("#completeDialog");
 const posterDialog = document.querySelector("#posterDialog");
 const posterLarge = document.querySelector("#posterLarge");
 const posterImage = document.querySelector("#posterImage");
+const posterVideo = document.querySelector("#posterVideo");
 const heroVisual = document.querySelector("#heroVisual");
 const heroImage = document.querySelector("#heroImage");
 const posterCard = document.querySelector("#posterCard");
@@ -154,7 +156,7 @@ function setOptionalText(selector, value) {
 function normalizeExternalUrl(value) {
   const url = String(value || "").trim();
   if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
+  if (/^(https?:|kakaomap:|nmap:|navermaps:|intent:)/i.test(url)) return url;
   return "";
 }
 
@@ -210,6 +212,33 @@ function setImageRegion(wrapper, image, url, fallbackAlt) {
   image.alt = fallbackAlt;
 }
 
+function setPosterMedia() {
+  if (!posterCard) return;
+  const videoUrl = normalizeImageUrl(config.posterVideoUrl);
+  const imageUrl = normalizeImageUrl(config.posterImageUrl);
+  const useVideo = Boolean(videoUrl);
+
+  posterCard.hidden = !videoUrl && !imageUrl;
+  posterCard.classList.toggle("is-video", useVideo);
+
+  if (posterVideo) {
+    posterVideo.hidden = !useVideo;
+    if (useVideo && posterVideo.src !== videoUrl) posterVideo.src = videoUrl;
+    if (!useVideo) posterVideo.removeAttribute("src");
+  }
+
+  const imageButton = posterImage?.closest(".poster-open-button");
+  if (imageButton) imageButton.hidden = useVideo || !imageUrl;
+  if (posterImage) {
+    if (imageUrl) {
+      posterImage.src = imageUrl;
+      posterImage.alt = `${config.classTitle} 포스터`;
+    } else {
+      posterImage.removeAttribute("src");
+    }
+  }
+}
+
 function applyConfig(nextConfig = {}) {
   config = {
     ...defaultConfig,
@@ -219,6 +248,7 @@ function applyConfig(nextConfig = {}) {
   config.mainImageUrl = optionalConfigText(nextConfig, "mainImageUrl", defaultConfig.mainImageUrl);
   config.heroImageUrl = optionalConfigText(nextConfig, "heroImageUrl", defaultConfig.heroImageUrl);
   config.posterImageUrl = optionalConfigText(nextConfig, "posterImageUrl", defaultConfig.posterImageUrl);
+  config.posterVideoUrl = optionalConfigText(nextConfig, "posterVideoUrl", defaultConfig.posterVideoUrl);
   config.lessonDate = optionalConfigText(nextConfig, "lessonDate", defaultConfig.lessonDate);
   config.lessonTime = optionalConfigText(nextConfig, "lessonTime", defaultConfig.lessonTime);
   config.lessonPlace = optionalConfigText(nextConfig, "lessonPlace", defaultConfig.lessonPlace);
@@ -230,7 +260,6 @@ function applyConfig(nextConfig = {}) {
   config.successMessage = optionalConfigText(nextConfig, "successMessage", defaultConfig.successMessage);
 
   setText("#classTitle", config.classTitle);
-  setText(".hero-cta", config.promoCta);
   setOptionalRow("#lessonDateRow", "#lessonDateText", config.lessonDate);
   setOptionalRow("#lessonTimeRow", "#lessonTimeText", config.lessonTime);
   setLessonPlace(config.lessonPlace);
@@ -238,7 +267,7 @@ function applyConfig(nextConfig = {}) {
   setOptionalText("#spaceFeeText", config.spaceFeeNotice);
   setOptionalText("#completeMessage", config.successMessage);
   setImageRegion(heroVisual, heroImage, config.mainImageUrl || config.heroImageUrl, `${config.classTitle} 사진`);
-  setImageRegion(posterCard, posterImage, config.posterImageUrl, `${config.classTitle} 포스터`);
+  setPosterMedia();
   updateSubmitButton();
   document.title = `${config.classTitle} 신청`;
 }
@@ -287,7 +316,7 @@ function normalizeGalleryItems(data) {
     .map((item, index) => ({
       order: Number(item.order || index + 1),
       url: normalizeImageUrl(item.url || item.photoUrl || item.imageUrl || ""),
-      caption: String(item.caption || item.description || item.alt || "").trim(),
+      caption: "",
     }))
     .filter((item) => item.url)
     .sort((a, b) => (Number.isFinite(a.order) ? a.order : 9999) - (Number.isFinite(b.order) ? b.order : 9999));
