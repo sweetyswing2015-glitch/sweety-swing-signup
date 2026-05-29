@@ -330,14 +330,15 @@ a {
 
 .video-status {
   position: absolute;
-  right: 50%;
-  bottom: 24px;
-  transform: translateX(50%);
+  top: calc(50% + 52px);
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 999px;
   padding: 8px 14px;
   background: rgba(16, 37, 40, 0.68);
   font-size: 0.9rem;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .video-card.is-loading .video-play-icon {
