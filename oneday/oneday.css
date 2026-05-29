@@ -256,6 +256,19 @@ a {
   background: #000;
 }
 
+@media (min-width: 901px) {
+  .signup-shell {
+    align-items: stretch;
+  }
+
+  .signup-shell .video-card {
+    align-self: stretch;
+    height: 100%;
+    min-height: 100%;
+    aspect-ratio: auto;
+  }
+}
+
 .video-play-card {
   position: absolute;
   inset: 0;
