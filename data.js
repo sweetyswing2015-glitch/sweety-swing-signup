@@ -235,6 +235,7 @@
     return {
       ...application,
       swingExperience: application.swingExperience || "",
+      birthday: application.birthday || "",
       selectedClasses: Array.isArray(application.selectedClasses)
         ? application.selectedClasses.map(normalizeLesson)
         : [],
@@ -660,6 +661,7 @@
         "닉네임",
         "이름",
         "연락처",
+        "생일",
         "스윙경력",
         "신청자유형",
         "강습",
@@ -677,6 +679,7 @@
         application.nickname,
         application.realName,
         application.phone,
+        application.birthday,
         application.swingExperience,
         applicantTypeLabels[application.applicantType] || application.applicantType,
         (application.selectedClasses || []).map((item) => item.name).join(" / "),

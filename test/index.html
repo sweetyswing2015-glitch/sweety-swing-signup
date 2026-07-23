@@ -7,7 +7,7 @@
     <base href="../" />
     <link rel="icon" type="image/png" href="./assets/favicon.png" />
     <link rel="apple-touch-icon" href="./assets/favicon.png" />
-    <link rel="stylesheet" href="./styles.css?v=20260522-kst-time" />
+    <link rel="stylesheet" href="./styles.css?v=20260723-test-birthday" />
   </head>
   <body data-page-mode="test">
     <header class="site-header">
@@ -114,9 +114,14 @@
                 <small>연락처는 신청 확인 및 안내 용도로만 사용되며 공개되지 않습니다.</small>
                 <small class="field-error" id="phoneError" role="alert"></small>
               </label>
+              <label>
+                <span>생일</span>
+                <input id="birthday" name="birthday" type="text" inputmode="text" autocomplete="off" placeholder="예: 6월 13일" />
+                <small>생일빵 대상자 확인용이며 운영진에게만 공개됩니다. 생년은 적지 않아도 됩니다.</small>
+              </label>
               <label id="swingExperienceField" class="wide conditional-field" hidden>
                 <span>스윙경력</span>
-                <input id="swingExperience" name="swingExperience" type="text" inputmode="numeric" placeholder="예: 2년 6개월" />
+                <input id="swingExperience" name="swingExperience" type="text" inputmode="text" placeholder="예: 2년 6개월" />
                 <small>트레이닝 수업 신청 시에만 입력하며 운영진에게만 공개됩니다. 예: 8년, 8년 6개월, 6개월</small>
                 <small class="field-error" id="swingExperienceError" role="alert"></small>
               </label>
@@ -233,7 +238,7 @@
       <p>입금 확인 후 신청이 확정됩니다.</p>
     </dialog>
 
-    <script src="./data.js?v=20260522-intro-site"></script>
-    <script src="./script.js?v=20260522-kst-time"></script>
+    <script src="./data.js?v=20260723-test-birthday"></script>
+    <script src="./script.js?v=20260723-test-birthday"></script>
   </body>
 </html>

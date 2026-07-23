@@ -401,6 +401,7 @@ function filteredApplications() {
       application.nickname,
       application.realName,
       application.phone,
+      application.birthday,
       application.swingExperience,
       application.recommendedDepositorName,
       selectedClassPlain(application),
@@ -419,7 +420,7 @@ function renderManagementTable(targetId, mode) {
         <tr>
           <td>
             <strong class="sheet-value">${escapeHtml(application.nickname)}</strong>
-            <span class="subtext sheet-value">${escapeHtml([application.realName, application.phone, application.swingExperience ? `스윙경력 ${application.swingExperience}` : ""].filter(Boolean).join(" · "))}</span>
+            <span class="subtext sheet-value">${escapeHtml([application.realName, application.phone, application.birthday ? `생일 ${application.birthday}` : "", application.swingExperience ? `스윙경력 ${application.swingExperience}` : ""].filter(Boolean).join(" · "))}</span>
           </td>
           <td>${selectedClassText(application)}</td>
           <td>${escapeHtml(Store.applicantTypeLabels[application.applicantType] || application.applicantType)}</td>

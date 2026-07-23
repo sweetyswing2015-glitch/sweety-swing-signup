@@ -44,6 +44,7 @@ const configLoadingBar = document.querySelector("#configLoadingBar");
 const configLoadingText = document.querySelector("#configLoadingText");
 const swingExperienceField = document.querySelector("#swingExperienceField");
 const swingExperienceInput = document.querySelector("#swingExperience");
+const birthdayInput = document.querySelector("#birthday");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
 const inlineSubmitButton = document.querySelector('#signupForm button[type="submit"]');
@@ -505,6 +506,7 @@ function buildPayload() {
     nickname: document.querySelector("#nickname").value.trim(),
     realName: document.querySelector("#realName").value.trim(),
     phone: document.querySelector("#phone").value.trim(),
+    birthday: birthdayInput?.value.trim() || "",
     swingExperience: hasTrainingLesson(selectedLessons) ? normalizeSwingExperience(swingExperienceInput?.value || "") : "",
     applicantType,
     selectedClasses: buildSelectedClasses(selectedLessons),
