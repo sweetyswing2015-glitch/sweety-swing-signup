@@ -1,6 +1,27 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
 const CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
+const SHARED_GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
+const CACHE_PURGE_PARAM = "purgeCache";
+
+function purgeBrowserCacheFromUrl(cacheKeys) {
+  const params = new URLSearchParams(window.location.search);
+  const value = String(params.get(CACHE_PURGE_PARAM) || "").toLowerCase();
+  if (!["1", "true", "yes", "y"].includes(value)) return false;
+
+  try {
+    cacheKeys.forEach((key) => localStorage.removeItem(key));
+  } catch (error) {
+    console.warn("Cache purge failed", error);
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete(CACHE_PURGE_PARAM);
+  window.location.replace(url.toString());
+  return true;
+}
+
+purgeBrowserCacheFromUrl([CONFIG_CACHE_KEY, SHARED_GALLERY_CACHE_KEY]);
 
 const defaultConfig = {
   classTitle: "스위티스윙 6월 원데이 클래스",

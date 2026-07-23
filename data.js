@@ -4,6 +4,7 @@
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
   const CACHE_VERSION = "20260723-role-visibility";
+  const CACHE_PURGE_PARAM = "purgeCache";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -21,6 +22,26 @@
     localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
   }
 
+  function purgeBrowserCacheFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const value = String(params.get(CACHE_PURGE_PARAM) || "").toLowerCase();
+    if (!["1", "true", "yes", "y"].includes(value)) return false;
+
+    try {
+      [CONFIG_KEY, PUBLIC_ROSTER_KEY, CACHE_VERSION_KEY].forEach((key) => localStorage.removeItem(key));
+      configCache = null;
+      publicRosterCache = null;
+    } catch (error) {
+      console.warn("Cache purge failed", error);
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete(CACHE_PURGE_PARAM);
+    window.location.replace(url.toString());
+    return true;
+  }
+
+  purgeBrowserCacheFromUrl();
   migrateLocalCache();
 
   function formatKstDateTime(date = new Date()) {

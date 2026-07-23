@@ -3,7 +3,27 @@ const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v5";
 const ONEDAY_CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
 const GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
+const CACHE_PURGE_PARAM = "purgeCache";
 const ONEDAY_SIGNUP_URL = "../oneday/";
+
+function purgeBrowserCacheFromUrl(cacheKeys) {
+  const params = new URLSearchParams(window.location.search);
+  const value = String(params.get(CACHE_PURGE_PARAM) || "").toLowerCase();
+  if (!["1", "true", "yes", "y"].includes(value)) return false;
+
+  try {
+    cacheKeys.forEach((key) => localStorage.removeItem(key));
+  } catch (error) {
+    console.warn("Cache purge failed", error);
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete(CACHE_PURGE_PARAM);
+  window.location.replace(url.toString());
+  return true;
+}
+
+purgeBrowserCacheFromUrl([CONFIG_CACHE_KEY, ONEDAY_CONFIG_CACHE_KEY, GALLERY_CACHE_KEY]);
 
 const defaultConfig = {
   termLabel: "입문 정규강습 신청",
