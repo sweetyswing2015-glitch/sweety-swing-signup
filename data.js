@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260522-intro-site";
+  const CACHE_VERSION = "20260723-poster-config-refresh";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
