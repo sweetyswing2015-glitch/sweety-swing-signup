@@ -355,20 +355,40 @@
     return normalized;
   }
 
-  function publicRosterRowsFromApplications(applications = getApplications()) {
+  function visibleRolesForLesson(lesson = {}) {
+    if (Array.isArray(lesson.visibleRoles)) {
+      return lesson.visibleRoles.filter((role) => roleLabels[role]);
+    }
+    return normalizeLessonRoles(lesson);
+  }
+
+  function isSelectedClassPubliclyVisible(selectedClass, lessonById) {
+    const lesson = lessonById[normalizeLessonId(selectedClass.id)] || {};
+    const visibleRoles = visibleRolesForLesson(lesson);
+    const role = selectedClass.role || "";
+    return visibleRoles.length ? visibleRoles.includes(role) : !role;
+  }
+
+  function publicRosterRowsFromApplications(applications = getApplications(), config = getConfig()) {
+    const lessonById = (config.lessons || []).reduce((byId, lesson) => {
+      byId[lesson.id] = lesson;
+      return byId;
+    }, {});
     return applications.flatMap((application) => {
       if (application.status === "cancelled" || application.paymentStatus === "refunded") return [];
-      return (application.selectedClasses || []).map((selectedClass) => ({
-        termId: application.termId,
-        termName: application.termName,
-        lessonId: selectedClass.id,
-        lessonName: selectedClass.name,
-        nickname: application.nickname,
-        role: selectedClass.role,
-        status: application.status,
-        paymentStatus: application.paymentStatus,
-        submittedAt: application.submittedAt,
-      }));
+      return (application.selectedClasses || [])
+        .filter((selectedClass) => isSelectedClassPubliclyVisible(selectedClass, lessonById))
+        .map((selectedClass) => ({
+          termId: application.termId,
+          termName: application.termName,
+          lessonId: selectedClass.id,
+          lessonName: selectedClass.name,
+          nickname: application.nickname,
+          role: selectedClass.role,
+          status: application.status,
+          paymentStatus: application.paymentStatus,
+          submittedAt: application.submittedAt,
+        }));
     });
   }
 
@@ -424,15 +444,16 @@
       return savePublicRosterRows(Array.isArray(rows) ? rows : []);
     } catch (error) {
       const applications = await refreshApplications(termId);
-      return savePublicRosterRows(publicRosterRowsFromApplications(applications));
+      return savePublicRosterRows(publicRosterRowsFromApplications(applications, getConfig()));
     }
   }
 
   async function refreshStudentsPageData(termId = "") {
+    const config = getConfig();
     if (!USE_REMOTE_API) {
       return {
-        config: getConfig(),
-        publicRoster: savePublicRosterRows(publicRosterRowsFromApplications()),
+        config,
+        publicRoster: savePublicRosterRows(publicRosterRowsFromApplications(getApplications(), config)),
       };
     }
 

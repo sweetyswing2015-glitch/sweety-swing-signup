@@ -59,6 +59,16 @@ function lessonOptions(config, selected = "all") {
   ].join("");
 }
 
+function getVisibleLessonRoles(lesson) {
+  const configuredRoles = Array.isArray(lesson?.visibleRoles) ? lesson.visibleRoles : Object.keys(Store.roleLabels);
+  return Object.keys(Store.roleLabels).filter((role) => configuredRoles.includes(role));
+}
+
+function isRosterRowRoleVisible(lesson, row) {
+  const visibleRoles = getVisibleLessonRoles(lesson);
+  return visibleRoles.length ? visibleRoles.includes(row.role) : !row.role;
+}
+
 function selectedClassText(application) {
   return (application.selectedClasses || [])
     .map((item) => `<span class="sheet-value">${escapeHtml(item.name)}</span> <span>${Store.roleLabels[item.role] || item.role}</span>`)
@@ -327,12 +337,20 @@ function initStudentsPage() {
     const publicRows = Store.getPublicRosterRows().filter((row) => row.status !== "cancelled" && row.paymentStatus !== "refunded");
     $("#rosterContent").innerHTML = lessons
       .map((lesson) => {
-        const rows = publicRows.filter((row) => row.lessonId === lesson.id);
-        const leaderRows = rows.filter((row) => row.role === "leader");
-        const followerRows = rows.filter((row) => row.role === "follower");
-        const leaderCount = leaderRows.length;
-        const followerCount = followerRows.length;
+        const visibleRoles = getVisibleLessonRoles(lesson);
+        const rows = publicRows.filter((row) => row.lessonId === lesson.id && isRosterRowRoleVisible(lesson, row));
+        const roleColumns = visibleRoles.map((role) => ({
+          role,
+          title: Store.roleLabels[role],
+          rows: rows.filter((row) => row.role === role),
+        }));
         const paidCount = rows.filter((row) => row.paymentStatus === "paid").length;
+        const countParts = [
+          `총 ${rows.length}명`,
+          ...roleColumns.map((column) => `${column.title} ${column.rows.length}`),
+          `입금확인 ${paidCount}`,
+        ];
+        const rosterColumns = roleColumns.length ? roleColumns : [{ title: "신청자", rows }];
         return `
           <section class="panel roster-section">
             <div class="section-title row-title">
@@ -340,13 +358,12 @@ function initStudentsPage() {
                 <p class="eyebrow">${lesson.category === "training" ? "Training" : "Class"}</p>
                 <h2 class="sheet-value">${escapeHtml(lesson.name)}</h2>
               </div>
-              <p class="count-pill">총 ${rows.length}명 · 리더 ${leaderCount} · 팔뤄 ${followerCount} · 입금확인 ${paidCount}</p>
+              <p class="count-pill">${countParts.join(" · ")}</p>
             </div>
             ${
               rows.length
-                ? `<div class="role-roster" aria-label="${escapeHtml(lesson.name)} 신청 명단">
-                    ${renderRoleColumn("리더", leaderRows)}
-                    ${renderRoleColumn("팔뤄", followerRows)}
+                ? `<div class="role-roster ${rosterColumns.length === 1 ? "is-single" : ""}" aria-label="${escapeHtml(lesson.name)} 신청 명단">
+                    ${rosterColumns.map((column) => renderRoleColumn(column.title, column.rows)).join("")}
                   </div>`
                 : `<p class="roster-empty">아직 신청자가 없습니다.</p>`
             }

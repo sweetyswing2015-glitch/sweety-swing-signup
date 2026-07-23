@@ -1195,6 +1195,10 @@ td select {
   background: #fffdf7;
 }
 
+.role-roster.is-single {
+  grid-template-columns: 1fr;
+}
+
 .role-roster-column {
   display: grid;
   align-content: start;
