@@ -7,7 +7,7 @@
     <base href="../" />
     <link rel="icon" type="image/png" href="./assets/favicon.png" />
     <link rel="apple-touch-icon" href="./assets/favicon.png" />
-    <link rel="stylesheet" href="./styles.css?v=20260723-test-birthday" />
+    <link rel="stylesheet" href="./styles.css?v=20260723-test-birthday-layout" />
   </head>
   <body data-page-mode="test">
     <header class="site-header">
@@ -92,7 +92,7 @@
             <p id="typeError" class="field-error" role="alert"></p>
           </section>
 
-          <section class="panel">
+          <section class="panel applicant-panel">
             <div class="section-title">
               <p class="eyebrow">Step 3</p>
               <h2>신청자 정보</h2>
@@ -108,7 +108,7 @@
                 <input id="realName" name="realName" type="text" autocomplete="name" placeholder="예: 홍길동" />
                 <small class="field-error" id="realNameError" role="alert"></small>
               </label>
-              <label class="wide">
+              <label>
                 <span>연락처</span>
                 <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" />
                 <small>연락처는 신청 확인 및 안내 용도로만 사용되며 공개되지 않습니다.</small>
@@ -117,7 +117,7 @@
               <label>
                 <span>생일</span>
                 <input id="birthday" name="birthday" type="text" inputmode="text" autocomplete="off" placeholder="예: 6월 13일" />
-                <small>생일빵 대상자 확인용이며 운영진에게만 공개됩니다. 생년은 적지 않아도 됩니다.</small>
+                <small>생일빵 대상자 확인용으로 운영진에게만 공개됩니다.</small>
               </label>
               <label id="swingExperienceField" class="wide conditional-field" hidden>
                 <span>스윙경력</span>

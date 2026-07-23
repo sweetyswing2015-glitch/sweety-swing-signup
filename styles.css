@@ -602,6 +602,19 @@ main {
   font-size: 13px;
 }
 
+body[data-page-mode="test"] .applicant-panel .field-grid {
+  gap: 10px 12px;
+}
+
+body[data-page-mode="test"] .applicant-panel .field-grid label {
+  gap: 5px;
+}
+
+body[data-page-mode="test"] .applicant-panel .field-error {
+  min-height: 16px;
+  margin-top: 4px;
+}
+
 .field-error {
   min-height: 20px;
   margin: 8px 0 0;
