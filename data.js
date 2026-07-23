@@ -195,7 +195,11 @@
     refunded: "환불",
   };
   const applicationStatusCodes = Object.fromEntries(Object.entries(applicationStatusLabels).map(([code, label]) => [label, code]));
-  const paymentStatusCodes = Object.fromEntries(Object.entries(paymentStatusLabels).map(([code, label]) => [label, code]));
+  const paymentStatusCodes = {
+    ...Object.fromEntries(Object.entries(paymentStatusLabels).map(([code, label]) => [label, code])),
+    입금확인: "paid",
+    입금완료: "paid",
+  };
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
