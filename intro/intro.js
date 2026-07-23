@@ -44,7 +44,6 @@ const defaultOnedayPromoConfig = {
 
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
 let isSubmitting = false;
-let isConfigLoading = true;
 let submitRequestedFromMobile = false;
 let hasResolvedRemoteConfig = false;
 let galleryItems = [];
@@ -65,7 +64,6 @@ const fields = {
 const submitButton = document.querySelector(".submit-button");
 const mobileSubmitButton = document.querySelector("#mobileSubmit");
 const mobileTotal = document.querySelector(".mobile-total");
-const copyAccountButton = document.querySelector("[data-copy-account]");
 const referrerField = document.querySelector("#referrerField");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
@@ -598,19 +596,11 @@ function setSubmitting(nextSubmitting) {
   updateSubmitButtons();
 }
 
-function setConfigLoading(nextLoading) {
-  isConfigLoading = nextLoading;
-  document.body.classList.toggle("is-config-loading", isConfigLoading);
-  if (copyAccountButton) copyAccountButton.disabled = isConfigLoading;
-  updateSubmitButtons();
-}
-
 function updateSubmitButtons() {
-  const disabled = isSubmitting || isConfigLoading;
-  submitButton.disabled = disabled;
-  if (mobileSubmitButton) mobileSubmitButton.disabled = disabled;
-  submitButton.textContent = isSubmitting ? "신청 저장 중" : isConfigLoading ? "설정 불러오는 중" : "신청하기";
-  if (mobileSubmitButton) mobileSubmitButton.textContent = isSubmitting ? "저장 중" : isConfigLoading ? "대기 중" : "신청하기";
+  submitButton.disabled = isSubmitting;
+  if (mobileSubmitButton) mobileSubmitButton.disabled = isSubmitting;
+  submitButton.textContent = isSubmitting ? "신청 저장 중" : "신청하기";
+  if (mobileSubmitButton) mobileSubmitButton.textContent = isSubmitting ? "저장 중" : "신청하기";
 }
 
 function showCompleteDialog(record) {
@@ -661,8 +651,6 @@ async function refreshConfig() {
     console.warn(error);
     hasResolvedRemoteConfig = true;
     applyConfig(readCachedConfig() || defaultConfig);
-  } finally {
-    setConfigLoading(false);
   }
 }
 
@@ -733,10 +721,6 @@ function setupFloatingSubmitVisibility() {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (isConfigLoading) {
-    setStatus("신청 정보를 불러오는 중입니다. 잠시만 기다려주세요.");
-    return;
-  }
   if (isSubmitting) return;
   const shouldScrollApplyFirst = submitRequestedFromMobile;
   submitRequestedFromMobile = false;
@@ -821,7 +805,7 @@ mobileSubmitButton?.addEventListener("click", () => {
   form.requestSubmit();
 });
 
-setConfigLoading(true);
+applyConfig(readCachedConfig() || defaultConfig);
 applyOnedayPromo(readCachedOnedayConfig({ allowStale: true }) || defaultOnedayPromoConfig);
 updateReferrerVisibility();
 refreshConfig();
