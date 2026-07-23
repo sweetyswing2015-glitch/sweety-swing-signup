@@ -1,5 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
-const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v4";
+const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v5";
 const ONEDAY_CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
 const GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
@@ -11,21 +11,21 @@ const defaultConfig = {
   bankAccount: {
     bank: "카카오뱅크",
     accountNumber: "3333351975536",
-    accountHolder: "이기봉",
+    accountHolder: "이기연",
   },
   depositorPrefix: "입문",
-  refundDeadline: "6월19일",
-  ageNotice: "만45세 이하 신청 가능 (1980년 6월생까지)",
+  refundDeadline: "8월21일",
+  ageNotice: "만45세 이하 신청 가능 (1980년 8월생까지)",
   mainImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
   heroImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
-  posterImageUrl: "./assets/intro-poster.png?v=137-regular-20260523004234",
+  posterImageUrl: "./assets/intro-poster.png?v=138-regular-20260723114258",
   recommendationTitle: "이런 분께 추천해요 💛",
   recommendationItems: [
-    "춤을 좋아하지만 어디서 시작해야 할지 몰랐던 분",
-    "놀다가 땀 흘려본 적이 언제인지 기억 안 나는 분",
+    "새로운 취미를 시작해보고 싶으신 분",
+    "좋은 사람들과 어울리고 싶으신 분",
     "주말이 되면 괜히 심심하고 허전한 분",
   ],
-  lessonPeriod: "6월20일~8월15일\n(기간 중 총 6회 강습)",
+  lessonPeriod: "8월22일~10월24일\n(기간 중 총 6회 강습)",
   lessonTime: "토요일 PM 06:20~07:55",
   lessonPlace: "선릉 Swing Time 바깥쪽 홀",
   kakaoMapUrl: "",
@@ -44,6 +44,7 @@ const defaultOnedayPromoConfig = {
 
 let config = { ...defaultConfig, bankAccount: { ...defaultConfig.bankAccount } };
 let isSubmitting = false;
+let isConfigLoading = true;
 let submitRequestedFromMobile = false;
 let hasResolvedRemoteConfig = false;
 let galleryItems = [];
@@ -64,6 +65,7 @@ const fields = {
 const submitButton = document.querySelector(".submit-button");
 const mobileSubmitButton = document.querySelector("#mobileSubmit");
 const mobileTotal = document.querySelector(".mobile-total");
+const copyAccountButton = document.querySelector("[data-copy-account]");
 const referrerField = document.querySelector("#referrerField");
 const formStatus = document.querySelector("#formStatus");
 const submittingOverlay = document.querySelector("#submittingOverlay");
@@ -593,10 +595,22 @@ function setSubmitting(nextSubmitting) {
   isSubmitting = nextSubmitting;
   document.body.classList.toggle("is-submitting", isSubmitting);
   submittingOverlay.hidden = !isSubmitting;
-  submitButton.disabled = isSubmitting;
-  if (mobileSubmitButton) mobileSubmitButton.disabled = isSubmitting;
-  submitButton.textContent = isSubmitting ? "신청 저장 중" : "신청하기";
-  if (mobileSubmitButton) mobileSubmitButton.textContent = isSubmitting ? "저장 중" : "신청하기";
+  updateSubmitButtons();
+}
+
+function setConfigLoading(nextLoading) {
+  isConfigLoading = nextLoading;
+  document.body.classList.toggle("is-config-loading", isConfigLoading);
+  if (copyAccountButton) copyAccountButton.disabled = isConfigLoading;
+  updateSubmitButtons();
+}
+
+function updateSubmitButtons() {
+  const disabled = isSubmitting || isConfigLoading;
+  submitButton.disabled = disabled;
+  if (mobileSubmitButton) mobileSubmitButton.disabled = disabled;
+  submitButton.textContent = isSubmitting ? "신청 저장 중" : isConfigLoading ? "설정 불러오는 중" : "신청하기";
+  if (mobileSubmitButton) mobileSubmitButton.textContent = isSubmitting ? "저장 중" : isConfigLoading ? "대기 중" : "신청하기";
 }
 
 function showCompleteDialog(record) {
@@ -647,6 +661,8 @@ async function refreshConfig() {
     console.warn(error);
     hasResolvedRemoteConfig = true;
     applyConfig(readCachedConfig() || defaultConfig);
+  } finally {
+    setConfigLoading(false);
   }
 }
 
@@ -717,6 +733,10 @@ function setupFloatingSubmitVisibility() {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (isConfigLoading) {
+    setStatus("신청 정보를 불러오는 중입니다. 잠시만 기다려주세요.");
+    return;
+  }
   if (isSubmitting) return;
   const shouldScrollApplyFirst = submitRequestedFromMobile;
   submitRequestedFromMobile = false;
@@ -801,7 +821,7 @@ mobileSubmitButton?.addEventListener("click", () => {
   form.requestSubmit();
 });
 
-applyConfig(readCachedConfig() || defaultConfig);
+setConfigLoading(true);
 applyOnedayPromo(readCachedOnedayConfig({ allowStale: true }) || defaultOnedayPromoConfig);
 updateReferrerVisibility();
 refreshConfig();
