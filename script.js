@@ -150,6 +150,40 @@ function getPosterSrc(lesson) {
   return `${poster}${separator}sitev=${ASSET_CACHE_VERSION}`;
 }
 
+function getVisibleRoles(lesson) {
+  const roles = Array.isArray(lesson?.visibleRoles) ? lesson.visibleRoles : Object.keys(roleLabels);
+  return Object.keys(roleLabels).filter((role) => roles.includes(role));
+}
+
+function lessonRequiresRole(lesson) {
+  return getVisibleRoles(lesson).length > 0;
+}
+
+function renderRoleBox(lesson) {
+  const visibleRoles = getVisibleRoles(lesson);
+  if (!visibleRoles.length) return "";
+  const optionClass = visibleRoles.length === 1 ? "role-options is-single" : "role-options";
+
+  return `
+          <fieldset class="role-box" aria-label="${lesson.name} 역할 선택">
+            <legend class="sheet-value">${lesson.name} 역할</legend>
+            <div class="${optionClass}">
+              ${visibleRoles
+                .map(
+                  (role) => `
+              <label>
+                <input type="radio" name="role-${lesson.id}" value="${role}" aria-describedby="role-error-${lesson.id}" disabled />
+                <span>${roleLabels[role]}</span>
+              </label>
+                `,
+                )
+                .join("")}
+            </div>
+          </fieldset>
+          <p id="role-error-${lesson.id}" class="field-error role-error" data-role-error="${lesson.id}" role="alert"></p>
+  `;
+}
+
 function renderLessons() {
   lessonGrid.innerHTML = lessons
     .map(
@@ -169,20 +203,7 @@ function renderLessons() {
             <input type="checkbox" name="lesson" value="${lesson.id}" />
             <span class="sheet-value">${lesson.name} 신청</span>
           </label>
-          <fieldset class="role-box" aria-label="${lesson.name} 역할 선택">
-            <legend class="sheet-value">${lesson.name} 역할</legend>
-            <div class="role-options">
-              <label>
-                <input type="radio" name="role-${lesson.id}" value="leader" aria-describedby="role-error-${lesson.id}" disabled />
-                <span>리더</span>
-              </label>
-              <label>
-                <input type="radio" name="role-${lesson.id}" value="follower" aria-describedby="role-error-${lesson.id}" disabled />
-                <span>팔뤄</span>
-              </label>
-            </div>
-          </fieldset>
-          <p id="role-error-${lesson.id}" class="field-error role-error" data-role-error="${lesson.id}" role="alert"></p>
+          ${renderRoleBox(lesson)}
         </article>
       `,
     )
@@ -279,7 +300,7 @@ function buildSelectedClasses(selectedLessons) {
     shortName: lesson.shortName,
     category: lesson.category,
     price: lesson.price,
-    role: getRole(lesson.id),
+    role: lessonRequiresRole(lesson) ? getRole(lesson.id) : "",
   }));
 }
 
@@ -305,11 +326,12 @@ function updateLessonCards() {
     const checkbox = document.querySelector(`input[name="lesson"][value="${lesson.id}"]`);
     const isSelected = Boolean(checkbox?.checked);
     const roleInputs = document.querySelectorAll(`input[name="role-${lesson.id}"]`);
+    const shouldRequireRole = isSelected && lessonRequiresRole(lesson);
     card?.classList.toggle("is-selected", isSelected);
     roleInputs.forEach((input) => {
       input.disabled = !isSelected;
-      input.required = isSelected;
-      input.setAttribute("aria-required", String(isSelected));
+      input.required = shouldRequireRole;
+      input.setAttribute("aria-required", String(shouldRequireRole));
       if (!isSelected) {
         input.checked = false;
       }
@@ -340,11 +362,12 @@ function renderSummary(selectedLessons, price, depositorName) {
     ? selectedLessons
         .map((lesson) => {
           const role = getRole(lesson.id);
+          const roleText = lessonRequiresRole(lesson) ? roleLabels[role] || "역할 미선택" : "";
           return `
             <div class="selected-item">
               <div>
                 <strong class="sheet-value">${lesson.name}</strong>
-                <span>${role ? roleLabels[role] : "역할 미선택"}</span>
+                ${roleText ? `<span>${roleText}</span>` : ""}
               </div>
               <b>${formatWon(lesson.price)}</b>
             </div>
@@ -437,7 +460,7 @@ function validateForm() {
     isValid = false;
   }
 
-  const missingRoleLessons = selectedLessons.filter((lesson) => !getRole(lesson.id));
+  const missingRoleLessons = selectedLessons.filter((lesson) => lessonRequiresRole(lesson) && !getRole(lesson.id));
   missingRoleLessons.forEach((lesson) => {
     document.querySelector(`[data-lesson-card="${lesson.id}"]`)?.classList.add("has-error");
     setRoleError(lesson.id, "이 강습의 리더/팔뤄 역할을 선택해주세요.");

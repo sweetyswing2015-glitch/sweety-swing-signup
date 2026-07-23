@@ -3,7 +3,7 @@
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260723-poster-config-refresh";
+  const CACHE_VERSION = "20260723-role-visibility";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
   let configCache = null;
@@ -123,6 +123,7 @@
         poster: "./assets/poster-beginner.png?v=137-regular-20260521131449",
         caption: "초급 포스터",
         enabled: true,
+        visibleRoles: ["leader", "follower"],
       },
       {
         id: "pre-intermediate",
@@ -133,6 +134,7 @@
         poster: "./assets/poster-pre-intermediate.png?v=137-regular-20260521110657",
         caption: "초중급 포스터",
         enabled: true,
+        visibleRoles: ["leader", "follower"],
       },
       {
         id: "intermediate",
@@ -143,6 +145,7 @@
         poster: "./assets/poster-intermediate.png?v=137-regular-20260521110657",
         caption: "중급 포스터",
         enabled: true,
+        visibleRoles: ["leader", "follower"],
       },
       {
         id: "training-a",
@@ -153,6 +156,7 @@
         poster: "./assets/poster-training-a.svg",
         caption: "트레이닝 9기 - 슬로우 포스터",
         enabled: true,
+        visibleRoles: ["leader", "follower"],
       },
       {
         id: "training-b",
@@ -163,6 +167,7 @@
         poster: "./assets/poster-training-b.svg",
         caption: "트레이닝 10기 - 리듬앤블루스 포스터",
         enabled: true,
+        visibleRoles: ["leader", "follower"],
       },
     ],
   };
@@ -208,8 +213,18 @@
     return legacyLessonIds[id] || id;
   }
 
+  function normalizeLessonRoles(lesson = {}) {
+    const rawRoles = Array.isArray(lesson.visibleRoles)
+      ? lesson.visibleRoles
+      : [
+          lesson.leaderVisible === false ? "" : "leader",
+          lesson.followerVisible === false ? "" : "follower",
+        ];
+    return [...new Set(rawRoles.map((role) => String(role || "").trim()).filter((role) => roleLabels[role]))];
+  }
+
   function normalizeLesson(lesson) {
-    return { ...lesson, id: normalizeLessonId(lesson.id) };
+    return { ...lesson, id: normalizeLessonId(lesson.id), visibleRoles: normalizeLessonRoles(lesson) };
   }
 
   function normalizeApplication(application) {
@@ -282,12 +297,12 @@
     const savedLessons = Array.isArray(saved.lessons) ? saved.lessons.map(normalizeLesson) : [];
     config.lessons = defaultConfig.lessons.map((lesson) => {
       const override = savedLessons.find((item) => item.id === lesson.id) || {};
-      return { ...lesson, ...override, price: Number(override.price ?? lesson.price) || 0 };
+      return normalizeLesson({ ...lesson, ...override, price: Number(override.price ?? lesson.price) || 0 });
     });
 
     savedLessons
       .filter((lesson) => !config.lessons.some((item) => item.id === lesson.id))
-      .forEach((lesson) => config.lessons.push({ ...lesson, price: Number(lesson.price) || 0 }));
+      .forEach((lesson) => config.lessons.push(normalizeLesson({ ...lesson, price: Number(lesson.price) || 0 })));
 
     return config;
   }

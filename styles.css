@@ -468,6 +468,10 @@ main {
   gap: 8px;
 }
 
+.role-options.is-single {
+  grid-template-columns: 1fr;
+}
+
 .role-options label {
   position: relative;
   cursor: pointer;
