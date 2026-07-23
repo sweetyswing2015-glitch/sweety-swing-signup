@@ -1,5 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
-const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v3";
+const CONFIG_CACHE_KEY = "sweetySwingIntroConfig:v4";
 const ONEDAY_CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
 const GALLERY_CACHE_KEY = "sweetySwingSharedPhotoGallery:v1";
 const CONFIG_CACHE_MAX_AGE_MS = 5 * 60 * 1000;
@@ -19,6 +19,12 @@ const defaultConfig = {
   mainImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
   heroImageUrl: "./assets/intro-hero.png?v=137-regular-20260523011840",
   posterImageUrl: "./assets/intro-poster.png?v=137-regular-20260523004234",
+  recommendationTitle: "이런 분께 추천해요 💛",
+  recommendationItems: [
+    "춤을 좋아하지만 어디서 시작해야 할지 몰랐던 분",
+    "놀다가 땀 흘려본 적이 언제인지 기억 안 나는 분",
+    "주말이 되면 괜히 심심하고 허전한 분",
+  ],
   lessonPeriod: "6월20일~8월15일\n(기간 중 총 6회 강습)",
   lessonTime: "토요일 PM 06:20~07:55",
   lessonPlace: "선릉 Swing Time 바깥쪽 홀",
@@ -69,6 +75,7 @@ const gallerySection = document.querySelector("#photoGallery");
 const galleryImage = document.querySelector("#galleryImage");
 const galleryCaption = document.querySelector("#galleryCaption");
 const galleryDots = document.querySelector("#galleryDots");
+const recommendList = document.querySelector("#recommendList");
 
 function formatWon(value) {
   return `${Number(value || 0).toLocaleString("ko-KR")}원`;
@@ -168,8 +175,12 @@ function applyConfig(nextConfig = {}) {
   config.ageNotice = optionalConfigText(nextConfig, "ageNotice", defaultConfig.ageNotice);
   config.refundDeadline = optionalConfigText(nextConfig, "refundDeadline", defaultConfig.refundDeadline);
   config.paymentNotice = optionalConfigText(nextConfig, "paymentNotice", defaultConfig.paymentNotice);
+  config.recommendationTitle = optionalConfigText(nextConfig, "recommendationTitle", defaultConfig.recommendationTitle);
+  config.recommendationItems = recommendationItemsFromConfig(nextConfig);
 
   setText("#termLabel", config.termLabel);
+  setOptionalText("#recommendTitle", config.recommendationTitle);
+  renderRecommendationItems(config.recommendationItems);
   setText("#priceText", formatWon(config.price));
   setText("#summaryPrice", formatWon(config.price));
   setText("#mobileSummaryPrice", formatWon(config.price));
@@ -200,6 +211,26 @@ function textOrDefault(value, fallback) {
 function optionalConfigText(source, key, fallback = "") {
   if (!Object.prototype.hasOwnProperty.call(source, key)) return fallback;
   return String(source[key] ?? "").trim();
+}
+
+function recommendationItemsFromConfig(source = {}) {
+  if (!Object.prototype.hasOwnProperty.call(source, "recommendationItems")) {
+    return defaultConfig.recommendationItems.slice();
+  }
+  if (!Array.isArray(source.recommendationItems)) return [];
+  return source.recommendationItems.map((item) => String(item || "").trim()).filter(Boolean);
+}
+
+function renderRecommendationItems(items = []) {
+  if (!recommendList) return;
+  recommendList.replaceChildren();
+  recommendList.hidden = items.length === 0;
+  items.forEach((item) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = item;
+    listItem.classList.add("sheet-value");
+    recommendList.appendChild(listItem);
+  });
 }
 
 function setOptionalRow(rowSelector, textSelector, value, { preserveEmpty = false } = {}) {
