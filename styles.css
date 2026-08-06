@@ -936,6 +936,22 @@ dialog::backdrop {
   font-size: 17px;
 }
 
+.roster-sync-status {
+  min-height: 1.4em;
+  margin-top: 8px !important;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.roster-sync-status.is-loading,
+.roster-sync-status.is-success {
+  color: var(--green);
+}
+
+.roster-sync-status.is-error {
+  color: #b42318;
+}
+
 .compact-title {
   margin-top: 28px;
 }

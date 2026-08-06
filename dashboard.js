@@ -46,6 +46,21 @@ function setToast(message) {
   }, 2600);
 }
 
+function setRosterSyncStatus(message, tone = "") {
+  const node = $("#rosterSyncStatus");
+  if (!node) return;
+
+  window.clearTimeout(setRosterSyncStatus.timer);
+  node.textContent = message;
+  node.className = `roster-sync-status${tone ? ` is-${tone}` : ""}`;
+  node.hidden = !message;
+  if (message && tone !== "loading") {
+    setRosterSyncStatus.timer = window.setTimeout(() => {
+      node.hidden = true;
+    }, 3200);
+  }
+}
+
 function activeApplications() {
   return Store.getApplications().filter((application) => application.status !== "cancelled");
 }
@@ -563,9 +578,10 @@ async function loadPublicRosterForDashboard() {
 async function loadStudentsPageData() {
   try {
     await Store.refreshStudentsPageData();
+    return true;
   } catch (error) {
     console.error(error);
-    setToast("명단 데이터를 불러오지 못했습니다. 잠시 후 새로고침해주세요.");
+    return false;
   }
 }
 
@@ -580,9 +596,24 @@ async function loadConfigForDashboard() {
 
 async function boot() {
   if (page === "students") {
-    renderStudentsLoading();
-    await loadStudentsPageData();
-    initStudentsPage();
+    const cachedData = Store.getCachedStudentsPageData();
+    if (cachedData) {
+      Store.applyStudentsPageData(cachedData);
+      initStudentsPage();
+      setRosterSyncStatus("최신 명단을 확인하는 중입니다.", "loading");
+      const refreshed = await loadStudentsPageData();
+      if (refreshed) {
+        initStudentsPage();
+        setRosterSyncStatus("최신 명단으로 업데이트했습니다.", "success");
+      } else {
+        setRosterSyncStatus("최신 명단 확인에 실패했습니다. 이전 명단을 표시하고 있습니다.", "error");
+      }
+    } else {
+      renderStudentsLoading();
+      const refreshed = await loadStudentsPageData();
+      initStudentsPage();
+      if (!refreshed) setRosterSyncStatus("최신 명단을 불러오지 못했습니다.", "error");
+    }
     return;
   }
 

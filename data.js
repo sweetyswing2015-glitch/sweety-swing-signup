@@ -2,8 +2,9 @@
   const CONFIG_KEY = "sweetySwing.config.v2";
   const APPLICATIONS_KEY = "sweetySwing.applications.v2";
   const PUBLIC_ROSTER_KEY = "sweetySwing.publicRoster.v2";
+  const STUDENTS_PAGE_DATA_KEY = "sweetySwing.studentsPageData.v1";
   const CACHE_VERSION_KEY = "sweetySwing.cacheVersion.v1";
-  const CACHE_VERSION = "20260723-role-visibility";
+  const CACHE_VERSION = "20260806-students-page-cache";
   const CACHE_PURGE_PARAM = "purgeCache";
   const API_URL = "https://script.google.com/macros/s/AKfycbyXhHR_VEz_0a4guDUBI8t1VK88pFcbryxNovMZwQDqlkg0Vc3dAOi_YNInDSx9qQ-R/exec";
   const USE_REMOTE_API = Boolean(API_URL);
@@ -19,6 +20,7 @@
   function migrateLocalCache() {
     if (localStorage.getItem(CACHE_VERSION_KEY) === CACHE_VERSION) return;
     localStorage.removeItem(CONFIG_KEY);
+    localStorage.removeItem(STUDENTS_PAGE_DATA_KEY);
     localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
   }
 
@@ -28,7 +30,7 @@
     if (!["1", "true", "yes", "y"].includes(value)) return false;
 
     try {
-      [CONFIG_KEY, PUBLIC_ROSTER_KEY, CACHE_VERSION_KEY].forEach((key) => localStorage.removeItem(key));
+      [CONFIG_KEY, PUBLIC_ROSTER_KEY, STUDENTS_PAGE_DATA_KEY, CACHE_VERSION_KEY].forEach((key) => localStorage.removeItem(key));
       configCache = null;
       publicRosterCache = null;
     } catch (error) {
@@ -381,6 +383,34 @@
     return normalized;
   }
 
+  function saveStudentsPageDataCache(data, termId = "") {
+    const payload = {
+      savedAt: Date.now(),
+      termId: termId || data?.config?.termId || "",
+      config: data?.config || getConfig(),
+      publicRoster: Array.isArray(data?.publicRoster) ? data.publicRoster : [],
+    };
+    try {
+      localStorage.setItem(STUDENTS_PAGE_DATA_KEY, JSON.stringify(payload));
+    } catch (error) {
+      console.warn("Students page cache write failed", error);
+    }
+    return payload;
+  }
+
+  function getCachedStudentsPageData(maxAgeMs = Number.POSITIVE_INFINITY) {
+    const cached = safeJsonParse(localStorage.getItem(STUDENTS_PAGE_DATA_KEY), null);
+    if (!cached || !cached.savedAt || Date.now() - Number(cached.savedAt) > maxAgeMs) return null;
+    if (!cached.config || !Array.isArray(cached.publicRoster)) return null;
+    return cached;
+  }
+
+  function applyStudentsPageData(data) {
+    const config = data?.config ? saveConfig(data.config) : getConfig();
+    const publicRoster = savePublicRosterRows(Array.isArray(data?.publicRoster) ? data.publicRoster : []);
+    return { config, publicRoster };
+  }
+
   function visibleRolesForLesson(lesson = {}) {
     if (Array.isArray(lesson.visibleRoles)) {
       return lesson.visibleRoles.filter((role) => roleLabels[role]);
@@ -477,20 +507,24 @@
   async function refreshStudentsPageData(termId = "") {
     const config = getConfig();
     if (!USE_REMOTE_API) {
-      return {
+      const data = {
         config,
         publicRoster: savePublicRosterRows(publicRosterRowsFromApplications(getApplications(), config)),
       };
+      saveStudentsPageDataCache(data, termId);
+      return data;
     }
 
     try {
       const data = await apiGet("getStudentsPageData", termId ? { termId } : {});
-      const config = data?.config ? saveConfig(data.config) : getConfig();
-      const publicRoster = savePublicRosterRows(Array.isArray(data?.publicRoster) ? data.publicRoster : []);
-      return { config, publicRoster };
+      const result = applyStudentsPageData(data);
+      saveStudentsPageDataCache(result, termId);
+      return result;
     } catch (error) {
       const [config, publicRoster] = await Promise.all([refreshConfig(), refreshPublicRosterRows(termId)]);
-      return { config, publicRoster };
+      const result = { config, publicRoster };
+      saveStudentsPageDataCache(result, termId);
+      return result;
     }
   }
 
@@ -736,6 +770,8 @@
     saveApplications,
     getPublicRosterRows,
     savePublicRosterRows,
+    getCachedStudentsPageData,
+    applyStudentsPageData,
     refreshApplications,
     refreshPublicRosterRows,
     refreshStudentsPageData,
