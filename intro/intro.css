@@ -1084,8 +1084,26 @@ textarea:focus {
   border-width: 3px;
 }
 
+.sync-status {
+  min-height: 1.4em;
+  margin: -8px 0 18px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.sync-status.is-loading,
+.sync-status.is-success {
+  color: var(--green);
+}
+
+.sync-status.is-error {
+  color: #b42318;
+}
+
 .loading-state[hidden],
 .empty-state[hidden],
+.sync-status[hidden],
 .intro-roster[hidden],
 .intro-gender-roster[hidden] {
   display: none;

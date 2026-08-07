@@ -7,7 +7,6 @@ const fallbackData = {
 };
 const CACHE_KEY = "sweetySwingOnedayStudentsPageData:v1";
 const CONFIG_CACHE_KEY = "sweetySwingOnedayConfig:v1";
-const CACHE_MAX_AGE_MS = 60 * 1000;
 let currentConfig = fallbackData.config;
 
 const loadingState = document.querySelector("#loadingState");
@@ -15,6 +14,7 @@ const loadingText = loadingState?.querySelector("strong");
 const emptyState = document.querySelector("#emptyState");
 const rosterGrid = document.querySelector("#rosterGrid");
 const toast = document.querySelector("#toast");
+const syncStatus = document.querySelector("#syncStatus");
 
 function buildApiUrl(action) {
   const url = new URL(API_URL);
@@ -58,10 +58,23 @@ function setLoading(isLoading, message = "신청 현황을 불러오는 중입�
   loadingState.hidden = !isLoading;
 }
 
+function setSyncStatus(message, tone = "") {
+  if (!syncStatus) return;
+  window.clearTimeout(setSyncStatus.timer);
+  syncStatus.textContent = message;
+  syncStatus.className = `sync-status${tone ? ` is-${tone}` : ""}`;
+  syncStatus.hidden = !message;
+  if (message && tone !== "loading") {
+    setSyncStatus.timer = window.setTimeout(() => {
+      syncStatus.hidden = true;
+    }, 3200);
+  }
+}
+
 function readCachedData() {
   try {
     const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-    if (!cached?.data || Date.now() - Number(cached.savedAt || 0) > CACHE_MAX_AGE_MS) return null;
+    if (!cached?.data) return null;
     return cached.data;
   } catch (error) {
     console.warn("Oneday roster cache read failed", error);
@@ -80,7 +93,7 @@ function writeCachedData(data) {
 function readCachedConfig() {
   try {
     const cached = JSON.parse(localStorage.getItem(CONFIG_CACHE_KEY) || "null");
-    if (!cached?.config || Date.now() - Number(cached.savedAt || 0) > CACHE_MAX_AGE_MS) return null;
+    if (!cached?.config) return null;
     return cached.config;
   } catch (error) {
     console.warn("Oneday config cache read failed", error);
@@ -190,13 +203,16 @@ function render(data) {
 
 async function loadRoster({ silent = false, useCache = true } = {}) {
   const cachedData = useCache ? readCachedData() : null;
-  let hasRendered = false;
+  const hasCachedData = Boolean(cachedData);
+  let hasRendered = hasCachedData || loadingState.hidden;
   if (cachedData) {
     render(cachedData);
     hasRendered = true;
     setLoading(true, "최신 신청 현황을 확인하는 중입니다.");
+    setSyncStatus("최신 명단을 확인하는 중입니다.", "loading");
   } else {
     setLoading(true);
+    setSyncStatus("");
   }
 
   try {
@@ -205,10 +221,15 @@ async function loadRoster({ silent = false, useCache = true } = {}) {
     if (data.config) writeCachedConfig(data.config);
     render(data);
     hasRendered = true;
+    if (hasCachedData) setSyncStatus("최신 명단으로 업데이트했습니다.", "success");
     if (silent) showToast("명단을 새로고침했습니다.");
   } catch (error) {
     console.error(error);
     if (!hasRendered) render(fallbackData);
+    setSyncStatus(
+      hasRendered ? "최신 명단 확인에 실패했습니다. 이전 명단을 표시하고 있습니다." : "명단을 불러오지 못했습니다.",
+      "error",
+    );
     if (silent) showToast(hasRendered ? "최신 명단을 불러오지 못했습니다." : "명단을 불러오지 못했습니다.");
   } finally {
     setLoading(false);
@@ -220,5 +241,4 @@ document.querySelector("#refreshButton").addEventListener("click", () => {
 });
 
 applyConfig(readCachedConfig() || fallbackData.config);
-loadOnedayConfig();
 loadRoster();
