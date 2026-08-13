@@ -37,6 +37,7 @@ const defaultConfig = {
   naverMapUrl: "",
   lessonFee: "무료!",
   spaceFeeNotice: "공간이용료 12,000원 현장 결제",
+  ageNotice: "",
   promoCta: "원데이 신청하기",
   successMessage: "신청이 완료되었습니다. 강습 때 만나요 :)",
 };
@@ -335,6 +336,7 @@ function applyConfig(nextConfig = {}) {
   config.naverMapUrl = optionalConfigText(nextConfig, "naverMapUrl", defaultConfig.naverMapUrl);
   config.lessonFee = optionalConfigText(nextConfig, "lessonFee", defaultConfig.lessonFee);
   config.spaceFeeNotice = optionalConfigText(nextConfig, "spaceFeeNotice", defaultConfig.spaceFeeNotice);
+  config.ageNotice = optionalConfigText(nextConfig, "ageNotice", defaultConfig.ageNotice);
   config.promoCta = textOrDefault(nextConfig.promoCta, defaultConfig.promoCta);
   config.successMessage = optionalConfigText(nextConfig, "successMessage", defaultConfig.successMessage);
 
@@ -345,6 +347,7 @@ function applyConfig(nextConfig = {}) {
   setLessonPlace(config.lessonPlace);
   setOptionalRow("#lessonFeeRow", "#lessonFeeText", config.lessonFee);
   setOptionalText("#spaceFeeText", config.spaceFeeNotice);
+  setOptionalText("#ageNotice", config.ageNotice);
   setOptionalText("#completeMessage", config.successMessage);
   setImageRegion(heroVisual, heroImage, config.mainImageUrl || config.heroImageUrl, `${config.classTitle} 사진`);
   setPosterMedia();

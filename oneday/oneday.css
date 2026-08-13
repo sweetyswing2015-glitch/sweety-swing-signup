@@ -566,6 +566,19 @@ dd {
   line-height: 1.45;
 }
 
+.age-note {
+  margin: 14px 0 0;
+  color: var(--coral);
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.age-note[hidden] {
+  display: none;
+}
+
 .form-panel {
   display: grid;
   gap: 22px;
